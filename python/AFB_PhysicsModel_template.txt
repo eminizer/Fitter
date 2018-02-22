@@ -1,0 +1,24 @@
+from HiggsAnalysis.CombinedLimit.PhysicsModel import *
+import re
+
+class %(fitname)s_PhysicsModel(PhysicsModel):
+    def doParametersOfInterest(self):
+        """Create POI and other parameters, and define the POI set."""
+        rws = {}
+
+        self.modelBuilder.doVar("Afb[0.0,-0.75,0.75]");
+        self.modelBuilder.doSet("POI","Afb")
+        
+        self.modelBuilder.factory_('expr::fqp("(1.+@0)",Afb)')
+        self.modelBuilder.factory_('expr::fqm("(1.-@0)",Afb)')
+
+    def getYieldScale(self,bin,process):
+        if bin.find("WJets_CR")==-1 :
+            if process in ['fqp0','fqp1','fqp2']:
+                return 'fqp'
+            if process in ['fqm0','fqm1','fqm2']:
+                return 'fqm'
+        return 1
+
+
+%(fitname)s_PhysicsModel = %(fitname)s_PhysicsModel()
