@@ -59,7 +59,7 @@ fit = Fit(topologies,leptypes,options.par,options.nojec,options.noss,options.nor
 fit.buildDatacards(options.tfilepath)
 
 #add PoIs and refine the model with a PhysicsModel class
-fit.refinePhysicsModel()
+fit.refinePhysicsModel(options.tfilepath)
 
 #combine all of it into a workspace file using text2workspace.py
 fit.createWorkspace()

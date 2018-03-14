@@ -13,11 +13,12 @@ class %(fitname)s_PhysicsModel(PhysicsModel):
         self.modelBuilder.factory_('expr::fqm("(1.-@0)",Afb)')
 
     def getYieldScale(self,bin,process):
-        if bin.find("WJets_CR")==-1 :
-            if process in ['fqp0','fqp1','fqp2']:
-                return 'fqp'
-            if process in ['fqm0','fqm1','fqm2']:
-                return 'fqm'
+        if bin.find('SR')==-1 :
+            return 1
+        if process in ['fqp0','fqp1','fqp2']:
+            return 'fqp'
+        if process in ['fqm0','fqm1','fqm2']:
+            return 'fqm'
         return 1
 
 
