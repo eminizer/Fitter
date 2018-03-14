@@ -24,6 +24,7 @@ parser.add_option('--noSS',  action='store_true', dest='noss')  #leave out other
 parser.add_option('--noRateParams',  action='store_true', dest='norateparams')  #leave out 'rateParam' nuisances
 parser.add_option('--noCRs',  action='store_true', dest='nocontrolregions')  #fit in signal region only
 parser.add_option('--sumCharges',  action='store_true', dest='sumcharges')  #are lepton charges summed in the template file?
+parser.add_option('--verbose', action='store_true', dest='vb') #print debugging combine output?
 #In what filename conventions?
 parser.add_option('--out', 	  type='string', action='store', default='parameters', dest='out',	   	  
 	help='Name stem for parameter values files made by this script')
@@ -52,7 +53,7 @@ fnamepieces = (options.out,options.append)
 ##########								Main Script								##########
 
 #start a new fit object (also initializes the parameter file)
-fit = Fit(topologies,leptypes,options.par,options.nojec,options.noss,options.norateparams,options.nocontrolregions,options.sumcharges,fnamepieces,options.toyAfb,options.toymu,options.toyd)
+fit = Fit(topologies,leptypes,options.par,options.nojec,options.noss,options.norateparams,options.nocontrolregions,options.sumcharges,fnamepieces,options.toyAfb,options.toymu,options.toyd,options.vb)
 
 #build datacards
 fit.buildDatacards(options.tfilepath)

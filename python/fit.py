@@ -9,7 +9,7 @@ import os, glob
 
 class Fit(object) :
 
-	def __init__(self,topologies,leptypes,parameter,nojec,noss,norateparams,nocontrolregions,sumcharges,fnparts,toyAfb,toymu,toyd) :
+	def __init__(self,topologies,leptypes,parameter,nojec,noss,norateparams,nocontrolregions,sumcharges,fnparts,toyAfb,toymu,toyd,vb) :
 		self._topologies=topologies
 		self._ltypes=leptypes
 		self._fitpar=parameter
@@ -26,6 +26,7 @@ class Fit(object) :
 		for ltype in self._ltypes :
 			self._name+='_'+ltype
 		print 'initializing fit with name '+self._name
+		self._verbose = vb
 
 	########		PUBLIC FUNCTIONS 			########
 
@@ -86,7 +87,10 @@ class Fit(object) :
 		os.environ['PYTHONPATH']=orig_pythonpath+':'+os.getcwd()
 		#run text2workspace.py
 		cmd = 'text2workspace.py '+self._total_datacard_filename
+		cmd+=' --X-no-optimize-bins'
 		cmd+=' --PO verbose'
+		if self._verbose :
+			cmd+=' --verbose 5'
 		cmd+=' -o '+self._workspace_filename
 		cmd+=' -P '+self._physics_model_filename.split('.')[0]+':'+self._physics_model_filename.split('.')[0]
 		print cmd
@@ -99,13 +103,16 @@ class Fit(object) :
 		print 'Running Combine for fit %s'%(self._name)
 		if mode=='data' : 
 			#run a single fit to the observed data
-			self._runSingleDataFit_()
+			fit_diagnostics_filename = self._runSingleDataFit_()
+			self._makeNuisanceImpactPlots_()
+			self._makePostfitCompPlots_(fit_diagnostics_filename,tfilepath)
 		elif mode=='toyGroup' : 
 			#run a group of toys and produce a fit with all the bestfit parameter values for use in the Neyman construction
 			self._runToyGroup_(ntoys,nthreads,savetoys)
 		elif mode=='singleToy' : 
-			#run a single toy with the given input value of the POI and make fit comparison plots
+			#run a single toy with the given input value of the POI and make nuisance impact and fit comparison plots
 			fit_diagnostics_filename = self._runSingleToyFit_(savetoys)
+			self._makeNuisanceImpactPlots_()
 			self._makePostfitCompPlots_(fit_diagnostics_filename,tfilepath)
 
 	########		GETTERS/SETTERS 			########
@@ -235,8 +242,8 @@ class Fit(object) :
 			#start the command to run Combine
 			print 'PARALLEL TOYS: each multiprocessing job will run %d toys (%d total)'%(ntoys/nthreads,nthreads*(ntoys/nthreads))
 			cmd = 'combine -M MultiDimFit '+self._workspace_filename
-			if self._noss and self._nojec : #fix nuisance parameters
-				cmd+=' --toysNoSystematics'
+			#fix nuisance parameters
+			cmd+=' --toysNoSystematics'
 			#set observable value for toys
 			cmd+=' --setParameters %s=%.3f'%(self._fitpar,self._toypar)
 			#set the number of toys
@@ -248,7 +255,7 @@ class Fit(object) :
 			#save the fit results to multidimfitNAME.root
 			cmd+=' --saveFitResult'
 			#make it print out progress, etc.
-			cmd+=' --verbose 0'
+			cmd+=' --verbose 5' if self._verbose else ' --verbose 0'
 			#set the fit name 
 			cmd+=' --name Toys%s%.3f_%d'%(self._fitpar,self._toypar,i)
 			p = multiprocessing.Process(target=runFitCommand,args=(cmd,))
@@ -300,8 +307,8 @@ class Fit(object) :
 	def _runSingleToyFit_(self,savetoys) :
 		#start the command to run Combine
 		cmd = 'combine -M FitDiagnostics '+self._workspace_filename
-		if self._noss and self._nojec : #fix nuisance parameters
-			cmd+=' --toysNoSystematics'
+		#fix nuisance parameters
+		cmd+=' --toysNoSystematics'
 		#set observable value for toys
 		cmd+=' --setParameters %s=%.3f'%(self._fitpar,self._toypar)
 		#run on only one toy
@@ -313,7 +320,7 @@ class Fit(object) :
 		#save shapes with uncertainty
 		cmd+=' --saveShapes --saveWithUncertainties'
 		#make it print out progress, etc.
-		cmd+=' --verbose 0'
+		cmd+=' --verbose 5' if self._verbose else ' --verbose 0'
 		#set the fit name 
 		cmd+=' --name Toys%s%.3f'%(self._fitpar,self._toypar)
 		print cmd
@@ -321,6 +328,25 @@ class Fit(object) :
 		#return the filename of the output
 		outputfilename = 'fitDiagnosticsToys%s%.3f.root'%(self._fitpar,self._toypar)
 		return outputfilename
+
+	def _makeNuisanceImpactPlots_(self) :
+		print 'Plotting nuisance impacts for fit %s'%(self._name)
+		#make the first command to run the initial fit through combineTool.py
+		cmd = 'combineTool.py -M Impacts -d %s -m 125 --doInitialFit'%(self._workspace_filename)
+		print cmd
+		os.system(cmd)
+		#make the second command to do scans for each nuisance parameter
+		cmd = 'combineTool.py -M Impacts -d %s -m 125 --doFits --parallel %d'%(self._workspace_filename,4)
+		print cmd
+		os.system(cmd)
+		#make the third command to collect the results and put them in a json file
+		cmd = 'combineTool.py -M Impacts -d %s -m 125 -o impacts_%s.json'%(self._workspace_filename,self._name)
+		print cmd
+		os.system(cmd)
+		#make the final command to plot the impacts
+		cmd = 'plotImpacts.py -i impacts_%s.json -o impacts_%s'%(self._name,self._name)
+		print cmd
+		os.system(cmd)
 
 	def _makePostfitCompPlots_(self,fdfn,tfp) :
 		print 'Making postfit comparison plots with input filename=%s'%(fdfn)
@@ -334,8 +360,6 @@ class Fit(object) :
 		cmd+='--outfilename %s_postfit_comparison_plots.root'%(self._name)
 		print cmd
 		os.system(cmd)
-
-
 
 def runFitCommand(cmd) :
 	print cmd 
