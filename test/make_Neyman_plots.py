@@ -28,8 +28,10 @@ parser.add_option('--centralValue', type='float', action='store', default=100000
 #With what filename conventions?
 parser.add_option('--append', type='string', action='store', default='', 		   dest='append',	   	  
 	help='Append for end of parameter values filename')
-#print debbugging statements?
+#print debugging statements?
 parser.add_option('-V','--verbose',  action='store_true', dest='verbose')
+#Take the absolute value of mu and d?
+parser.add_option('--unsigned',  action='store_true', dest='unsigned')
 (options, args) = parser.parse_args()
 
 ##########								Script								##########
@@ -48,10 +50,10 @@ cwd = os.getcwd()
 os.chdir(options.toygroupdir)
 dirnamestem = 'toyGroup_'+options.par+'='
 dirlist = glob.glob(dirnamestem+'*')
-if options.par=='Afb' :
-	input_values = array('d',[float(dirname.split(dirnamestem)[1]) for dirname in dirlist])
-else :
+if options.unsigned :
 	input_values = array('d',[abs(float(dirname.split(dirnamestem)[1])) for dirname in dirlist if abs(float(dirname.split(dirnamestem)[1])) not in input_values])
+else :
+	input_values = array('d',[float(dirname.split(dirnamestem)[1]) for dirname in dirlist])
 os.chdir(cwd)
 if options.verbose : print 'input_values = %s'%(input_values) #DEBUG
 
@@ -71,11 +73,20 @@ if options.append.find('no_sys')!=-1 :
 	title += '(no systematics) '
 title+='for '
 if options.par == 'Afb' :
-	title += 'A_{FB}; Input A_{FB}; Fitted A_{FB}'
-elif par_of_int == 'mu' :
-	title += '#mu; Input |#mu|; Fitted |#mu|'
-elif par_of_int == 'd' :
-	title += 'd; Input |d|; Fitted |d|'
+	if options.unsigned :
+		title += '|A_{FB}|; Input |A_{FB}|; Fitted |A_{FB}|'
+	else :
+		title += 'A_{FB}; Input A_{FB}; Fitted A_{FB}'
+elif options.par == 'mu' :
+	if options.unsigned :
+		title += '|#mu|; Input |#mu|; Fitted |#mu|'
+	else :
+		title += '#mu; Input #mu; Fitted #mu'
+elif options.par == 'd' :
+	if options.unsigned :
+		title += '|d|; Input |d|; Fitted |d|'
+	else :
+		title += 'd; Input d; Fitted d'
 closure_test_histo = TH2D('closure_test_histo',title,(n-1),input_values,4*n,2*input_values[0],2*input_values[n-1])
 
 #Set graph attributes
@@ -91,9 +102,9 @@ formattedvar = ''
 if options.par=='Afb' :
 	formattedvar = 'A_{FB}'
 elif options.par=='mu' :
-	formattedvar = '|#mu|'
+	formattedvar = '#mu'
 elif options.par=='d' :
-	formattedvar = '|d|'
+	formattedvar = 'd'
 tstitle+=formattedvar
 if options.append.find('no_sys')!=-1 :
 	tstitle += ' (no systematics)'
@@ -107,7 +118,7 @@ for i in range(n) :
 	filepath = '%s/toyGroup_%s=%.2f/higgsCombineToys%s%.3f.MultiDimFit.all.root'%(options.toygroupdir,options.par,input_values[i],options.par,input_values[i])
 	filepath_opp_sign = '%s/toyGroup_%s=%.2f/higgsCombineToys%s%.3f.MultiDimFit.all.root'%(options.toygroupdir,options.par,-1*input_values[i],options.par,-1*input_values[i])
 	files_to_read = [filepath]
-	if options.par!='Afb' :
+	if options.unsigned :
 		files_to_read.append(filepath_opp_sign)
 	#make a list of all the fitted parameter values
 	par_values_list = []
@@ -123,11 +134,11 @@ for i in range(n) :
 		tree.SetBranchAddress(options.par,readArray)
 		for j in range(n_tree_entries) :
 			tree.GetEntry(j)
-			#if the POI is Afb, add the value, otherwise add its absolute value
-			if options.par=='Afb' :
-				par_values_list.append(readArray[0])
-			else :
+			#add the value
+			if options.unsigned :
 				par_values_list.append(abs(readArray[0]))
+			else :
+				par_values_list.append(readArray[0])
 	#sort the list
 	par_values_list.sort()
 	#read the values into the closure test histogram

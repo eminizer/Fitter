@@ -33,7 +33,7 @@ parser.add_option('--append', type='string', action='store', default='', 		   de
 #Configurations for toy runs
 parser.add_option('--ntoys', type='int', action='store', default=1000, dest='ntoys',	   	  
 	help='How many toys to run for each fit?')
-parser.add_option('--nthreads', type='int', action='store', default=10, dest='nthreads',	   	  
+parser.add_option('--nthreads', type='int', action='store', default=2, dest='nthreads',	   	  
 	help='How many parallel processes should we use in running the fits to toys?')
 parser.add_option('--toy-Afb', type='float', action='store', default=0.0, dest='toyAfb',	   	  
 	help='Toy Afb value')
