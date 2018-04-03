@@ -32,7 +32,7 @@ btag_eff_weight 			  shapeN2	1					1					1					1					1					1					1					1					1		
 JES 						  shapeN2	1					1					1					1					1					1					1					1					1					1					1					1
 JER 						  shapeN2	1					1					1					1					1					1					1					1					1					1					1					1
 # MC generation shape/rate uncertainties for ttbar and QCD
-ren_scale_weight 			  shapeN2	1					1					1					0					0					0					1					1					1					0					0					0
-fact_scale_weight 			  shapeN2	1					1					1					0					0					0					1					1					1					0					0					0
-comb_scale_weight 			  shapeN2	1					1					1					0					0					0					1					1					1					0					0					0
-pdfas_weight 				  shapeN2	1					1					1					0					0					0					1					1					1					0					0					0
+ren_scale_weight 			  shapeN2	1					1					1					0					0					1					1					1					1					0					0					1
+fact_scale_weight 			  shapeN2	1					1					1					0					0					1					1					1					1					0					0					1
+comb_scale_weight 			  shapeN2	1					1					1					0					0					1					1					1					1					0					0					1
+pdfas_weight 				  shapeN2	1					1					1					0					0					1					1					1					1					0					0					1

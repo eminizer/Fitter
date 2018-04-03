@@ -15,6 +15,7 @@ class Fit(object) :
 		self._fitpar=parameter
 		toyparsdict={'Afb':toyAfb,'mu':toymu,'d':toyd}
 		self._toypar=toyparsdict[self._fitpar]
+		self._toyAfb=toyAfb
 		self._nojec=nojec
 		self._noss=noss
 		self._noRateParams=norateparams
@@ -58,17 +59,38 @@ class Fit(object) :
 		if not self._noRateParams :
 			self._addRateParamsToTotalCard_(templatefilepath)
 
-	def refinePhysicsModel(self) :
+	def refinePhysicsModel(self,tfilepath) :
 		print 'Building physics model for fit %s'%(self._name)
 		#first build the filename for the new custom model
 		fn = self._name+'_PhysicsModel.py'
 		#make the dictionary of variables to replace in the template file
-		rep_data = {'fitname':self._name,
-					}
+		nq1={}; nq2={}; nqq={}; ng1={}; ng2={}; ng3={}; ng4={}; ngg={}
+		aux_temp_file = TFile.Open(tfilepath.split('.root')[0]+'_aux.root')
+		for topology in ['t1','t2','t3'] :
+			nq1[topology]=0.; nq2[topology]=0.; nqq[topology]=0.; ng1[topology]=0.; ng2[topology]=0.; ng3[topology]=0.; ng4[topology]=0.; ngg[topology]=0.
+			nq1[topology]+=aux_temp_file.Get(topology+'_SR_NQ1').GetBinContent(1)
+			nq2[topology]+=aux_temp_file.Get(topology+'_SR_NQ2').GetBinContent(1)
+			nqq[topology]+=aux_temp_file.Get(topology+'_SR_NQQBAR').GetBinContent(1)
+			ng1[topology]+=aux_temp_file.Get(topology+'_SR_NG1').GetBinContent(1)
+			ng2[topology]+=aux_temp_file.Get(topology+'_SR_NG2').GetBinContent(1)
+			ng3[topology]+=aux_temp_file.Get(topology+'_SR_NG3').GetBinContent(1)
+			ng4[topology]+=aux_temp_file.Get(topology+'_SR_NG4').GetBinContent(1)
+			ngg[topology]+=aux_temp_file.Get(topology+'_SR_NGG').GetBinContent(1)
+		aux_temp_file.Close()
+		rep_data = {'fitname':self._name}
+		for topology in ['t1','t2','t3'] :
+			rep_data['NQ1_'+topology]=nq1[topology]
+			rep_data['NQ2_'+topology]=nq2[topology]
+			rep_data['NQQ_'+topology]=nqq[topology]
+			rep_data['NG1_'+topology]=ng1[topology]
+			rep_data['NG2_'+topology]=ng2[topology]
+			rep_data['NG3_'+topology]=ng3[topology]
+			rep_data['NG4_'+topology]=ng4[topology]
+			rep_data['NGG_'+topology]=ngg[topology]
 		#open the new file to write into
 		newfile = open(fn,'w')
 		#open the template file to use
-		template_file = open(os.environ['CMSSW_BASE']+'/src/Analysis/Fitter/python/AFB_PhysicsModel_template.txt','r')
+		template_file = open(os.environ['CMSSW_BASE']+'/src/Analysis/Fitter/python/'+self._fitpar+'_PhysicsModel_template.txt','r')
 		#for each line in the template file
 		for line in template_file.readlines() :
 			newfile.write(line%rep_data)
@@ -112,7 +134,6 @@ class Fit(object) :
 		elif mode=='singleToy' : 
 			#run a single toy with the given input value of the POI and make nuisance impact and fit comparison plots
 			fit_diagnostics_filename = self._runSingleToyFit_(savetoys)
-			self._makeNuisanceImpactPlots_()
 			self._makePostfitCompPlots_(fit_diagnostics_filename,tfilepath)
 
 	########		GETTERS/SETTERS 			########
@@ -130,6 +151,7 @@ class Fit(object) :
 			pp+='_'+leptype
 		#figure out which template datacard to open
 		template_filename = os.environ['CMSSW_BASE']+'/src/Analysis/Fitter/python/'
+		template_filename+='Afb_' if (self._fitpar=='Afb' or region!='SR') else 'mu_d_'
 		if topology=='t1' or (topology=='t2' and region=='SR') :
 			template_filename+='wo_QCD_'
 		elif topology=='t3' or (topology=='t2' and region=='WJets_CR') :
@@ -180,30 +202,40 @@ class Fit(object) :
 		outfile.write('# Rateparams for individual processes\n')
 		#make the dictionary of all the rateParam lines by topology
 		rate_params_lines = {}
+		#rateParams for type-1 events
 		rate_params_lines['t1']=[]
 		rate_params_lines['t1'].append('Rwjets_t1 rateParam t1_* fwjets 1')
 		rate_params_lines['t1'].append('Rbck_t1 rateParam t1_* fbck 1')
-		rate_params_lines['t1'].append('qq_scale_t1 rateParam t1_* fq* ((%(NTOT)s-@0*%(NWJETS)s-@1*%(NBCK)s)/(%(NTT)s)) Rwjets_t1,Rbck_t1')
 		rate_params_lines['t1'].append('Rqqbar_t1 rateParam t1_* fq* 1')
-		rate_params_lines['t1'].append('gg_scale_t1 rateParam t1_* fg0 @0*((%(NTT)s-@1*%(NQQ)s)/(%(NGG)s)) qq_scale_t1,Rqqbar_t1')
+		rate_params_lines['t1'].append('qq_scale_t1 rateParam t1_* fq* ((%(NTOT)s-@0*%(NWJETS)s-@1*%(NBCK)s)/(%(NTT)s)) Rwjets_t1,Rbck_t1')
+		#if self._fitpar!='Afb' :
+		#	rate_params_lines['t1'].append('qp_scale_t1 rateParam t1_*_SR fqp* (1.+%.4s)'%(self._toyAfb))
+		#	rate_params_lines['t1'].append('qm_scale_t1 rateParam t1_*_SR fqm* (1.-%.4s)'%(self._toyAfb))
+		rate_params_lines['t1'].append('gg_scale_t1 rateParam t1_* fg* @0*((%(NTT)s-@1*%(NQQ)s)/(%(NGG)s)) qq_scale_t1,Rqqbar_t1')
 		rate_params_lines['t2']=[]
 		rate_params_lines['t2'].append('Rwjets_t2 rateParam t2_* fwjets 1')
 		rate_params_lines['t2'].append('Rbck_t2 rateParam t2_* fbck 1')
 		rate_params_lines['t2'].append('Rqqbar_t2 rateParam t2_* fq* 1')
-		if not self._nocontrolregions :
+		if self._nocontrolregions :
+			rate_params_lines['t2'].append('qq_scale_t2 rateParam t2_* fq* ((%(NTOT)s-@0*%(NWJETS)s-@1*%(NBCK)s)/(%(NTT)s)) Rwjets_t2,Rbck_t2')
+			rate_params_lines['t2'].append('gg_scale_t2 rateParam t2_* fg* @0*((%(NTT)s-@1*%(NQQ)s)/(%(NGG)s)) qq_scale_t2,Rqqbar_t2')
+		else :
 			rate_params_lines['t2'].append('Rqcd_t2 rateParam t2_* fqcd 1')
 			rate_params_lines['t2'].append('qq_scale_t2 rateParam t2_* fq* ((%(NTOT)s-@0*%(NWJETS)s-@1*%(NBCK)s-@2*%(NQCD)s)/(%(NTT)s)) Rwjets_t2,Rbck_t2,Rqcd_t2')
-			rate_params_lines['t2'].append('gg_scale_t2 rateParam t2_* fg0 @0*((%(NTT)s-@1*%(NQQ)s)/(%(NGG)s)) qq_scale_t2,Rqqbar_t2')
-		else :
-			rate_params_lines['t2'].append('qq_scale_t2 rateParam t2_* fq* ((%(NTOT)s-@0*%(NWJETS)s-@1*%(NBCK)s)/(%(NTT)s)) Rwjets_t2,Rbck_t2')
-			rate_params_lines['t2'].append('gg_scale_t2 rateParam t2_* fg0 @0*((%(NTT)s-@1*%(NQQ)s)/(%(NGG)s)) qq_scale_t2,Rqqbar_t2')
+			rate_params_lines['t2'].append('gg_scale_t2 rateParam t2_* fg* @0*((%(NTT)s-@1*%(NQQ)s)/(%(NGG)s)) qq_scale_t2,Rqqbar_t2')
+		#if self._fitpar!='Afb' :
+		#	rate_params_lines['t2'].append('qp_scale_t2 rateParam t2_*_SR fqp* (1.+%.4s)'%(self._toyAfb))
+		#	rate_params_lines['t2'].append('qm_scale_t2 rateParam t2_*_SR fqm* (1.-%.4s)'%(self._toyAfb))
 		rate_params_lines['t3']=[]
 		rate_params_lines['t3'].append('Rwjets_t3 rateParam t3_* fwjets 1')
 		rate_params_lines['t3'].append('Rbck_t3 rateParam t3_* fbck 1')
 		rate_params_lines['t3'].append('Rqcd_t3 rateParam t3_* fqcd 1')
-		rate_params_lines['t3'].append('qq_scale_t3 rateParam t3_* fq* ((%(NTOT)s-@0*%(NWJETS)s-@1*%(NBCK)s-@2*%(NQCD)s)/(%(NTT)s)) Rwjets_t3,Rbck_t3,Rqcd_t3')
 		rate_params_lines['t3'].append('Rqqbar_t3 rateParam t3_* fq* 1')
-		rate_params_lines['t3'].append('gg_scale_t3 rateParam t3_* fg0 @0*((%(NTT)s-@1*%(NQQ)s)/(%(NGG)s)) qq_scale_t3,Rqqbar_t3')
+		rate_params_lines['t3'].append('qq_scale_t3 rateParam t3_* fq* ((%(NTOT)s-@0*%(NWJETS)s-@1*%(NBCK)s-@2*%(NQCD)s)/(%(NTT)s)) Rwjets_t3,Rbck_t3,Rqcd_t3')
+		rate_params_lines['t3'].append('gg_scale_t3 rateParam t3_* fg* @0*((%(NTT)s-@1*%(NQQ)s)/(%(NGG)s)) qq_scale_t3,Rqqbar_t3')
+		#if self._fitpar!='Afb' :
+		#	rate_params_lines['t3'].append('qp_scale_t3 rateParam t3_*_SR fqp* (1.+%.4s)'%(self._toyAfb))
+		#	rate_params_lines['t3'].append('qm_scale_t3 rateParam t3_*_SR fqm* (1.-%.4s)'%(self._toyAfb))
 		for topology in self._topologies :
 			#which regions should we sum over?
 			regions = ['SR']
@@ -232,8 +264,21 @@ class Fit(object) :
 		outfile.close()
 
 	def _runSingleDataFit_(self) :
-		#still blinded
-		print 'ERROR: Not ready to run on data yet; rerun with -M toyGroup/singleToy '
+		#start the command to run Combine
+		cmd = 'combine -M FitDiagnostics '+self._workspace_filename
+		#save shapes with uncertainty
+		cmd+=' --saveShapes --saveWithUncertainties'
+		#don't fit only to the background because that doesn't make sense for our analysis
+		cmd+=' --skipBOnlyFit'
+		#make it print out progress, etc.
+		cmd+=' --verbose 5' if self._verbose else ' --verbose 0'
+		#set the fit name 
+		cmd+=' --name Data%s'%(self._fitpar)
+		print cmd
+		os.system(cmd)
+		#return the filename of the output
+		outputfilename = 'fitDiagnosticsData%s.root'%(self._fitpar)
+		return outputfilename
 
 	def _runToyGroup_(self,ntoys,nthreads,savetoys) :
 		#multithread running the fits
@@ -303,6 +348,7 @@ class Fit(object) :
 		print 'FINAL PARAMETER VALUE INTERVALS:'
 		print '%.4f || %.4f | %.4f | %.4f || %.4f'%(minustwo,minusone,median,plusone,plustwo)
 		print '-----------------------------------------------------'
+		fit_result_file.Close()
 
 	def _runSingleToyFit_(self,savetoys) :
 		#start the command to run Combine
@@ -319,6 +365,10 @@ class Fit(object) :
 			cmd+=' --saveToys'
 		#save shapes with uncertainty
 		cmd+=' --saveShapes --saveWithUncertainties'
+		#don't fit only to the background because that doesn't make sense for our analysis
+		cmd+=' --skipBOnlyFit'
+		#use the custom starting point for the POI
+		cmd+=' --customStartingPoint'
 		#make it print out progress, etc.
 		cmd+=' --verbose 5' if self._verbose else ' --verbose 0'
 		#set the fit name 

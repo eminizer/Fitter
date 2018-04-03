@@ -1,0 +1,96 @@
+from HiggsAnalysis.CombinedLimit.PhysicsModel import *
+import re
+
+class %(fitname)s_PhysicsModel(PhysicsModel):
+    def doParametersOfInterest(self):
+        """Create POI and other parameters, and define the POI set."""
+        rws = {}
+
+        self.modelBuilder.doVar("mu[0.0,-10.0,10.0]");
+        self.modelBuilder.doSet("POI","mu")
+        
+        self.modelBuilder.factory_('expr::fqmu0_t1("((1.)/(1.+(2.*@0+@0*@0)*((%(NQ1_t1)s)/(%(NQQ_t1)s))+(@0*@0)*((%(NQ2_t1)s)/(%(NQQ_t1)s))))",mu)')
+        self.modelBuilder.factory_('expr::fqmu1_t1("((2*@0+@0*@0)/(1.+(2.*@0+@0*@0)*((%(NQ1_t1)s)/(%(NQQ_t1)s))+(@0*@0)*((%(NQ2_t1)s)/(%(NQQ_t1)s))))",mu)')
+        self.modelBuilder.factory_('expr::fqmu2_t1("((@0*@0)/(1.+(2.*@0+@0*@0)*((%(NQ1_t1)s)/(%(NQQ_t1)s))+(@0*@0)*((%(NQ2_t1)s)/(%(NQQ_t1)s))))",mu)')
+        self.modelBuilder.factory_('expr::fgmu0_t1("((1.)/(1.+@0*(1.+@0)*((%(NG1_t1)s)/(%(NGG_t1)s))+@0*@0*(1.+@0)*((%(NG2_t1)s)/(%(NGG_t1)s))+@0*@0*(1.-5.*@0)*((%(NG3_t1)s)/(%(NGG_t1)s))+@0*@0*@0*@0*((%(NG4_t1)s)/(%(NGG_t1)s))))",mu)')
+        self.modelBuilder.factory_('expr::fgmu1_t1("((@0+@0*@0)/(1.+@0*(1.+@0)*((%(NG1_t1)s)/(%(NGG_t1)s))+@0*@0*(1.+@0)*((%(NG2_t1)s)/(%(NGG_t1)s))+@0*@0*(1.-5.*@0)*((%(NG3_t1)s)/(%(NGG_t1)s))+@0*@0*@0*@0*((%(NG4_t1)s)/(%(NGG_t1)s))))",mu)')
+        self.modelBuilder.factory_('expr::fgmu2_t1("((@0*@0+@0*@0*@0)/(1.+@0*(1.+@0)*((%(NG1_t1)s)/(%(NGG_t1)s))+@0*@0*(1.+@0)*((%(NG2_t1)s)/(%(NGG_t1)s))+@0*@0*(1.-5.*@0)*((%(NG3_t1)s)/(%(NGG_t1)s))+@0*@0*@0*@0*((%(NG4_t1)s)/(%(NGG_t1)s))))",mu)')
+        self.modelBuilder.factory_('expr::fgmu3_t1("((@0*@0-5.*@0*@0*@0)/(1.+@0*(1.+@0)*((%(NG1_t1)s)/(%(NGG_t1)s))+@0*@0*(1.+@0)*((%(NG2_t1)s)/(%(NGG_t1)s))+@0*@0*(1.-5.*@0)*((%(NG3_t1)s)/(%(NGG_t1)s))+@0*@0*@0*@0*((%(NG4_t1)s)/(%(NGG_t1)s))))",mu)')
+        self.modelBuilder.factory_('expr::fgmu4_t1("((@0*@0*@0*@0)/(1.+@0*(1.+@0)*((%(NG1_t1)s)/(%(NGG_t1)s))+@0*@0*(1.+@0)*((%(NG2_t1)s)/(%(NGG_t1)s))+@0*@0*(1.-5.*@0)*((%(NG3_t1)s)/(%(NGG_t1)s))+@0*@0*@0*@0*((%(NG4_t1)s)/(%(NGG_t1)s))))",mu)')
+
+        self.modelBuilder.factory_('expr::fqmu0_t2("((1.)/(1.+(2.*@0+@0*@0)*((%(NQ1_t2)s)/(%(NQQ_t2)s))+(@0*@0)*((%(NQ2_t2)s)/(%(NQQ_t2)s))))",mu)')
+        self.modelBuilder.factory_('expr::fqmu1_t2("((2*@0+@0*@0)/(1.+(2.*@0+@0*@0)*((%(NQ1_t2)s)/(%(NQQ_t2)s))+(@0*@0)*((%(NQ2_t2)s)/(%(NQQ_t2)s))))",mu)')
+        self.modelBuilder.factory_('expr::fqmu2_t2("((@0*@0)/(1.+(2.*@0+@0*@0)*((%(NQ1_t2)s)/(%(NQQ_t2)s))+(@0*@0)*((%(NQ2_t2)s)/(%(NQQ_t2)s))))",mu)')
+        self.modelBuilder.factory_('expr::fgmu0_t2("((1.)/(1.+@0*(1.+@0)*((%(NG1_t2)s)/(%(NGG_t2)s))+@0*@0*(1.+@0)*((%(NG2_t2)s)/(%(NGG_t2)s))+@0*@0*(1.-5.*@0)*((%(NG3_t2)s)/(%(NGG_t2)s))+@0*@0*@0*@0*((%(NG4_t2)s)/(%(NGG_t2)s))))",mu)')
+        self.modelBuilder.factory_('expr::fgmu1_t2("((@0+@0*@0)/(1.+@0*(1.+@0)*((%(NG1_t2)s)/(%(NGG_t2)s))+@0*@0*(1.+@0)*((%(NG2_t2)s)/(%(NGG_t2)s))+@0*@0*(1.-5.*@0)*((%(NG3_t2)s)/(%(NGG_t2)s))+@0*@0*@0*@0*((%(NG4_t2)s)/(%(NGG_t2)s))))",mu)')
+        self.modelBuilder.factory_('expr::fgmu2_t2("((@0*@0+@0*@0*@0)/(1.+@0*(1.+@0)*((%(NG1_t2)s)/(%(NGG_t2)s))+@0*@0*(1.+@0)*((%(NG2_t2)s)/(%(NGG_t2)s))+@0*@0*(1.-5.*@0)*((%(NG3_t2)s)/(%(NGG_t2)s))+@0*@0*@0*@0*((%(NG4_t2)s)/(%(NGG_t2)s))))",mu)')
+        self.modelBuilder.factory_('expr::fgmu3_t2("((@0*@0-5.*@0*@0*@0)/(1.+@0*(1.+@0)*((%(NG1_t2)s)/(%(NGG_t2)s))+@0*@0*(1.+@0)*((%(NG2_t2)s)/(%(NGG_t2)s))+@0*@0*(1.-5.*@0)*((%(NG3_t2)s)/(%(NGG_t2)s))+@0*@0*@0*@0*((%(NG4_t2)s)/(%(NGG_t2)s))))",mu)')
+        self.modelBuilder.factory_('expr::fgmu4_t2("((@0*@0*@0*@0)/(1.+@0*(1.+@0)*((%(NG1_t2)s)/(%(NGG_t2)s))+@0*@0*(1.+@0)*((%(NG2_t2)s)/(%(NGG_t2)s))+@0*@0*(1.-5.*@0)*((%(NG3_t2)s)/(%(NGG_t2)s))+@0*@0*@0*@0*((%(NG4_t2)s)/(%(NGG_t2)s))))",mu)')
+
+        self.modelBuilder.factory_('expr::fqmu0_t3("((1.)/(1.+(2.*@0+@0*@0)*((%(NQ1_t3)s)/(%(NQQ_t3)s))+(@0*@0)*((%(NQ2_t3)s)/(%(NQQ_t3)s))))",mu)')
+        self.modelBuilder.factory_('expr::fqmu1_t3("((2*@0+@0*@0)/(1.+(2.*@0+@0*@0)*((%(NQ1_t3)s)/(%(NQQ_t3)s))+(@0*@0)*((%(NQ2_t3)s)/(%(NQQ_t3)s))))",mu)')
+        self.modelBuilder.factory_('expr::fqmu2_t3("((@0*@0)/(1.+(2.*@0+@0*@0)*((%(NQ1_t3)s)/(%(NQQ_t3)s))+(@0*@0)*((%(NQ2_t3)s)/(%(NQQ_t3)s))))",mu)')
+        self.modelBuilder.factory_('expr::fgmu0_t3("((1.)/(1.+@0*(1.+@0)*((%(NG1_t3)s)/(%(NGG_t3)s))+@0*@0*(1.+@0)*((%(NG2_t3)s)/(%(NGG_t3)s))+@0*@0*(1.-5.*@0)*((%(NG3_t3)s)/(%(NGG_t3)s))+@0*@0*@0*@0*((%(NG4_t3)s)/(%(NGG_t3)s))))",mu)')
+        self.modelBuilder.factory_('expr::fgmu1_t3("((@0+@0*@0)/(1.+@0*(1.+@0)*((%(NG1_t3)s)/(%(NGG_t3)s))+@0*@0*(1.+@0)*((%(NG2_t3)s)/(%(NGG_t3)s))+@0*@0*(1.-5.*@0)*((%(NG3_t3)s)/(%(NGG_t3)s))+@0*@0*@0*@0*((%(NG4_t3)s)/(%(NGG_t3)s))))",mu)')
+        self.modelBuilder.factory_('expr::fgmu2_t3("((@0*@0+@0*@0*@0)/(1.+@0*(1.+@0)*((%(NG1_t3)s)/(%(NGG_t3)s))+@0*@0*(1.+@0)*((%(NG2_t3)s)/(%(NGG_t3)s))+@0*@0*(1.-5.*@0)*((%(NG3_t3)s)/(%(NGG_t3)s))+@0*@0*@0*@0*((%(NG4_t3)s)/(%(NGG_t3)s))))",mu)')
+        self.modelBuilder.factory_('expr::fgmu3_t3("((@0*@0-5.*@0*@0*@0)/(1.+@0*(1.+@0)*((%(NG1_t3)s)/(%(NGG_t3)s))+@0*@0*(1.+@0)*((%(NG2_t3)s)/(%(NGG_t3)s))+@0*@0*(1.-5.*@0)*((%(NG3_t3)s)/(%(NGG_t3)s))+@0*@0*@0*@0*((%(NG4_t3)s)/(%(NGG_t3)s))))",mu)')
+        self.modelBuilder.factory_('expr::fgmu4_t3("((@0*@0*@0*@0)/(1.+@0*(1.+@0)*((%(NG1_t3)s)/(%(NGG_t3)s))+@0*@0*(1.+@0)*((%(NG2_t3)s)/(%(NGG_t3)s))+@0*@0*(1.-5.*@0)*((%(NG3_t3)s)/(%(NGG_t3)s))+@0*@0*@0*@0*((%(NG4_t3)s)/(%(NGG_t3)s))))",mu)')
+
+    def getYieldScale(self,bin,process):
+        if bin.find('SR')==-1 :
+            return 1
+        if bin.find('t1')!=-1 :    
+            if process in ['fqp0','fqm0'] :
+                return 'fqmu0_t1'
+            elif process in ['fqp1','fqm1'] :
+                return 'fqmu1_t1'
+            elif process in ['fqp2','fqm2'] :
+                return 'fqmu2_t1'
+            elif process in ['fg0'] :
+                return 'fgmu0_t1'
+            elif process in ['fg1'] :
+                return 'fgmu1_t1'
+            elif process in ['fg2'] :
+                return 'fgmu2_t1'
+            elif process in ['fg3'] :
+                return 'fgmu3_t1'
+            elif process in ['fg4'] :
+                return 'fgmu4_t1'
+        elif bin.find('t2')!=-1 :    
+            if process in ['fqp0','fqm0'] :
+                return 'fqmu0_t2'
+            elif process in ['fqp1','fqm1'] :
+                return 'fqmu1_t2'
+            elif process in ['fqp2','fqm2'] :
+                return 'fqmu2_t2'
+            elif process in ['fg0'] :
+                return 'fgmu0_t2'
+            elif process in ['fg1'] :
+                return 'fgmu1_t2'
+            elif process in ['fg2'] :
+                return 'fgmu2_t2'
+            elif process in ['fg3'] :
+                return 'fgmu3_t2'
+            elif process in ['fg4'] :
+                return 'fgmu4_t2'
+        elif bin.find('t3')!=-1 :    
+            if process in ['fqp0','fqm0'] :
+                return 'fqmu0_t3'
+            elif process in ['fqp1','fqm1'] :
+                return 'fqmu1_t3'
+            elif process in ['fqp2','fqm2'] :
+                return 'fqmu2_t3'
+            elif process in ['fg0'] :
+                return 'fgmu0_t3'
+            elif process in ['fg1'] :
+                return 'fgmu1_t3'
+            elif process in ['fg2'] :
+                return 'fgmu2_t3'
+            elif process in ['fg3'] :
+                return 'fgmu3_t3'
+            elif process in ['fg4'] :
+                return 'fgmu4_t3'
+        return 1
+
+
+%(fitname)s_PhysicsModel = %(fitname)s_PhysicsModel()

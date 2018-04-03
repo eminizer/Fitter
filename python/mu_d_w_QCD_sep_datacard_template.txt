@@ -1,0 +1,38 @@
+# Shape-based analysis setup for AFB/mu/d measurement
+# This file is a datacard for the %(fitname)s fit in the %(r)s region
+# It contains the charge-separated channels for %(lt)s leptons
+imax 2 # There are two channels when using charge-separated lepton types
+jmax 13 # There are 4 backgrounds with QCD
+kmax * # Let Combine figure out how many nuisance parameters there are
+-------------------------------------------------------------------------------
+# Next declare how to find the histograms in the file
+shapes * * %(templatefilename)s %(topology)s_$CHANNEL__$PROCESS %(topology)s_$CHANNEL__$PROCESS__$SYSTEMATIC
+shapes data_obs %(lt)splus_%(r)s %(templatefilename)s %(topology)s_%(lt)splus_%(r)s__data_obs
+shapes data_obs %(lt)sminus_%(r)s %(templatefilename)s %(topology)s_%(lt)sminus_%(r)s__data_obs
+-------------------------------------------------------------------------------
+# Add what's observed in the lepton charge plus/minus bins
+bin			%(lt)splus_%(r)s	%(lt)sminus_%(r)s
+observation	-1					-1
+-------------------------------------------------------------------------------
+# Add the processes contributing to the data expectation
+bin 									%(lt)splus_%(r)s	%(lt)splus_%(r)s	%(lt)splus_%(r)s	%(lt)splus_%(r)s	%(lt)splus_%(r)s	%(lt)splus_%(r)s	%(lt)splus_%(r)s	%(lt)splus_%(r)s	%(lt)splus_%(r)s	%(lt)splus_%(r)s	%(lt)splus_%(r)s	%(lt)splus_%(r)s	%(lt)splus_%(r)s	%(lt)splus_%(r)s	%(lt)sminus_%(r)s	%(lt)sminus_%(r)s	%(lt)sminus_%(r)s	%(lt)sminus_%(r)s	%(lt)sminus_%(r)s	%(lt)sminus_%(r)s	%(lt)sminus_%(r)s	%(lt)sminus_%(r)s	%(lt)sminus_%(r)s	%(lt)sminus_%(r)s	%(lt)sminus_%(r)s	%(lt)sminus_%(r)s	%(lt)sminus_%(r)s	%(lt)sminus_%(r)s
+process 								fqp0				fqp1				fqp2				fqm0				fqm1				fqm2				fg0					fg1					fg2					fg3					fg4					fbck				fwjets				fqcd				fqp0				fqp1				fqp2				fqm0				fqm1				fqm2				fg0					fg1					fg2					fg3					fg4					fbck				fwjets				fqcd				
+process 								-5					-4					-3					-2					-1					0					1					2					3					4					5					6					7					8					-5					-4					-3					-2					-1					0					1					2					3					4					5					6					7					8					
+rate 									-1					-1					-1					-1					-1					-1					-1					-1					-1					-1					-1					-1					-1					-1					-1					-1					-1					-1					-1					-1					-1					-1					-1					-1					-1					-1					-1					-1					
+-------------------------------------------------------------------------------
+# Add the systematics
+# Luminosity lnN
+lumi 						  lnN		1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				
+# shape/rate uncertainties for all processes
+pileup_weight 				  shapeN2	1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					
+%(lt)s_trig_eff_weight_%(tr)s shapeN2	1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					
+%(lt)s_ID_weight 			  shapeN2	1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					
+%(lt)s_iso_weight 			  shapeN2	1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					
+btag_eff_weight 			  shapeN2	1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					
+JES 						  shapeN2	1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					
+JER 						  shapeN2	1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					
+# MC generation shape/rate uncertainties for ttbar and QCD
+ren_scale_weight 			  shapeN2	1					1					1					1					1					1					1					1					1					1					1					0					0					1					1					1					1					1					1					1					1					1					1					1					1					0					0					1					
+fact_scale_weight 			  shapeN2	1					1					1					1					1					1					1					1					1					1					1					0					0					1					1					1					1					1					1					1					1					1					1					1					1					0					0					1					
+comb_scale_weight 			  shapeN2	1					1					1					1					1					1					1					1					1					1					1					0					0					1					1					1					1					1					1					1					1					1					1					1					1					0					0					1					
+pdfas_weight 				  shapeN2	1					1					1					1					1					1					1					1					1					1					1					0					0					1					1					1					1					1					1					1					1					1					1					1					1					0					0					1					
