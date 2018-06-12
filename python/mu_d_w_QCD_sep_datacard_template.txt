@@ -22,7 +22,7 @@ rate 									-1					-1					-1					-1					-1					-1					-1					-1					-1					-1	
 -------------------------------------------------------------------------------
 # Add the systematics
 # Luminosity lnN
-lumi 						  lnN		1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				1.026				
+lumi 						  lnN		1.025				1.025				1.025				1.025				1.025				1.025				1.025				1.025				1.025				1.025				1.025				1.025				1.025				1.025				1.025				1.025				1.025				1.025				1.025				1.025				1.025				1.025				1.025				1.025				1.025				1.025				1.025				1.025				
 # shape/rate uncertainties for all processes
 pileup_weight 				  shapeN2	1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					
 %(lt)s_trig_eff_weight_%(tr)s shapeN2	1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					
@@ -31,8 +31,9 @@ pileup_weight 				  shapeN2	1					1					1					1					1					1					1					1					1			
 btag_eff_weight 			  shapeN2	1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					
 JES 						  shapeN2	1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					
 JER 						  shapeN2	1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					1					
-# MC generation shape/rate uncertainties for ttbar and QCD
+# MC generation shape/rate uncertainties and top pt reweighting for ttbar and QCD
 ren_scale_weight 			  shapeN2	1					1					1					1					1					1					1					1					1					1					1					0					0					1					1					1					1					1					1					1					1					1					1					1					1					0					0					1					
 fact_scale_weight 			  shapeN2	1					1					1					1					1					1					1					1					1					1					1					0					0					1					1					1					1					1					1					1					1					1					1					1					1					0					0					1					
 comb_scale_weight 			  shapeN2	1					1					1					1					1					1					1					1					1					1					1					0					0					1					1					1					1					1					1					1					1					1					1					1					1					0					0					1					
 pdfas_weight 				  shapeN2	1					1					1					1					1					1					1					1					1					1					1					0					0					1					1					1					1					1					1					1					1					1					1					1					1					0					0					1					
+top_pt_re_weight 			  shapeN2	1					1					1					1					1					1					1					1					1					1					1					0					0					1					1					1					1					1					1					1					1					1					1					1					1					0					0					1					

@@ -9,7 +9,7 @@ import os, glob
 
 class Fit(object) :
 
-	def __init__(self,topologies,leptypes,parameter,nojec,noss,norateparams,nocontrolregions,sumcharges,fnparts,toyAfb,toymu,toyd,vb) :
+	def __init__(self,topologies,leptypes,parameter,nojec,noss,norateparams,nocontrolregions,sumcharges,fnparts,toyAfb,toymu,toyd,vb,ppo) :
 		self._topologies=topologies
 		self._ltypes=leptypes
 		self._fitpar=parameter
@@ -28,6 +28,7 @@ class Fit(object) :
 			self._name+='_'+ltype
 		print 'initializing fit with name '+self._name
 		self._verbose = vb
+		self._post_plots_only = ppo
 
 	########		PUBLIC FUNCTIONS 			########
 
@@ -66,7 +67,7 @@ class Fit(object) :
 		#make the dictionary of variables to replace in the template file
 		nq1={}; nq2={}; nqq={}; ng1={}; ng2={}; ng3={}; ng4={}; ngg={}
 		aux_temp_file = TFile.Open(tfilepath.split('.root')[0]+'_aux.root')
-		for topology in ['t1','t2','t3'] :
+		for topology in self._topologies :
 			nq1[topology]=0.; nq2[topology]=0.; nqq[topology]=0.; ng1[topology]=0.; ng2[topology]=0.; ng3[topology]=0.; ng4[topology]=0.; ngg[topology]=0.
 			nq1[topology]+=aux_temp_file.Get(topology+'_SR_NQ1').GetBinContent(1)
 			nq2[topology]+=aux_temp_file.Get(topology+'_SR_NQ2').GetBinContent(1)
@@ -78,7 +79,7 @@ class Fit(object) :
 			ngg[topology]+=aux_temp_file.Get(topology+'_SR_NGG').GetBinContent(1)
 		aux_temp_file.Close()
 		rep_data = {'fitname':self._name}
-		for topology in ['t1','t2','t3'] :
+		for topology in self._topologies :
 			rep_data['NQ1_'+topology]=nq1[topology]
 			rep_data['NQ2_'+topology]=nq2[topology]
 			rep_data['NQQ_'+topology]=nqq[topology]
@@ -110,6 +111,8 @@ class Fit(object) :
 		#run text2workspace.py
 		cmd = 'text2workspace.py '+self._total_datacard_filename
 		cmd+=' --X-no-optimize-bins'
+		#add option to multiply the top pt reweighting uncertainty by five
+		#cmd+=" --X-rescale-nuisance 'top_pt_re_weight' 5.0 "
 		cmd+=' --PO verbose'
 		if self._verbose :
 			cmd+=' --verbose 5'
@@ -126,9 +129,13 @@ class Fit(object) :
 		if mode=='data' : 
 			#run a single fit to the observed data
 			fit_diagnostics_filename = self._runSingleDataFit_()
-			self._makeNuisanceImpactPlots_()
+			if not self._post_plots_only :
+				self._makeNuisanceImpactPlots_()
 			self._makePostfitCompPlots_(fit_diagnostics_filename,tfilepath)
 		elif mode=='toyGroup' : 
+			if self._post_plots_only :
+				print 'ERROR: run with --postfit_plots_only but this is a toyGroup where no postfit plots are made... try again with different options'
+				return
 			#run a group of toys and produce a fit with all the bestfit parameter values for use in the Neyman construction
 			self._runToyGroup_(ntoys,nthreads,savetoys)
 		elif mode=='singleToy' : 
@@ -152,10 +159,11 @@ class Fit(object) :
 		#figure out which template datacard to open
 		template_filename = os.environ['CMSSW_BASE']+'/src/Analysis/Fitter/python/'
 		template_filename+='Afb_' if (self._fitpar=='Afb' or region!='SR') else 'mu_d_'
-		if topology=='t1' or (topology=='t2' and region=='SR') :
-			template_filename+='wo_QCD_'
-		elif topology=='t3' or (topology=='t2' and region=='WJets_CR') :
-			template_filename+='w_QCD_'
+		#if topology=='t1' and leptype=='mu' :
+		#	template_filename+='wo_QCD_'
+		#else :
+		#	template_filename+='w_QCD_'
+		template_filename+='w_QCD_'
 		if self._sumcharges :
 			template_filename+='sum'
 		else :
@@ -180,7 +188,7 @@ class Fit(object) :
 			if self._nojec :
 				sys_to_skip += ['JES','JER']
 			if self._noss :
-				sys_to_skip += ['pileup_weight',rep_data['lt']+'_trig_eff_weight_'+rep_data['tr'],rep_data['lt']+'_ID_weight',rep_data['lt']+'_iso_weight','btag_eff_weight','ren_scale_weight','fact_scale_weight','comb_scale_weight','pdfas_weight']
+				sys_to_skip += ['pileup_weight',rep_data['lt']+'_trig_eff_weight_'+rep_data['tr'],rep_data['lt']+'_ID_weight',rep_data['lt']+'_iso_weight','btag_eff_weight','ren_scale_weight','fact_scale_weight','comb_scale_weight','pdfas_weight','top_pt_re_weight']
 			if line.split()[0]%rep_data in sys_to_skip :
 				continue
 			#if we're running with rateParams
@@ -206,36 +214,36 @@ class Fit(object) :
 		rate_params_lines['t1']=[]
 		rate_params_lines['t1'].append('Rwjets_t1 rateParam t1_* fwjets 1')
 		rate_params_lines['t1'].append('Rbck_t1 rateParam t1_* fbck 1')
-		rate_params_lines['t1'].append('Rqqbar_t1 rateParam t1_* fq* 1')
-		rate_params_lines['t1'].append('qq_scale_t1 rateParam t1_* fq* ((%(NTOT)s-@0*%(NWJETS)s-@1*%(NBCK)s)/(%(NTT)s)) Rwjets_t1,Rbck_t1')
-		#if self._fitpar!='Afb' :
-		#	rate_params_lines['t1'].append('qp_scale_t1 rateParam t1_*_SR fqp* (1.+%.4s)'%(self._toyAfb))
-		#	rate_params_lines['t1'].append('qm_scale_t1 rateParam t1_*_SR fqm* (1.-%.4s)'%(self._toyAfb))
+		rate_params_lines['t1'].append('Rqcd_t1 rateParam t1_* fqcd 1')
+		rate_params_lines['t1'].append('Rqqbar_t1 rateParam t1_* fqp* 1')
+		rate_params_lines['t1'].append('Rqqbar_t1 rateParam t1_* fqm* 1')
+		rate_params_lines['t1'].append('qq_scale_t1 rateParam t1_* fqp* ((%(NTOT)s-@0*%(NWJETS)s-@1*%(NBCK)s-@2*%(NQCD)s)/(%(NTT)s)) Rwjets_t1,Rbck_t1,Rqcd_t1')
+		rate_params_lines['t1'].append('qq_scale_t1 rateParam t1_* fqm* ((%(NTOT)s-@0*%(NWJETS)s-@1*%(NBCK)s-@2*%(NQCD)s)/(%(NTT)s)) Rwjets_t1,Rbck_t1,Rqcd_t1')
+		#rate_params_lines['t1'].append('qq_scale_t1 rateParam t1_* fg* ((%(NTOT)s-@0*%(NWJETS)s-@1*%(NBCK)s-@2*%(NQCD)s)/(%(NTT)s)) Rwjets_t1,Rbck_t1,Rqcd_t1')
 		rate_params_lines['t1'].append('gg_scale_t1 rateParam t1_* fg* @0*((%(NTT)s-@1*%(NQQ)s)/(%(NGG)s)) qq_scale_t1,Rqqbar_t1')
+		#rate_params_lines['t1'].append('gg_scale_t1 rateParam t1_* fg* ((%(NTOT)s-@0*%(NWJETS)s-@1*%(NBCK)s-@2*%(NQCD)s)/(%(NTT)s))*((%(NTT)s-@3*%(NQQ)s)/(%(NGG)s)) Rwjets_t1,Rbck_t1,Rqcd_t1,Rqqbar_t1')
 		rate_params_lines['t2']=[]
 		rate_params_lines['t2'].append('Rwjets_t2 rateParam t2_* fwjets 1')
 		rate_params_lines['t2'].append('Rbck_t2 rateParam t2_* fbck 1')
-		rate_params_lines['t2'].append('Rqqbar_t2 rateParam t2_* fq* 1')
-		if self._nocontrolregions :
-			rate_params_lines['t2'].append('qq_scale_t2 rateParam t2_* fq* ((%(NTOT)s-@0*%(NWJETS)s-@1*%(NBCK)s)/(%(NTT)s)) Rwjets_t2,Rbck_t2')
-			rate_params_lines['t2'].append('gg_scale_t2 rateParam t2_* fg* @0*((%(NTT)s-@1*%(NQQ)s)/(%(NGG)s)) qq_scale_t2,Rqqbar_t2')
-		else :
-			rate_params_lines['t2'].append('Rqcd_t2 rateParam t2_* fqcd 1')
-			rate_params_lines['t2'].append('qq_scale_t2 rateParam t2_* fq* ((%(NTOT)s-@0*%(NWJETS)s-@1*%(NBCK)s-@2*%(NQCD)s)/(%(NTT)s)) Rwjets_t2,Rbck_t2,Rqcd_t2')
-			rate_params_lines['t2'].append('gg_scale_t2 rateParam t2_* fg* @0*((%(NTT)s-@1*%(NQQ)s)/(%(NGG)s)) qq_scale_t2,Rqqbar_t2')
-		#if self._fitpar!='Afb' :
-		#	rate_params_lines['t2'].append('qp_scale_t2 rateParam t2_*_SR fqp* (1.+%.4s)'%(self._toyAfb))
-		#	rate_params_lines['t2'].append('qm_scale_t2 rateParam t2_*_SR fqm* (1.-%.4s)'%(self._toyAfb))
+		rate_params_lines['t2'].append('Rqcd_t2 rateParam t2_* fqcd 1')
+		rate_params_lines['t2'].append('Rqqbar_t2 rateParam t2_* fqp* 1')
+		rate_params_lines['t2'].append('Rqqbar_t2 rateParam t2_* fqm* 1')
+		rate_params_lines['t2'].append('qq_scale_t2 rateParam t2_* fqp* ((%(NTOT)s-@0*%(NWJETS)s-@1*%(NBCK)s-@2*%(NQCD)s)/(%(NTT)s)) Rwjets_t2,Rbck_t2,Rqcd_t2')
+		rate_params_lines['t2'].append('qq_scale_t2 rateParam t2_* fqm* ((%(NTOT)s-@0*%(NWJETS)s-@1*%(NBCK)s-@2*%(NQCD)s)/(%(NTT)s)) Rwjets_t2,Rbck_t2,Rqcd_t2')
+		#rate_params_lines['t2'].append('qq_scale_t2 rateParam t2_* fg* ((%(NTOT)s-@0*%(NWJETS)s-@1*%(NBCK)s-@2*%(NQCD)s)/(%(NTT)s)) Rwjets_t2,Rbck_t2,Rqcd_t2')
+		rate_params_lines['t2'].append('gg_scale_t2 rateParam t2_* fg* @0*((%(NTT)s-@1*%(NQQ)s)/(%(NGG)s)) qq_scale_t2,Rqqbar_t2')
+		#rate_params_lines['t2'].append('gg_scale_t2 rateParam t2_* fg* ((%(NTOT)s-@0*%(NWJETS)s-@1*%(NBCK)s-@2*%(NQCD)s)/(%(NTT)s))*((%(NTT)s-@3*%(NQQ)s)/(%(NGG)s)) Rwjets_t2,Rbck_t2,Rqcd_t2,Rqqbar_t2')
 		rate_params_lines['t3']=[]
 		rate_params_lines['t3'].append('Rwjets_t3 rateParam t3_* fwjets 1')
 		rate_params_lines['t3'].append('Rbck_t3 rateParam t3_* fbck 1')
 		rate_params_lines['t3'].append('Rqcd_t3 rateParam t3_* fqcd 1')
-		rate_params_lines['t3'].append('Rqqbar_t3 rateParam t3_* fq* 1')
-		rate_params_lines['t3'].append('qq_scale_t3 rateParam t3_* fq* ((%(NTOT)s-@0*%(NWJETS)s-@1*%(NBCK)s-@2*%(NQCD)s)/(%(NTT)s)) Rwjets_t3,Rbck_t3,Rqcd_t3')
+		rate_params_lines['t3'].append('Rqqbar_t3 rateParam t3_* fqp* 1')
+		rate_params_lines['t3'].append('Rqqbar_t3 rateParam t3_* fqm* 1')
+		rate_params_lines['t3'].append('qq_scale_t3 rateParam t3_* fqp* ((%(NTOT)s-@0*%(NWJETS)s-@1*%(NBCK)s-@2*%(NQCD)s)/(%(NTT)s)) Rwjets_t3,Rbck_t3,Rqcd_t3')
+		rate_params_lines['t3'].append('qq_scale_t3 rateParam t3_* fqm* ((%(NTOT)s-@0*%(NWJETS)s-@1*%(NBCK)s-@2*%(NQCD)s)/(%(NTT)s)) Rwjets_t3,Rbck_t3,Rqcd_t3')
+		#rate_params_lines['t3'].append('qq_scale_t3 rateParam t3_* fg* ((%(NTOT)s-@0*%(NWJETS)s-@1*%(NBCK)s-@2*%(NQCD)s)/(%(NTT)s)) Rwjets_t3,Rbck_t3,Rqcd_t3')
 		rate_params_lines['t3'].append('gg_scale_t3 rateParam t3_* fg* @0*((%(NTT)s-@1*%(NQQ)s)/(%(NGG)s)) qq_scale_t3,Rqqbar_t3')
-		#if self._fitpar!='Afb' :
-		#	rate_params_lines['t3'].append('qp_scale_t3 rateParam t3_*_SR fqp* (1.+%.4s)'%(self._toyAfb))
-		#	rate_params_lines['t3'].append('qm_scale_t3 rateParam t3_*_SR fqm* (1.-%.4s)'%(self._toyAfb))
+		#rate_params_lines['t3'].append('gg_scale_t3 rateParam t3_* fg* ((%(NTOT)s-@0*%(NWJETS)s-@1*%(NBCK)s-@2*%(NQCD)s)/(%(NTT)s))*((%(NTT)s-@3*%(NQQ)s)/(%(NGG)s)) Rwjets_t3,Rbck_t3,Rqcd_t3,Rqqbar_t3')
 		for topology in self._topologies :
 			#which regions should we sum over?
 			regions = ['SR']
@@ -249,8 +257,7 @@ class Fit(object) :
 				nbck+=aux_temp_file.Get(topology+'_'+region+'_NBCK').GetBinContent(1)
 				nqq+=aux_temp_file.Get(topology+'_'+region+'_NQQBAR').GetBinContent(1)
 				ngg+=aux_temp_file.Get(topology+'_'+region+'_NGG').GetBinContent(1)
-				if topology=='t3' or (topology=='t2' and region=='WJets_CR') :
-					nqcd+=aux_temp_file.Get(topology+'_'+region+'_NQCD').GetBinContent(1)
+				nqcd+=aux_temp_file.Get(topology+'_'+region+'_NQCD').GetBinContent(1)
 			aux_temp_file.Close()
 			rep_data = {'NWJETS':nwjets,
 						'NBCK':nbck,
@@ -259,8 +266,11 @@ class Fit(object) :
 						'NGG':ngg,
 						'NTT':nqq+ngg,
 						'NTOT':nwjets+nbck+nqcd+nqq+ngg}
+			print 'topology = %s, rep_data = %s'%(topology, rep_data) #DEBUG
 			for line in rate_params_lines[topology] :
+				print 'new line: %s \n'%(line%rep_data) #DEBUG
 				outfile.write((line%rep_data)+'\n')
+
 		outfile.close()
 
 	def _runSingleDataFit_(self) :
@@ -274,8 +284,9 @@ class Fit(object) :
 		cmd+=' --verbose 5' if self._verbose else ' --verbose 0'
 		#set the fit name 
 		cmd+=' --name Data%s'%(self._fitpar)
-		print cmd
-		os.system(cmd)
+		if not self._post_plots_only :
+			print cmd
+			os.system(cmd)
 		#return the filename of the output
 		outputfilename = 'fitDiagnosticsData%s.root'%(self._fitpar)
 		return outputfilename
@@ -373,8 +384,9 @@ class Fit(object) :
 		cmd+=' --verbose 5' if self._verbose else ' --verbose 0'
 		#set the fit name 
 		cmd+=' --name Toys%s%.3f'%(self._fitpar,self._toypar)
-		print cmd
-		os.system(cmd)
+		if not self._post_plots_only :
+			print cmd
+			os.system(cmd)
 		#return the filename of the output
 		outputfilename = 'fitDiagnosticsToys%s%.3f.root'%(self._fitpar,self._toypar)
 		return outputfilename
@@ -401,7 +413,9 @@ class Fit(object) :
 	def _makePostfitCompPlots_(self,fdfn,tfp) :
 		print 'Making postfit comparison plots with input filename=%s'%(fdfn)
 		#run the script that makes the postfit comparison plots
-		cmd = 'python /uscms_data/d3/eminizer/ttbar_13TeV/CMSSW_8_1_0/src/Analysis/TemplateMaker/python/make_postfit_comp_plots.py '
+		cmd = 'python /uscms_data/d3/eminizer/ttbar_13TeV/CMSSW_8_1_0/src/Analysis/TemplateMaker/python/make_mc_data_comp_plots.py '
+		#in postfit mode
+		cmd+='-M postfit '
 		#add the template filename
 		cmd+='--tfilename %s '%(tfp)
 		#add the combine FitDiagnostics output filename
