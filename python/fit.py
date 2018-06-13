@@ -217,10 +217,11 @@ class Fit(object) :
 		rate_params_lines['t1'].append('Rqcd_t1 rateParam t1_* fqcd 1')
 		rate_params_lines['t1'].append('Rqqbar_t1 rateParam t1_* fqp* 1')
 		rate_params_lines['t1'].append('Rqqbar_t1 rateParam t1_* fqm* 1')
-		rate_params_lines['t1'].append('qq_scale_t1 rateParam t1_* fqp* ((%(NTOT)s-@0*%(NWJETS)s-@1*%(NBCK)s-@2*%(NQCD)s)/(%(NTT)s)) Rwjets_t1,Rbck_t1,Rqcd_t1')
-		rate_params_lines['t1'].append('qq_scale_t1 rateParam t1_* fqm* ((%(NTOT)s-@0*%(NWJETS)s-@1*%(NBCK)s-@2*%(NQCD)s)/(%(NTT)s)) Rwjets_t1,Rbck_t1,Rqcd_t1')
+		#rate_params_lines['t1'].append('qq_scale_t1 rateParam t1_* fqp* ((%(NTOT)s-@0*%(NWJETS)s-@1*%(NBCK)s-@2*%(NQCD)s)/(%(NTT)s)) Rwjets_t1,Rbck_t1,Rqcd_t1')
+		#rate_params_lines['t1'].append('qq_scale_t1 rateParam t1_* fqm* ((%(NTOT)s-@0*%(NWJETS)s-@1*%(NBCK)s-@2*%(NQCD)s)/(%(NTT)s)) Rwjets_t1,Rbck_t1,Rqcd_t1')
 		#rate_params_lines['t1'].append('qq_scale_t1 rateParam t1_* fg* ((%(NTOT)s-@0*%(NWJETS)s-@1*%(NBCK)s-@2*%(NQCD)s)/(%(NTT)s)) Rwjets_t1,Rbck_t1,Rqcd_t1')
-		rate_params_lines['t1'].append('gg_scale_t1 rateParam t1_* fg* @0*((%(NTT)s-@1*%(NQQ)s)/(%(NGG)s)) qq_scale_t1,Rqqbar_t1')
+		#rate_params_lines['t1'].append('gg_scale_t1 rateParam t1_* fg* @0*((%(NTT)s-@1*%(NQQ)s)/(%(NGG)s)) qq_scale_t1,Rqqbar_t1')
+		rate_params_lines['t1'].append('gg_scale_t1 rateParam t1_* fg* ((%(NTT)s-@0*%(NQQ)s)/(%(NGG)s)) Rqqbar_t1')
 		#rate_params_lines['t1'].append('gg_scale_t1 rateParam t1_* fg* ((%(NTOT)s-@0*%(NWJETS)s-@1*%(NBCK)s-@2*%(NQCD)s)/(%(NTT)s))*((%(NTT)s-@3*%(NQQ)s)/(%(NGG)s)) Rwjets_t1,Rbck_t1,Rqcd_t1,Rqqbar_t1')
 		rate_params_lines['t2']=[]
 		rate_params_lines['t2'].append('Rwjets_t2 rateParam t2_* fwjets 1')
@@ -228,10 +229,11 @@ class Fit(object) :
 		rate_params_lines['t2'].append('Rqcd_t2 rateParam t2_* fqcd 1')
 		rate_params_lines['t2'].append('Rqqbar_t2 rateParam t2_* fqp* 1')
 		rate_params_lines['t2'].append('Rqqbar_t2 rateParam t2_* fqm* 1')
-		rate_params_lines['t2'].append('qq_scale_t2 rateParam t2_* fqp* ((%(NTOT)s-@0*%(NWJETS)s-@1*%(NBCK)s-@2*%(NQCD)s)/(%(NTT)s)) Rwjets_t2,Rbck_t2,Rqcd_t2')
-		rate_params_lines['t2'].append('qq_scale_t2 rateParam t2_* fqm* ((%(NTOT)s-@0*%(NWJETS)s-@1*%(NBCK)s-@2*%(NQCD)s)/(%(NTT)s)) Rwjets_t2,Rbck_t2,Rqcd_t2')
+		#rate_params_lines['t2'].append('qq_scale_t2 rateParam t2_* fqp* ((%(NTOT)s-@0*%(NWJETS)s-@1*%(NBCK)s-@2*%(NQCD)s)/(%(NTT)s)) Rwjets_t2,Rbck_t2,Rqcd_t2')
+		#rate_params_lines['t2'].append('qq_scale_t2 rateParam t2_* fqm* ((%(NTOT)s-@0*%(NWJETS)s-@1*%(NBCK)s-@2*%(NQCD)s)/(%(NTT)s)) Rwjets_t2,Rbck_t2,Rqcd_t2')
 		#rate_params_lines['t2'].append('qq_scale_t2 rateParam t2_* fg* ((%(NTOT)s-@0*%(NWJETS)s-@1*%(NBCK)s-@2*%(NQCD)s)/(%(NTT)s)) Rwjets_t2,Rbck_t2,Rqcd_t2')
-		rate_params_lines['t2'].append('gg_scale_t2 rateParam t2_* fg* @0*((%(NTT)s-@1*%(NQQ)s)/(%(NGG)s)) qq_scale_t2,Rqqbar_t2')
+		#rate_params_lines['t2'].append('gg_scale_t2 rateParam t2_* fg* @0*((%(NTT)s-@1*%(NQQ)s)/(%(NGG)s)) qq_scale_t2,Rqqbar_t2')
+		rate_params_lines['t1'].append('gg_scale_t2 rateParam t2_* fg* ((%(NTT)s-@0*%(NQQ)s)/(%(NGG)s)) Rqqbar_t2')
 		#rate_params_lines['t2'].append('gg_scale_t2 rateParam t2_* fg* ((%(NTOT)s-@0*%(NWJETS)s-@1*%(NBCK)s-@2*%(NQCD)s)/(%(NTT)s))*((%(NTT)s-@3*%(NQQ)s)/(%(NGG)s)) Rwjets_t2,Rbck_t2,Rqcd_t2,Rqqbar_t2')
 		rate_params_lines['t3']=[]
 		rate_params_lines['t3'].append('Rwjets_t3 rateParam t3_* fwjets 1')
@@ -239,10 +241,11 @@ class Fit(object) :
 		rate_params_lines['t3'].append('Rqcd_t3 rateParam t3_* fqcd 1')
 		rate_params_lines['t3'].append('Rqqbar_t3 rateParam t3_* fqp* 1')
 		rate_params_lines['t3'].append('Rqqbar_t3 rateParam t3_* fqm* 1')
-		rate_params_lines['t3'].append('qq_scale_t3 rateParam t3_* fqp* ((%(NTOT)s-@0*%(NWJETS)s-@1*%(NBCK)s-@2*%(NQCD)s)/(%(NTT)s)) Rwjets_t3,Rbck_t3,Rqcd_t3')
-		rate_params_lines['t3'].append('qq_scale_t3 rateParam t3_* fqm* ((%(NTOT)s-@0*%(NWJETS)s-@1*%(NBCK)s-@2*%(NQCD)s)/(%(NTT)s)) Rwjets_t3,Rbck_t3,Rqcd_t3')
+		#rate_params_lines['t3'].append('qq_scale_t3 rateParam t3_* fqp* ((%(NTOT)s-@0*%(NWJETS)s-@1*%(NBCK)s-@2*%(NQCD)s)/(%(NTT)s)) Rwjets_t3,Rbck_t3,Rqcd_t3')
+		#rate_params_lines['t3'].append('qq_scale_t3 rateParam t3_* fqm* ((%(NTOT)s-@0*%(NWJETS)s-@1*%(NBCK)s-@2*%(NQCD)s)/(%(NTT)s)) Rwjets_t3,Rbck_t3,Rqcd_t3')
 		#rate_params_lines['t3'].append('qq_scale_t3 rateParam t3_* fg* ((%(NTOT)s-@0*%(NWJETS)s-@1*%(NBCK)s-@2*%(NQCD)s)/(%(NTT)s)) Rwjets_t3,Rbck_t3,Rqcd_t3')
-		rate_params_lines['t3'].append('gg_scale_t3 rateParam t3_* fg* @0*((%(NTT)s-@1*%(NQQ)s)/(%(NGG)s)) qq_scale_t3,Rqqbar_t3')
+		#rate_params_lines['t3'].append('gg_scale_t3 rateParam t3_* fg* @0*((%(NTT)s-@1*%(NQQ)s)/(%(NGG)s)) qq_scale_t3,Rqqbar_t3')
+		rate_params_lines['t1'].append('gg_scale_t3 rateParam t3_* fg* ((%(NTT)s-@0*%(NQQ)s)/(%(NGG)s)) Rqqbar_t3')
 		#rate_params_lines['t3'].append('gg_scale_t3 rateParam t3_* fg* ((%(NTOT)s-@0*%(NWJETS)s-@1*%(NBCK)s-@2*%(NQCD)s)/(%(NTT)s))*((%(NTT)s-@3*%(NQQ)s)/(%(NGG)s)) Rwjets_t3,Rbck_t3,Rqcd_t3,Rqqbar_t3')
 		for topology in self._topologies :
 			#which regions should we sum over?
@@ -266,9 +269,9 @@ class Fit(object) :
 						'NGG':ngg,
 						'NTT':nqq+ngg,
 						'NTOT':nwjets+nbck+nqcd+nqq+ngg}
-			print 'topology = %s, rep_data = %s'%(topology, rep_data) #DEBUG
+			#print 'topology = %s, rep_data = %s'%(topology, rep_data) #DEBUG
 			for line in rate_params_lines[topology] :
-				print 'new line: %s \n'%(line%rep_data) #DEBUG
+				#print 'new line: %s \n'%(line%rep_data) #DEBUG
 				outfile.write((line%rep_data)+'\n')
 
 		outfile.close()
