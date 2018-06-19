@@ -36,3 +36,7 @@ fact_scale_weight 			  shapeN2	1				1				1				1				1				1				1				1				1				1			
 comb_scale_weight 			  shapeN2	1				1				1				1				1				1				1				1				1				1				1				0				0
 pdfas_weight 				  shapeN2	1				1				1				1				1				1				1				1				1				1				1				0				0
 top_pt_re_weight 			  shapeN2	1				1				1				1				1				1				1				1				1				1				1				0				0
+# "Rate"params for individual processes
+Rwjets_%(topology)s param 0.0 0.1 [-1.,1.]
+Rbck_%(topology)s param 0.0 0.1 [-1.,1.]
+Rqqbar_%(topology)s param 0.0 0.1 [-1.,1.]

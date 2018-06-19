@@ -184,6 +184,8 @@ class Fit(object) :
 		for line in template_file.readlines() :
 			#exclude/skip a couple lines specifically
 			sys_to_skip = []
+			##ignore top pt reweighting if it's already there in the templates
+			#sys_to_skip.append('top_pt_re_weight')
 			#if we're running without systematics
 			if self._nojec :
 				sys_to_skip += ['JES','JER']
@@ -276,6 +278,7 @@ class Fit(object) :
 			print 'PARALLEL TOYS: each multiprocessing job will run %d toys (%d total)'%(ntoys/nthreads,nthreads*(ntoys/nthreads))
 			cmd = 'combine -M MultiDimFit '+self._workspace_filename
 			#fix nuisance parameters
+			#if self._nojec and self._noss :
 			cmd+=' --toysNoSystematics'
 			#set observable value for toys
 			cmd+=' --setParameters %s=%.3f'%(self._fitpar,self._toypar)

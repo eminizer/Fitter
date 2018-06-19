@@ -68,26 +68,37 @@ onesigma_graph = TGraphAsymmErrors(n,x_values,y_values,x_errs,x_errs,y_1_errs,y_
 twosigma_graph = TGraphAsymmErrors(n,x_values,y_values,x_errs,x_errs,y_2_errs,y_2_errs)
 
 #closure test plot setup
-title = 'Fitting Closure Tests '
-if options.append.find('no_sys')!=-1 :
-	title += '(no systematics) '
-title+='for '
+title = ''
+#title = 'Fitting Closure Tests '
+#if options.append.find('no_sys')!=-1 :
+#	title += '(no systematics) '
+#title+='for '
 if options.par == 'Afb' :
 	if options.unsigned :
-		title += '|A_{FB}|; Input |A_{FB}|; Fitted |A_{FB}|'
+		#title += '|A_{FB}|; Input |A_{FB}|; Fitted |A_{FB}|'
+		title += '; Input |A_{FB}|; Fitted |A_{FB}|'
 	else :
-		title += 'A_{FB}; Input A_{FB}; Fitted A_{FB}'
+		#title += 'A_{FB}; Input A_{FB}; Fitted A_{FB}'
+		title += '; Input A_{FB}; Fitted A_{FB}'
 elif options.par == 'mu' :
 	if options.unsigned :
-		title += '|#mu|; Input |#mu|; Fitted |#mu|'
+		#title += '|#mu|; Input |#mu|; Fitted |#mu|'
+		title += '; Input |#mu|; Fitted |#mu|'
 	else :
-		title += '#mu; Input #mu; Fitted #mu'
+		#title += '#mu; Input #mu; Fitted #mu'
+		title += '; Input #mu; Fitted #mu'
 elif options.par == 'd' :
 	if options.unsigned :
-		title += '|d|; Input |d|; Fitted |d|'
+		#title += '|d|; Input |d|; Fitted |d|'
+		title += '; Input |d|; Fitted |d|'
 	else :
-		title += 'd; Input d; Fitted d'
-closure_test_histo = TH2D('closure_test_histo',title,(n-1),input_values,4*n,2*input_values[0],2*input_values[n-1])
+		#title += 'd; Input d; Fitted d'
+		title += '; Input d; Fitted d'
+if options.par == 'Afb' :
+	closure_test_histo = TH2D('closure_test_histo',title,(n-1),input_values,4*n,2*input_values[0],2*input_values[n-1])
+else :
+	closure_test_histo = TH2D('closure_test_histo',title,(n-1),input_values,4*n,input_values[0]-0.02,input_values[n-1]+0.02)
+closure_test_histo.SetStats(0)
 
 #Set graph attributes
 onesigma_graph.SetFillColor(kGreen)
@@ -97,7 +108,8 @@ onesigma_graph.SetLineColor(kBlack)
 onesigma_graph.SetMarkerStyle(20)
 onesigma_graph.SetMarkerColor(kBlack)
 twosigma_graph.SetFillColor(kYellow)
-tstitle='Neyman Construction for '
+#tstitle='Neyman Construction for '
+tstitle=''
 formattedvar = ''
 if options.par=='Afb' :
 	formattedvar = 'A_{FB}'
@@ -105,9 +117,9 @@ elif options.par=='mu' :
 	formattedvar = '#mu'
 elif options.par=='d' :
 	formattedvar = 'd'
-tstitle+=formattedvar
-if options.append.find('no_sys')!=-1 :
-	tstitle += ' (no systematics)'
+#tstitle+=formattedvar
+#if options.append.find('no_sys')!=-1 :
+#	tstitle += ' (no systematics)'
 tstitle+='; Input %s; Fitted %s'%(formattedvar,formattedvar)
 twosigma_graph.SetTitle(tstitle)
 
@@ -115,8 +127,13 @@ twosigma_graph.SetTitle(tstitle)
 for i in range(n) :
 	realvalues=[]
 	#build the path to the file holding the toy results
-	filepath = '%s/toyGroup_%s=%.2f/higgsCombineToys%s%.3f.MultiDimFit.all.root'%(options.toygroupdir,options.par,input_values[i],options.par,input_values[i])
-	filepath_opp_sign = '%s/toyGroup_%s=%.2f/higgsCombineToys%s%.3f.MultiDimFit.all.root'%(options.toygroupdir,options.par,-1*input_values[i],options.par,-1*input_values[i])
+	filepath = ''; filepath_opp_sign = ''
+	if options.par=='Afb' :
+		filepath = '%s/toyGroup_%s=%.2f/higgsCombineToys%s%.3f.MultiDimFit.all.root'%(options.toygroupdir,options.par,input_values[i],options.par,input_values[i])
+		filepath_opp_sign = '%s/toyGroup_%s=%.2f/higgsCombineToys%s%.3f.MultiDimFit.all.root'%(options.toygroupdir,options.par,-1*input_values[i],options.par,-1*input_values[i])
+	else :
+		filepath = '%s/toyGroup_%s=%.3f/higgsCombineToys%s%.3f.MultiDimFit.all.root'%(options.toygroupdir,options.par,input_values[i],options.par,input_values[i])
+		filepath_opp_sign = '%s/toyGroup_%s=%.3f/higgsCombineToys%s%.3f.MultiDimFit.all.root'%(options.toygroupdir,options.par,-1*input_values[i],options.par,-1*input_values[i])
 	files_to_read = [filepath]
 	if options.unsigned :
 		files_to_read.append(filepath_opp_sign)
@@ -163,10 +180,17 @@ for i in range(n) :
 
 if options.centralvalue!=10000000. :
 	#Interpolate given the central value
-	data_fit_one_sigma_down = 2*input_values[0]
-	data_fit_one_sigma_up   = 2*input_values[n-1]
-	data_fit_two_sigma_down = 2*input_values[0]
-	data_fit_two_sigma_up   = 2*input_values[n-1]
+	if options.par=='Afb' :
+		data_fit_one_sigma_down = 2*input_values[0]
+		data_fit_one_sigma_up   = 2*input_values[n-1]
+		data_fit_two_sigma_down = 2*input_values[0]
+		data_fit_two_sigma_up   = 2*input_values[n-1]
+	else :
+		data_fit_one_sigma_down = input_values[0]-0.02
+		data_fit_one_sigma_up   = input_values[n-1]+0.02
+		data_fit_two_sigma_down = input_values[0]-0.02
+		data_fit_two_sigma_up   = input_values[n-1]+0.02
+	dfosd_changed = False; dftsd_changed = False
 	data_fit_mean = options.centralvalue
 	for i in range(n-1) :
 		thisx = array('d',[0.0]); thisymean = array('d',[0.0])
@@ -176,9 +200,10 @@ if options.centralvalue!=10000000. :
 		thisylow = thisymean[0]-onesigma_graph.GetErrorYlow(i)
 		nextyhi  = nextymean[0]+onesigma_graph.GetErrorYhigh(i+1)
 		nextylow = nextymean[0]-onesigma_graph.GetErrorYlow(i+1)
-		if thisyhi <= options.centralvalue and nextyhi > options.centralvalue and data_fit_one_sigma_down == 2*input_values[0] :
+		if thisyhi <= options.centralvalue and nextyhi > options.centralvalue and not dfosd_changed :
 			slope = (nextyhi-thisyhi)/(input_values[i+1]-input_values[i])
 			data_fit_one_sigma_down = (options.centralvalue-thisyhi)/slope+input_values[i]
+			dfosd_changed=True
 		if thisylow <= options.centralvalue and nextylow > options.centralvalue :
 			slope = (nextylow-thisylow)/(input_values[i+1]-input_values[i])
 			data_fit_one_sigma_up = (options.centralvalue-thisylow)/slope+input_values[i]
@@ -193,9 +218,10 @@ if options.centralvalue!=10000000. :
 		thisylow = thisymean[0]-twosigma_graph.GetErrorYlow(i)
 		nextyhi  = nextymean[0]+twosigma_graph.GetErrorYhigh(i+1)
 		nextylow = nextymean[0]-twosigma_graph.GetErrorYlow(i+1)
-		if thisyhi <= options.centralvalue and nextyhi > options.centralvalue and data_fit_one_sigma_down == 2*input_values[0] :
+		if thisyhi <= options.centralvalue and nextyhi > options.centralvalue and not dftsd_changed :
 			slope = (nextyhi-thisyhi)/(input_values[i+1]-input_values[i])
 			data_fit_two_sigma_down = (options.centralvalue-thisyhi)/slope+input_values[i]
+			dftsd_changed=True
 		if thisylow <= options.centralvalue and nextylow > options.centralvalue :
 			slope = (nextylow-thisylow)/(input_values[i+1]-input_values[i])
 			data_fit_two_sigma_up = (options.centralvalue-thisylow)/slope+input_values[i]
