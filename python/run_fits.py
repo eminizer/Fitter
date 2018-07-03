@@ -43,6 +43,7 @@ parser.add_option('--toy-mu',  type='float', action='store', default=0.0, dest='
 parser.add_option('--toy-d',   type='float', action='store', default=0.0, dest='toyd',	   	  
 	help='Toy d value')
 parser.add_option('--saveToys',  action='store_true', dest='savetoys')
+parser.add_option('--toysFile', type='string', action='store', default='', dest='toysFile',	help='Name of file to pull pre-generated toys from')
 
 (options, args) = parser.parse_args()
 
@@ -66,4 +67,4 @@ fit.refinePhysicsModel(options.tfilepath)
 fit.createWorkspace()
 
 #run the fits using Combine
-fit.runCombine(options.mode,options.ntoys,options.nthreads,options.savetoys,options.tfilepath)
+fit.runCombine(options.mode,options.ntoys,options.nthreads,options.savetoys,options.tfilepath,options.toysFile)

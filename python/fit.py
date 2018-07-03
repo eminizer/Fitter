@@ -124,7 +124,7 @@ class Fit(object) :
 		os.environ['PYTHONPATH']=orig_pythonpath
 		print 'Done'
 
-	def runCombine(self,mode,ntoys,nthreads,savetoys,tfilepath) :
+	def runCombine(self,mode,ntoys,nthreads,savetoys,tfilepath,toysfilename) :
 		print 'Running Combine for fit %s'%(self._name)
 		if mode=='data' : 
 			#run a single fit to the observed data
@@ -140,7 +140,7 @@ class Fit(object) :
 			self._runToyGroup_(ntoys,nthreads,savetoys)
 		elif mode=='singleToy' : 
 			#run a single toy with the given input value of the POI and make nuisance impact and fit comparison plots
-			fit_diagnostics_filename = self._runSingleToyFit_(savetoys)
+			fit_diagnostics_filename = self._runSingleToyFit_(savetoys,toysfilename)
 			self._makePostfitCompPlots_(fit_diagnostics_filename,tfilepath)
 
 	########		GETTERS/SETTERS 			########
@@ -184,8 +184,8 @@ class Fit(object) :
 		for line in template_file.readlines() :
 			#exclude/skip a couple lines specifically
 			sys_to_skip = []
-			##ignore top pt reweighting if it's already there in the templates
-			#sys_to_skip.append('top_pt_re_weight')
+			#ignore top pt reweighting if it's already there in the templates
+			sys_to_skip.append('top_pt_re_weight')
 			#if we're running without systematics
 			if self._nojec :
 				sys_to_skip += ['JES','JER']
@@ -341,9 +341,12 @@ class Fit(object) :
 		print '-----------------------------------------------------'
 		fit_result_file.Close()
 
-	def _runSingleToyFit_(self,savetoys) :
+	def _runSingleToyFit_(self,savetoys,toysfilename) :
 		#start the command to run Combine
 		cmd = 'combine -M FitDiagnostics '+self._workspace_filename
+		#pull toys from file if desired
+		if toysfilename!='' :
+			cmd+=' --toysFile=%s'%(toysfilename)
 		#fix nuisance parameters
 		cmd+=' --toysNoSystematics'
 		#set observable value for toys
