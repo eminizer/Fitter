@@ -213,16 +213,17 @@ class Fit(object) :
 		#make the dictionary of all the rateParam lines by topology
 		rate_params_lines = {}
 		for t in self._topologies :
-			rate_params_lines[t]=[]
-			rate_params_lines[t].append('fwjets_scale_'+t+' rateParam '+t+'_* fwjets (1.+@0) Rwjets_'+t+'')
-			rate_params_lines[t].append('fbck_scale_'+t+' rateParam '+t+'_* fbck (1.+@0) Rbck_'+t+'')
-			rate_params_lines[t].append('fqcd_scale_'+t+' rateParam '+t+'_* fqcd (1.+@0) Rqcd_'+t+'')
-			#rate_params_lines[t].append('fqp_scale_'+t+' rateParam '+t+'_* fqp* (1.+@0) Rqqbar_'+t+'')
-			#rate_params_lines[t].append('fqm_scale_'+t+' rateParam '+t+'_* fqm* (1.+@0) Rqqbar_'+t+'')
-			#rate_params_lines[t].append('fgg_scale_'+t+' rateParam '+t+'_* fg* ((%(NTT)s-(1.+@0)*%(NQQ)s)/(%(NGG)s)) Rqqbar_'+t+'')
-			rate_params_lines[t].append('fqp_scale_'+t+' rateParam '+t+'_* fqp* (1.+@0)*((%(NTOT)s-(1.+@1)*%(NWJETS)s-(1.+@2)*%(NBCK)s-(1.+@3)*%(NQCD)s)/(%(NTT)s)) Rqqbar_'+t+',Rwjets_'+t+',Rbck_'+t+',Rqcd_'+t+'')
-			rate_params_lines[t].append('fqm_scale_'+t+' rateParam '+t+'_* fqm* (1.+@0)*((%(NTOT)s-(1.+@1)*%(NWJETS)s-(1.+@2)*%(NBCK)s-(1.+@3)*%(NQCD)s)/(%(NTT)s)) Rqqbar_'+t+',Rwjets_'+t+',Rbck_'+t+',Rqcd_'+t+'')
-			rate_params_lines[t].append('fgg_scale_'+t+' rateParam '+t+'_* fg* ((%(NTOT)s-(1.+@0)*%(NWJETS)s-(1.+@1)*%(NBCK)s-(1.+@2)*%(NQCD)s)/(%(NTT)s))*((%(NTT)s-(1.+@3)*%(NQQ)s)/(%(NGG)s)) Rwjets_'+t+',Rbck_'+t+',Rqcd_'+t+',Rqqbar_'+t+'')
+			for l in self._ltypes :
+				rate_params_lines[t]=[]
+				rate_params_lines[t].append('fwjets_scale_'+t+'_'+l+' rateParam '+t+'_'+l+'* fwjets (1.+@0) Rwjets_'+t+'_'+l+'')
+				rate_params_lines[t].append('fbck_scale_'+t+'_'+l+' rateParam '+t+'_'+l+'* fbck (1.+@0) Rbck_'+t+'_'+l+'')
+				rate_params_lines[t].append('fqcd_scale_'+t+'_'+l+' rateParam '+t+'_'+l+'* fqcd (1.+@0) Rqcd_'+t+'_'+l+'')
+				rate_params_lines[t].append('fqp_scale_'+t+' rateParam '+t+'_* fqp* (1.+@0) Rqqbar_'+t+'')
+				rate_params_lines[t].append('fqm_scale_'+t+' rateParam '+t+'_* fqm* (1.+@0) Rqqbar_'+t+'')
+				rate_params_lines[t].append('fgg_scale_'+t+' rateParam '+t+'_* fg* ((%(NTT)s-(1.+@0)*%(NQQ)s)/(%(NGG)s)) Rqqbar_'+t+'')
+				#rate_params_lines[t].append('fqp_scale_'+t+' rateParam '+t+'_* fqp* (1.+@0)*((%(NTOT)s-(1.+@1)*%(NWJETS)s-(1.+@2)*%(NBCK)s-(1.+@3)*%(NQCD)s)/(%(NTT)s)) Rqqbar_'+t+',Rwjets_'+t+',Rbck_'+t+',Rqcd_'+t+'')
+				#rate_params_lines[t].append('fqm_scale_'+t+' rateParam '+t+'_* fqm* (1.+@0)*((%(NTOT)s-(1.+@1)*%(NWJETS)s-(1.+@2)*%(NBCK)s-(1.+@3)*%(NQCD)s)/(%(NTT)s)) Rqqbar_'+t+',Rwjets_'+t+',Rbck_'+t+',Rqcd_'+t+'')
+				#rate_params_lines[t].append('fgg_scale_'+t+' rateParam '+t+'_* fg* ((%(NTOT)s-(1.+@0)*%(NWJETS)s-(1.+@1)*%(NBCK)s-(1.+@2)*%(NQCD)s)/(%(NTT)s))*((%(NTT)s-(1.+@3)*%(NQQ)s)/(%(NGG)s)) Rwjets_'+t+',Rbck_'+t+',Rqcd_'+t+',Rqqbar_'+t+'')
 		for topology in self._topologies :
 			#which regions should we sum over?
 			regions = ['SR']
