@@ -41,4 +41,4 @@ top_pt_re_weight 			  shapeN2	1					1					1					0					0					1					1					1					1	
 Rwjets_%(topology)s param 0.0 0.1 [-1.,1.]
 Rbck_%(topology)s param 0.0 0.1 [-1.,1.]
 Rqcd_%(topology)s param 0.0 0.1 [-1.,1.]
-Rqqbar_%(topology)s param 0.0 0.1 [-1.,1.]
+Rqqbar param 0.0 0.1 [-1.,1.]
