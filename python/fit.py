@@ -219,13 +219,13 @@ class Fit(object) :
 			if t==self._topologies[-1] :
 				rate_params_lines[t].append('fwjets_scale rateParam * fwjets (1.+@0) Rwjets')
 				rate_params_lines[t].append('fbck_scale rateParam * fbck (1.+@0) Rbck')
-				rate_params_lines[t].append('fqp_scale rateParam * fqp* (1.+@0) Rqqbar')
-				rate_params_lines[t].append('fqm_scale rateParam * fqm* (1.+@0) Rqqbar')
-				rate_params_lines[t].append('fgg_scale rateParam * fg* ((%(NTT)s-(1.+@0)*%(NQQ)s)/(%(NGG)s)) Rqqbar')
-				#rate_params_lines[t].append('fqp_scale_'+t+' rateParam '+t+'_* fqp* (1.+@0)*((%(NTOT)s-(1.+@1)*%(NWJETS)s-(1.+@2)*%(NBCK)s-(1.+@3)*%(NQCD)s)/(%(NTT)s)) Rqqbar_'+t+',Rwjets_'+t+',Rbck_'+t+',Rqcd_'+t+'')
-				#rate_params_lines[t].append('fqm_scale_'+t+' rateParam '+t+'_* fqm* (1.+@0)*((%(NTOT)s-(1.+@1)*%(NWJETS)s-(1.+@2)*%(NBCK)s-(1.+@3)*%(NQCD)s)/(%(NTT)s)) Rqqbar_'+t+',Rwjets_'+t+',Rbck_'+t+',Rqcd_'+t+'')
-				#rate_params_lines[t].append('fgg_scale_'+t+' rateParam '+t+'_* fg* ((%(NTOT)s-(1.+@0)*%(NWJETS)s-(1.+@1)*%(NBCK)s-(1.+@2)*%(NQCD)s)/(%(NTT)s))*((%(NTT)s-(1.+@3)*%(NQQ)s)/(%(NGG)s)) Rwjets_'+t+',Rbck_'+t+',Rqcd_'+t+',Rqqbar_'+t+'')
-		nqq=0.; ngg=0.
+				#rate_params_lines[t].append('fqp_scale rateParam * fqp* (1.+@0) Rqqbar')
+				#rate_params_lines[t].append('fqm_scale rateParam * fqm* (1.+@0) Rqqbar')
+				#rate_params_lines[t].append('fgg_scale rateParam * fg* ((%(NTT)s-(1.+@0)*%(NQQ)s)/(%(NGG)s)) Rqqbar')
+				rate_params_lines[t].append('fqp_scale rateParam * fqp* (1.+@0)*((%(NTOT)s-(1.+@1)*%(NWJETS)s-(1.+@2)*%(NBCK)s)/(%(NTT)s)) Rqqbar,Rwjets,Rbck')
+				rate_params_lines[t].append('fqm_scale rateParam * fqm* (1.+@0)*((%(NTOT)s-(1.+@1)*%(NWJETS)s-(1.+@2)*%(NBCK)s)/(%(NTT)s)) Rqqbar,Rwjets,Rbck')
+				rate_params_lines[t].append('fgg_scale rateParam * fg* ((%(NTOT)s-(1.+@0)*%(NWJETS)s-(1.+@1)*%(NBCK)s)/(%(NTT)s))*((%(NTT)s-(1.+@2)*%(NQQ)s)/(%(NGG)s)) Rwjets,Rbck,Rqqbar')
+		nqq=0.; ngg=0.; nwjets=0.; nbck=0.; nqcd=0.
 		for topology in self._topologies :
 			#which regions should we sum over?
 			regions = ['SR']
@@ -233,7 +233,6 @@ class Fit(object) :
 				regions.append('WJets_CR')
 			#make this topology's replacement dictionary
 			aux_temp_file = TFile.Open(tfilepath.split('.root')[0]+'_aux.root')
-			nwjets=0.; nbck=0.; nqcd=0.
 			for region in regions :
 				nwjets+=aux_temp_file.Get(topology+'_'+region+'_NWJETS').GetBinContent(1)
 				nbck+=aux_temp_file.Get(topology+'_'+region+'_NBCK').GetBinContent(1)
@@ -247,7 +246,8 @@ class Fit(object) :
 						'NQQ':nqq,
 						'NGG':ngg,
 						'NTT':nqq+ngg,
-						'NTOT':nwjets+nbck+nqcd+nqq+ngg}
+						#'NTOT':nwjets+nbck+nqcd+nqq+ngg}
+						'NTOT':nwjets+nbck+nqq+ngg}
 			#print 'topology = %s, rep_data = %s'%(topology, rep_data) #DEBUG
 			for line in rate_params_lines[topology] :
 				#print 'new line: %s \n'%(line%rep_data) #DEBUG
