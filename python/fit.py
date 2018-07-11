@@ -214,10 +214,11 @@ class Fit(object) :
 		rate_params_lines = {}
 		for t in self._topologies :
 			rate_params_lines[t]=[]
-			rate_params_lines[t].append('fwjets_scale_'+t+' rateParam '+t+'_* fwjets (1.+@0) Rwjets_'+t+'')
-			rate_params_lines[t].append('fbck_scale_'+t+' rateParam '+t+'_* fbck (1.+@0) Rbck_'+t+'')
-			rate_params_lines[t].append('fqcd_scale_'+t+' rateParam '+t+'_* fqcd (1.+@0) Rqcd_'+t+'')
+			for l in self._ltypes :
+				rate_params_lines[t].append('fqcd_scale_'+t+'_'+l+' rateParam '+t+'_'+l+'* fqcd (1.+@0) Rqcd_'+t+'_'+l+'')
 			if t==self._topologies[-1] :
+				rate_params_lines[t].append('fwjets_scale rateParam * fwjets (1.+@0) Rwjets')
+				rate_params_lines[t].append('fbck_scale rateParam * fbck (1.+@0) Rbck')
 				rate_params_lines[t].append('fqp_scale rateParam * fqp* (1.+@0) Rqqbar')
 				rate_params_lines[t].append('fqm_scale rateParam * fqm* (1.+@0) Rqqbar')
 				rate_params_lines[t].append('fgg_scale rateParam * fg* ((%(NTT)s-(1.+@0)*%(NQQ)s)/(%(NGG)s)) Rqqbar')
