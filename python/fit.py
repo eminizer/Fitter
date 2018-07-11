@@ -219,14 +219,16 @@ class Fit(object) :
 			if t==self._topologies[-1] :
 				rate_params_lines[t].append('fwjets_scale rateParam * fwjets (1.+@0) Rwjets')
 				rate_params_lines[t].append('fbck_scale rateParam * fbck (1.+@0) Rbck')
-				#rate_params_lines[t].append('fqp_scale rateParam * fqp* (1.+@0) Rqqbar')
-				#rate_params_lines[t].append('fqm_scale rateParam * fqm* (1.+@0) Rqqbar')
+				rate_params_lines[t].append('fqp_scale rateParam * fqp* (1.+@0) Rqqbar')
+				rate_params_lines[t].append('fqm_scale rateParam * fqm* (1.+@0) Rqqbar')
 				#rate_params_lines[t].append('fgg_scale rateParam * fg* ((%(NTT)s-(1.+@0)*%(NQQ)s)/(%(NGG)s)) Rqqbar')
-				rate_params_lines[t].append('fqp_scale rateParam * fqp* (1.+@0)*((%(NTOT)s-(1.+@1)*%(NWJETS)s-(1.+@2)*%(NBCK)s)/(%(NTT)s)) Rqqbar,Rwjets,Rbck')
-				rate_params_lines[t].append('fqm_scale rateParam * fqm* (1.+@0)*((%(NTOT)s-(1.+@1)*%(NWJETS)s-(1.+@2)*%(NBCK)s)/(%(NTT)s)) Rqqbar,Rwjets,Rbck')
-				rate_params_lines[t].append('fgg_scale rateParam * fg* ((%(NTOT)s-(1.+@0)*%(NWJETS)s-(1.+@1)*%(NBCK)s)/(%(NTT)s))*((%(NTT)s-(1.+@2)*%(NQQ)s)/(%(NGG)s)) Rwjets,Rbck,Rqqbar')
-		nqq=0.; ngg=0.; nwjets=0.; nbck=0.; nqcd=0.
+				#rate_params_lines[t].append('fqp_scale rateParam * fqp* (1.+@0)*((%(NTOT)s-(1.+@1)*%(NWJETS)s-(1.+@2)*%(NBCK)s)/(%(NTT)s)) Rqqbar,Rwjets,Rbck')
+				#rate_params_lines[t].append('fqm_scale rateParam * fqm* (1.+@0)*((%(NTOT)s-(1.+@1)*%(NWJETS)s-(1.+@2)*%(NBCK)s)/(%(NTT)s)) Rqqbar,Rwjets,Rbck')
+				#rate_params_lines[t].append('fgg_scale rateParam * fg* ((%(NTOT)s-(1.+@0)*%(NWJETS)s-(1.+@1)*%(NBCK)s)/(%(NTT)s))*((%(NTT)s-(1.+@2)*%(NQQ)s)/(%(NGG)s)) Rwjets,Rbck,Rqqbar')
+			rate_params_lines[t].append('fgg_scale_'+t+' rateParam '+t+'_* fg* ((%(NTT_'+t+')s-(1.+@0)*%(NQQ_'+t+')s)/(%(NGG_'+t+')s)) Rqqbar')
+		nwjets=0.; nbck=0.; nqcd=0.
 		for topology in self._topologies :
+			nqq=0.; ngg=0.
 			#which regions should we sum over?
 			regions = ['SR']
 			if topology!='t3' and not self._nocontrolregions :
@@ -243,9 +245,9 @@ class Fit(object) :
 			rep_data = {'NWJETS':nwjets,
 						'NBCK':nbck,
 						'NQCD':nqcd,
-						'NQQ':nqq,
-						'NGG':ngg,
-						'NTT':nqq+ngg,
+						'NQQ_'+topology:nqq,
+						'NGG_'+topology:ngg,
+						'NTT_'+topology:nqq+ngg,
 						#'NTOT':nwjets+nbck+nqcd+nqq+ngg}
 						'NTOT':nwjets+nbck+nqq+ngg}
 			#print 'topology = %s, rep_data = %s'%(topology, rep_data) #DEBUG
