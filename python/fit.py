@@ -210,51 +210,49 @@ class Fit(object) :
 	def _addRateParamsToTotalCard_(self,tfilepath) :
 		outfile = open(self._total_datacard_filename,'a')
 		outfile.write('# Rateparams for individual processes\n')
-		#make the dictionary of all the rateParam lines by topology
-		rate_params_lines = {}
+		#fwjets/fbck scaled agnostic of channel
+		outfile.write('fwjets_scale rateParam * fwjets (1.+@0) Rwjets\n')
+		outfile.write('fbck_scale rateParam * fbck (1.+@0) Rbck\n')
+		#build list of channel identifiers for fqcd/fqp/fqm/fgg rateParams which need individual scales (fqcd) or normalizations (others)
+		cids=[]
 		for t in self._topologies :
-			rate_params_lines[t]=[]
-			for l in self._ltypes :
-				rate_params_lines[t].append('fqcd_scale_'+t+'_'+l+' rateParam '+t+'_'+l+'* fqcd (1.+@0) Rqcd_'+t+'_'+l+'')
-			if t==self._topologies[-1] :
-				rate_params_lines[t].append('fwjets_scale rateParam * fwjets (1.+@0) Rwjets')
-				rate_params_lines[t].append('fbck_scale rateParam * fbck (1.+@0) Rbck')
-				rate_params_lines[t].append('fqp_scale rateParam * fqp* (1.+@0) Rqqbar')
-				rate_params_lines[t].append('fqm_scale rateParam * fqm* (1.+@0) Rqqbar')
-				#rate_params_lines[t].append('fgg_scale rateParam * fg* ((%(NTT)s-(1.+@0)*%(NQQ)s)/(%(NGG)s)) Rqqbar')
-				#rate_params_lines[t].append('fqp_scale rateParam * fqp* (1.+@0)*((%(NTOT)s-(1.+@1)*%(NWJETS)s-(1.+@2)*%(NBCK)s)/(%(NTT)s)) Rqqbar,Rwjets,Rbck')
-				#rate_params_lines[t].append('fqm_scale rateParam * fqm* (1.+@0)*((%(NTOT)s-(1.+@1)*%(NWJETS)s-(1.+@2)*%(NBCK)s)/(%(NTT)s)) Rqqbar,Rwjets,Rbck')
-				#rate_params_lines[t].append('fgg_scale rateParam * fg* ((%(NTOT)s-(1.+@0)*%(NWJETS)s-(1.+@1)*%(NBCK)s)/(%(NTT)s))*((%(NTT)s-(1.+@2)*%(NQQ)s)/(%(NGG)s)) Rwjets,Rbck,Rqqbar')
-			rate_params_lines[t].append('fgg_scale_'+t+' rateParam '+t+'_* fg* ((%(NTT_'+t+')s-(1.+@0)*%(NQQ_'+t+')s)/(%(NGG_'+t+')s)) Rqqbar')
-		nwjets=0.; nbck=0.; nqcd=0.
-		for topology in self._topologies :
-			nqq=0.; ngg=0.
-			#which regions should we sum over?
 			regions = ['SR']
-			if topology!='t3' and not self._nocontrolregions :
+			if t!='t3' and not self._nocontrolregions :
 				regions.append('WJets_CR')
-			#make this topology's replacement dictionary
-			aux_temp_file = TFile.Open(tfilepath.split('.root')[0]+'_aux.root')
-			for region in regions :
-				nwjets+=aux_temp_file.Get(topology+'_'+region+'_NWJETS').GetBinContent(1)
-				nbck+=aux_temp_file.Get(topology+'_'+region+'_NBCK').GetBinContent(1)
-				nqq+=aux_temp_file.Get(topology+'_'+region+'_NQQBAR').GetBinContent(1)
-				ngg+=aux_temp_file.Get(topology+'_'+region+'_NGG').GetBinContent(1)
-				nqcd+=aux_temp_file.Get(topology+'_'+region+'_NQCD').GetBinContent(1)
-			aux_temp_file.Close()
-			rep_data = {'NWJETS':nwjets,
-						'NBCK':nbck,
-						'NQCD':nqcd,
-						'NQQ_'+topology:nqq,
-						'NGG_'+topology:ngg,
-						'NTT_'+topology:nqq+ngg,
-						#'NTOT':nwjets+nbck+nqcd+nqq+ngg}
-						'NTOT':nwjets+nbck+nqq+ngg}
-			#print 'topology = %s, rep_data = %s'%(topology, rep_data) #DEBUG
-			for line in rate_params_lines[topology] :
+			for l in self._ltypes :
+				for r in regions :
+					if self._sumcharges :
+						cids.append(t+'_'+l+'_'+r)
+					else :
+						cids.append(t+'_'+l+'plus_'+r)
+						cids.append(t+'_'+l+'minus_'+r)
+		#print 'cids = %s'%(cids) #DEBUG
+		#make the lists of all the other rateParam lines by channel
+		temp_file = TFile.Open(tfilepath)
+		for cid in cids :
+			rate_params_lines = []
+			rate_params_lines.append('fqcd_scale_'+cid+' rateParam '+cid+' fqcd (1.+@0) Rqcd_'+cid+'')
+			rate_params_lines.append('fqp_scale_'+cid+' rateParam '+cid+' fqp* (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.+@2)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets,Rbck')
+			rate_params_lines.append('fqm_scale_'+cid+' rateParam '+cid+' fqm* (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.+@2)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets,Rbck')
+			rate_params_lines.append('fgg_scale_'+cid+' rateParam '+cid+' fg* ((%(NTT_'+cid+')s-(1.+@0)*%(NQQ_'+cid+')s)/(%(NGG_'+cid+')s))*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.+@2)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets,Rbck')
+			#make this channel's replacement dictionary
+			nwjets=temp_file.Get(cid+'__fwjets').Integral()
+			nbck=temp_file.Get(cid+'__fbck').Integral()
+			nqq=temp_file.Get(cid+'__fqq').Integral()
+			ngg=temp_file.Get(cid+'__fgg').Integral()
+			nqcd=temp_file.Get(cid+'__fqcd').Integral()
+			rep_data = {'NWJETS_'+cid:nwjets,
+						'NBCK_'+cid:nbck,
+						'NQCD_'+cid:nqcd,
+						'NQQ_'+cid:nqq,
+						'NGG_'+cid:ngg,
+						'NTT_'+cid:nqq+ngg,
+						'NTOT_'+cid:nwjets+nbck+nqq+ngg}
+			#print 'cid = %s, rep_data = %s'%(cid, rep_data) #DEBUG
+			for line in rate_params_lines :
 				#print 'new line: %s \n'%(line%rep_data) #DEBUG
 				outfile.write((line%rep_data)+'\n')
-
+		temp_file.Close()
 		outfile.close()
 
 	def _runSingleDataFit_(self) :
