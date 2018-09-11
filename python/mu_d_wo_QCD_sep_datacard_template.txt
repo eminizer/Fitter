@@ -17,7 +17,7 @@ observation	-1					-1
 # Add the processes contributing to the data expectation
 bin 											%(lt)splus_%(r)s	%(lt)splus_%(r)s	%(lt)splus_%(r)s	%(lt)splus_%(r)s	%(lt)splus_%(r)s	%(lt)splus_%(r)s	%(lt)splus_%(r)s	%(lt)splus_%(r)s	%(lt)splus_%(r)s	%(lt)splus_%(r)s	%(lt)splus_%(r)s	%(lt)splus_%(r)s	%(lt)splus_%(r)s	%(lt)sminus_%(r)s	%(lt)sminus_%(r)s	%(lt)sminus_%(r)s	%(lt)sminus_%(r)s	%(lt)sminus_%(r)s	%(lt)sminus_%(r)s	%(lt)sminus_%(r)s	%(lt)sminus_%(r)s	%(lt)sminus_%(r)s	%(lt)sminus_%(r)s	%(lt)sminus_%(r)s	%(lt)sminus_%(r)s	%(lt)sminus_%(r)s
 process 										fqp0 				fqp1 				fqp2 				fqm0				fqm1				fqm2				fg0					fg1					fg2					fg3					fg4					fbck				fwjets				fqp0 				fqp1 				fqp2 				fqm0				fqm1				fqm2				fg0					fg1					fg2					fg3					fg4					fbck				fwjets
-process 										-5 					-4 					-3 					-2					-1					0					1					2					3					4					5					6					7					-5 					-4 					-3 					-2					-1					0					1					2					3					4					5					6					7
+process 										-10 				-9 					-8 					-7					-6					-5					-4					-3					-2					-1					0					1					2					-10 				-9 					-8 					-7					-6					-5					-4					-3					-2					-1					0					1					2
 rate 											-1 					-1 					-1 					-1					-1					-1					-1					-1					-1					-1					-1					-1					-1					-1 					-1 					-1 					-1					-1					-1					-1					-1					-1					-1					-1					-1					-1
 -------------------------------------------------------------------------------
 # Add the systematics

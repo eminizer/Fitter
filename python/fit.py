@@ -185,7 +185,7 @@ class Fit(object) :
 			#exclude/skip a couple lines specifically
 			sys_to_skip = []
 			#ignore top pt reweighting if it's already there in the templates
-			sys_to_skip.append('top_pt_re_weight')
+			#sys_to_skip.append('top_pt_re_weight')
 			#if we're running without systematics
 			if self._nojec :
 				sys_to_skip += ['JES','JER']
@@ -373,6 +373,24 @@ class Fit(object) :
 		if not self._post_plots_only :
 			print cmd
 			os.system(cmd)
+		#run the nuisance impacts plots
+		print 'Plotting nuisance impacts for fit %s'%(self._name)
+		#make the first command to run the initial fit through combineTool.py
+		cmd = 'combineTool.py -M Impacts -d %s -t -1 --setParameters %s=%.3f -m 125 --doInitialFit  --robustFit 1'%(self._workspace_filename,self._fitpar,self._toypar)
+		print cmd
+		os.system(cmd)
+		#make the second command to do scans for each nuisance parameter
+		cmd = 'combineTool.py -M Impacts -d %s -t -1 --setParameters %s=%.3f --robustFit 1 -m 125 --doFits --parallel %d'%(self._workspace_filename,self._fitpar,self._toypar,4)
+		print cmd
+		os.system(cmd)
+		#make the third command to collect the results and put them in a json file
+		cmd = 'combineTool.py -M Impacts -d %s -t -1 --setParameters %s=%.3f -m 125 -o impacts_%s.json'%(self._workspace_filename,self._fitpar,self._toypar,self._name)
+		print cmd
+		os.system(cmd)
+		#make the final command to plot the impacts
+		cmd = 'plotImpacts.py -i impacts_%s.json -o impacts_%s'%(self._name,self._name)
+		print cmd
+		os.system(cmd)
 		#return the filename of the output
 		outputfilename = 'fitDiagnosticsToys%s%.3f.root'%(self._fitpar,self._toypar)
 		return outputfilename
