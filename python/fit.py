@@ -64,42 +64,84 @@ class Fit(object) :
 		print 'Building physics model for fit %s'%(self._name)
 		#first build the filename for the new custom model
 		fn = self._name+'_PhysicsModel.py'
-		#make the dictionary of variables to replace in the template file
-		nq1={}; nq2={}; nqq={}; ng1={}; ng2={}; ng3={}; ng4={}; ngg={}
-		aux_temp_file = TFile.Open(tfilepath.split('.root')[0]+'_aux.root')
-		#for topology in self._topologies :
-		for topology in ['t1','t2','t3'] :
-			nq1[topology]=0.; nq2[topology]=0.; nqq[topology]=0.; ng1[topology]=0.; ng2[topology]=0.; ng3[topology]=0.; ng4[topology]=0.; ngg[topology]=0.
-			nq1[topology]+=aux_temp_file.Get(topology+'_SR_NQ1').GetBinContent(1)
-			nq2[topology]+=aux_temp_file.Get(topology+'_SR_NQ2').GetBinContent(1)
-			nqq[topology]+=aux_temp_file.Get(topology+'_SR_NQQBAR').GetBinContent(1)
-			ng1[topology]+=aux_temp_file.Get(topology+'_SR_NG1').GetBinContent(1)
-			ng2[topology]+=aux_temp_file.Get(topology+'_SR_NG2').GetBinContent(1)
-			ng3[topology]+=aux_temp_file.Get(topology+'_SR_NG3').GetBinContent(1)
-			ng4[topology]+=aux_temp_file.Get(topology+'_SR_NG4').GetBinContent(1)
-			ngg[topology]+=aux_temp_file.Get(topology+'_SR_NGG').GetBinContent(1)
-		aux_temp_file.Close()
+		#make the dictionary of variables to replace in the template file, and the list of function lines to write into it
 		rep_data = {'fitname':self._name}
-		#for topology in self._topologies :
-		for topology in ['t1','t2','t3'] :
-			rep_data['NQ1_'+topology]=nq1[topology]
-			rep_data['NQ2_'+topology]=nq2[topology]
-			rep_data['NQQ_'+topology]=nqq[topology]
-			rep_data['NG1_'+topology]=ng1[topology]
-			rep_data['NG2_'+topology]=ng2[topology]
-			rep_data['NG3_'+topology]=ng3[topology]
-			rep_data['NG4_'+topology]=ng4[topology]
-			rep_data['NGG_'+topology]=ngg[topology]
+		flines = []
+		#if this is a mu or d fit we need some renormalization factors
+		if not self._fitpar=='Afb' :
+			nq1={}; nq2={}; nqq={}; ng1={}; ng2={}; ng3={}; ng4={}; ngg={}
+			#make the list of channel names for which to pull template yields
+			channames = []
+			for topology in self._topologies :
+				for ltype in self._ltypes :
+					if self._sumcharges :
+						channames.append(topology+'_'+ltype)
+					else :
+						channames.append(topology+'_'+ltype+'plus')
+						channames.append(topology+'_'+ltype+'minus')
+			#get the process yields in each channel
+			temp_file = TFile.Open(tfilepath)
+			for cname in channames :
+				nq1[cname]=0.; nq2[cname]=0.; nqq[cname]=0.; ng1[cname]=0.; ng2[cname]=0.; ng3[cname]=0.; ng4[cname]=0.; ngg[cname]=0.
+				#for qqbar
+				nqq[cname]+=temp_file.Get(cname+'_SR__fqp0').Integral()
+				nqq[cname]+=temp_file.Get(cname+'_SR__fqm0').Integral()
+				nq1[cname]+=temp_file.Get(cname+'_SR__fqp1').Integral()
+				nq1[cname]+=temp_file.Get(cname+'_SR__fqm1').Integral()
+				nq2[cname]+=temp_file.Get(cname+'_SR__fqp2').Integral()
+				nq2[cname]+=temp_file.Get(cname+'_SR__fqm2').Integral()
+				#for gg
+				ngg[cname]+=temp_file.Get(cname+'_SR__fg0').Integral()
+				ng1[cname]+=temp_file.Get(cname+'_SR__fg1').Integral()
+				ng2[cname]+=temp_file.Get(cname+'_SR__fg2').Integral()
+				ng3[cname]+=temp_file.Get(cname+'_SR__fg3').Integral()
+				ng4[cname]+=temp_file.Get(cname+'_SR__fg4').Integral()
+			temp_file.Close()
+			#make the list of function lines to add to the template physicsModel file
+			for cname in channames :
+				#for d fits
+				if self._fitpar=='d' :
+					#for qqbar
+					FQQ='(1.-@0*@0*((%f)/(%f))+@0*@0*((%f)/(%f)))'%(nq1[cname],nqq[cname],nq2[cname],nqq[cname])
+					flines.append('self.modelBuilder.factory_(\'expr::%s_fqd0("((1.)/(%s))",d)\')'%(cname,FQQ))
+					flines.append('self.modelBuilder.factory_(\'expr::%s_fqd1("((-1.*@0*@0)/(%s))",d)\')'%(cname,FQQ))
+					flines.append('self.modelBuilder.factory_(\'expr::%s_fqd2("((@0*@0)/(%s))",d)\')'%(cname,FQQ))
+					#for gg
+					FGG='(1.+@0*@0*((%f)/(%f))+@0*@0*((%f)/(%f))+@0*@0*@0*@0*((%f)/(%f)))'%(ng2[cname],ngg[cname],ng3[cname],ngg[cname],ng4[cname],ngg[cname])
+					flines.append('self.modelBuilder.factory_(\'expr::%s_fgd0("((1.)/(%s))",d)\')'%(cname,FGG))
+					flines.append('self.modelBuilder.factory_(\'expr::%s_fgd2("((@0*@0)/(%s))",d)\')'%(cname,FGG))
+					flines.append('self.modelBuilder.factory_(\'expr::%s_fgd3("((@0*@0)/(%s))",d)\')'%(cname,FGG))
+					flines.append('self.modelBuilder.factory_(\'expr::%s_fgd4("((@0*@0*@0*@0)/(%s))",d)\')'%(cname,FGG))
+				elif self._fitpar=='mu' :
+					pass #add this in if it works better for d
+					#for qqbar
+					FQQ='(1.+(2.*@0+@0*@0)*((%f)/(%f))+(@0*@0)*((%f)/(%f)))'%(nq1[cname],nqq[cname],nq2[cname],nqq[cname])
+					flines.append('self.modelBuilder.factory_(\'expr::%s_fqmu0("((1.)/(%s))",mu)\')'%(cname,FQQ))
+					flines.append('self.modelBuilder.factory_(\'expr::%s_fqmu1("((2*@0+@0*@0)/(%s))",mu)\')'%(cname,FQQ))
+					flines.append('self.modelBuilder.factory_(\'expr::%s_fqmu2("((@0*@0)/(%s))",mu)\')'%(cname,FQQ))
+					#for gg
+					FGG='(1.+@0*(1.+@0)*((%f)/(%f))+@0*@0*(1.+@0)*((%f)/(%f))+@0*@0*(1.-5.*@0)*((%f)/(%f))+@0*@0*@0*@0*((%f)/(%f)))'%(ng1[cname],ngg[cname],ng2[cname],ngg[cname],ng3[cname],ngg[cname],ng4[cname],ngg[cname])
+					flines.append('self.modelBuilder.factory_(\'expr::%s_fgmu0("((1.)/(%s))",mu)\')'%(cname,FGG))
+					flines.append('self.modelBuilder.factory_(\'expr::%s_fgmu1("((@0+@0*@0)/(%s))",mu)\')'%(cname,FGG))
+					flines.append('self.modelBuilder.factory_(\'expr::%s_fgmu2("((@0*@0+@0*@0*@0)/(%s))",mu)\')'%(cname,FGG))
+					flines.append('self.modelBuilder.factory_(\'expr::%s_fgmu3("((@0*@0-5.*@0*@0*@0)/(%s))",mu)\')'%(cname,FGG))
+					flines.append('self.modelBuilder.factory_(\'expr::%s_fgmu4("((@0*@0*@0*@0)/(%s))",mu)\')'%(cname,FGG))
+				else :
+					print 'ERROR: fitpar %s not recognized, cannot find template physicsModel file!'
+					return
 		#open the new file to write into
 		newfile = open(fn,'w')
 		#open the template file to use
 		template_file = open(os.environ['CMSSW_BASE']+'/src/Analysis/Fitter/python/'+self._fitpar+'_PhysicsModel_template.txt','r')
 		#for each line in the template file
 		for line in template_file.readlines() :
-			if line.find('print')!=-1. :
-				newfile.write(line)
-			else :
+			#if it's not the line that indicates where the function lines go just sub in and write it out
+			if line.find('###FUNCTIONS BELOW')==-1 :
 				newfile.write(line%rep_data)
+			#if it is that line, though, write all of the function lines instead
+			else :
+				for fline in flines :
+					newfile.write('	%s\n'%fline)
 		#close the files
 		template_file.close(); newfile.close()
 		#set this fit's model filename
