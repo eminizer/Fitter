@@ -53,8 +53,8 @@ class Fit(object) :
 		print cmd
 		os.system(cmd)
 		#delete the individual channel cards (housekeeping)
-		for i in range(len(dc_tuples)) :
-			os.system('rm -f %s'%(dc_tuples[i][0]))
+		for i in range(len(dc_tuples)) : #DEBUG
+			os.system('rm -f %s'%(dc_tuples[i][0])) #DEBUG
 		print 'Done.'
 		#if desired, add in the rateParams at the end of the card
 		if not self._noRateParams :
@@ -67,7 +67,8 @@ class Fit(object) :
 		#make the dictionary of variables to replace in the template file
 		nq1={}; nq2={}; nqq={}; ng1={}; ng2={}; ng3={}; ng4={}; ngg={}
 		aux_temp_file = TFile.Open(tfilepath.split('.root')[0]+'_aux.root')
-		for topology in self._topologies :
+		#for topology in self._topologies :
+		for topology in ['t1','t2','t3'] :
 			nq1[topology]=0.; nq2[topology]=0.; nqq[topology]=0.; ng1[topology]=0.; ng2[topology]=0.; ng3[topology]=0.; ng4[topology]=0.; ngg[topology]=0.
 			nq1[topology]+=aux_temp_file.Get(topology+'_SR_NQ1').GetBinContent(1)
 			nq2[topology]+=aux_temp_file.Get(topology+'_SR_NQ2').GetBinContent(1)
@@ -79,7 +80,8 @@ class Fit(object) :
 			ngg[topology]+=aux_temp_file.Get(topology+'_SR_NGG').GetBinContent(1)
 		aux_temp_file.Close()
 		rep_data = {'fitname':self._name}
-		for topology in self._topologies :
+		#for topology in self._topologies :
+		for topology in ['t1','t2','t3'] :
 			rep_data['NQ1_'+topology]=nq1[topology]
 			rep_data['NQ2_'+topology]=nq2[topology]
 			rep_data['NQQ_'+topology]=nqq[topology]
@@ -94,7 +96,10 @@ class Fit(object) :
 		template_file = open(os.environ['CMSSW_BASE']+'/src/Analysis/Fitter/python/'+self._fitpar+'_PhysicsModel_template.txt','r')
 		#for each line in the template file
 		for line in template_file.readlines() :
-			newfile.write(line%rep_data)
+			if line.find('print')!=-1. :
+				newfile.write(line)
+			else :
+				newfile.write(line%rep_data)
 		#close the files
 		template_file.close(); newfile.close()
 		#set this fit's model filename
@@ -158,12 +163,7 @@ class Fit(object) :
 			pp+='_'+leptype
 		#figure out which template datacard to open
 		template_filename = os.environ['CMSSW_BASE']+'/src/Analysis/Fitter/python/'
-		template_filename+='Afb_' if (self._fitpar=='Afb' or region!='SR') else 'mu_d_'
-		#if topology=='t1' and leptype=='mu' :
-		#	template_filename+='wo_QCD_'
-		#else :
-		#	template_filename+='w_QCD_'
-		template_filename+='w_QCD_'
+		template_filename+=self._fitpar+'_'
 		if self._sumcharges :
 			template_filename+='sum'
 		else :
@@ -190,7 +190,7 @@ class Fit(object) :
 			if self._nojec :
 				sys_to_skip += ['JES','JER']
 			if self._noss :
-				sys_to_skip += ['pileup_weight',rep_data['lt']+'_trig_eff_weight_'+rep_data['tr'],rep_data['lt']+'_ID_weight',rep_data['lt']+'_iso_weight','btag_eff_weight','ren_scale_weight','fact_scale_weight','comb_scale_weight','pdfas_weight','top_pt_re_weight']
+				sys_to_skip += ['pileup_weight',rep_data['lt']+'_trig_eff_weight_'+rep_data['tr'],rep_data['lt']+'_ID_weight',rep_data['lt']+'_iso_weight','btag_eff_weight','ren_scale_weight','fact_scale_weight','pdfas_weight','top_pt_re_weight']
 			if line.split()[0]%rep_data in sys_to_skip :
 				continue
 			#if we're running with rateParams
@@ -201,6 +201,8 @@ class Fit(object) :
 				if line.split()[0]%rep_data==rep_data['lt']+'_iso_weight' :
 					continue
 			#otherwise write the substituted line
+			#if line.startswith('process') : #DEBUG
+			#	print 'old: %s \nnew: %s \n------------------------------------'%(line, line%rep_data) #DEBUG
 			newfile.write(line%rep_data)
 		#close the files
 		template_file.close(); newfile.close()

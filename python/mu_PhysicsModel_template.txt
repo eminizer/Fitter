@@ -38,7 +38,10 @@ class %(fitname)s_PhysicsModel(PhysicsModel):
 
     def getYieldScale(self,bin,process):
         if bin.find('SR')==-1 :
-            return 1
+            if process in ['fqp1','fqm1','fqp2','fqm2','fg1','fg2','fg3','fg4'] :
+                return 0.
+            else :
+                return 1.
         if bin.find('t1')!=-1 :    
             if process in ['fqp0','fqm0'] :
                 return 'fqmu0_t1'

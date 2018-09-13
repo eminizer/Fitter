@@ -2,7 +2,7 @@
 # This file is a datacard for the %(fitname)s fit in the %(r)s region
 # It contains the charge-summed channels for %(lt)s leptons
 imax 1 # There's only one channel per lepton flavor when using charge-summed lepton types
-jmax 13 # There are 4 backgrounds with QCD
+jmax 13 # There are 3 backgrounds with QCD
 kmax * # Let Combine figure out how many nuisance parameters there are
 -------------------------------------------------------------------------------
 # Next declare how to find the histograms in the file
@@ -33,7 +33,6 @@ JER 						  shapeN2	1				1				1				1				1				1				1				1				1				1				1				1				
 # MC generation shape/rate uncertainties and top pt reweighting for ttbar and QCD
 ren_scale_weight 			  shapeN2	1				1				1				1				1				1				1				1				1				1				1				0				0				1
 fact_scale_weight 			  shapeN2	1				1				1				1				1				1				1				1				1				1				1				0				0				1
-comb_scale_weight 			  shapeN2	1				1				1				1				1				1				1				1				1				1				1				0				0				1
 pdfas_weight 				  shapeN2	1				1				1				1				1				1				1				1				1				1				1				0				0				1
 top_pt_re_weight 			  shapeN2	1				1				1				1				1				1				1				1				1				1				1				0				0				1
 # "Rate"params for individual processes
