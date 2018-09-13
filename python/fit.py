@@ -102,12 +102,12 @@ class Fit(object) :
 				#for d fits
 				if self._fitpar=='d' :
 					#for qqbar
-					FQQ='(1.-@0*@0*((%.5f)/(%.5f))+@0*@0*((%.5f)/(%.5f)))'%(nq1[cname],nqq[cname],nq2[cname],nqq[cname])
+					FQQ='(1.-@0*@0*((%f)/(%f))+@0*@0*((%f)/(%f)))'%(nq1[cname],nqq[cname],nq2[cname],nqq[cname])
 					flines.append('self.modelBuilder.factory_(\'expr::%s_fqd0("((1.)/(%s))",d)\')'%(cname,FQQ))
 					flines.append('self.modelBuilder.factory_(\'expr::%s_fqd1("((-1.*@0*@0)/(%s))",d)\')'%(cname,FQQ))
 					flines.append('self.modelBuilder.factory_(\'expr::%s_fqd2("((@0*@0)/(%s))",d)\')'%(cname,FQQ))
 					#for gg
-					FGG='(1.+@0*@0*((%.5f)/(%.5f))+@0*@0*((%.5f)/(%.5f))+@0*@0*@0*@0*((%.5f)/(%.5f)))'%(ng2[cname],ngg[cname],ng3[cname],ngg[cname],ng4[cname],ngg[cname])
+					FGG='(1.+@0*@0*((%f)/(%f))+@0*@0*((%f)/(%f))+@0*@0*@0*@0*((%f)/(%f)))'%(ng2[cname],ngg[cname],ng3[cname],ngg[cname],ng4[cname],ngg[cname])
 					flines.append('self.modelBuilder.factory_(\'expr::%s_fgd0("((1.)/(%s))",d)\')'%(cname,FGG))
 					flines.append('self.modelBuilder.factory_(\'expr::%s_fgd2("((@0*@0)/(%s))",d)\')'%(cname,FGG))
 					flines.append('self.modelBuilder.factory_(\'expr::%s_fgd3("((@0*@0)/(%s))",d)\')'%(cname,FGG))
@@ -115,7 +115,17 @@ class Fit(object) :
 				elif self._fitpar=='mu' :
 					pass #add this in if it works better for d
 					#for qqbar
+					FQQ='(1.+(2.*@0+@0*@0)*((%f)/(%f))+(@0*@0)*((%f)/(%f)))'%(nq1[cname],nqq[cname],nq2[cname],nqq[cname])
+					flines.append('self.modelBuilder.factory_(\'expr::%s_fqmu0("((1.)/(%s))",mu)\')'%(cname,FQQ))
+					flines.append('self.modelBuilder.factory_(\'expr::%s_fqmu1("((2*@0+@0*@0)/(%s))",mu)\')'%(cname,FQQ))
+					flines.append('self.modelBuilder.factory_(\'expr::%s_fqmu2("((@0*@0)/(%s))",mu)\')'%(cname,FQQ))
 					#for gg
+					FGG='(1.+@0*(1.+@0)*((%f)/(%f))+@0*@0*(1.+@0)*((%f)/(%f))+@0*@0*(1.-5.*@0)*((%f)/(%f))+@0*@0*@0*@0*((%f)/(%f)))'%(ng1[cname],ngg[cname],ng2[cname],ngg[cname],ng3[cname],ngg[cname],ng4[cname],ngg[cname])
+					flines.append('self.modelBuilder.factory_(\'expr::%s_fgmu0("((1.)/(%s))",mu)\')'%(cname,FGG))
+					flines.append('self.modelBuilder.factory_(\'expr::%s_fgmu1("((@0+@0*@0)/(%s))",mu)\')'%(cname,FGG))
+					flines.append('self.modelBuilder.factory_(\'expr::%s_fgmu2("((@0*@0+@0*@0*@0)/(%s))",mu)\')'%(cname,FGG))
+					flines.append('self.modelBuilder.factory_(\'expr::%s_fgmu3("((@0*@0-5.*@0*@0*@0)/(%s))",mu)\')'%(cname,FGG))
+					flines.append('self.modelBuilder.factory_(\'expr::%s_fgmu4("((@0*@0*@0*@0)/(%s))",mu)\')'%(cname,FGG))
 				else :
 					print 'ERROR: fitpar %s not recognized, cannot find template physicsModel file!'
 					return

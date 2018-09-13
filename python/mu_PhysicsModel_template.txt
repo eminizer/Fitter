@@ -9,91 +9,56 @@ class %(fitname)s_PhysicsModel(PhysicsModel):
         self.modelBuilder.doVar("mu[0.0,-10.0,10.0]");
         self.modelBuilder.doSet("POI","mu")
         
-        self.modelBuilder.factory_('expr::fqmu0_t1("((1.)/(1.+(2.*@0+@0*@0)*((%(NQ1_t1)s)/(%(NQQ_t1)s))+(@0*@0)*((%(NQ2_t1)s)/(%(NQQ_t1)s))))",mu)')
-        self.modelBuilder.factory_('expr::fqmu1_t1("((2*@0+@0*@0)/(1.+(2.*@0+@0*@0)*((%(NQ1_t1)s)/(%(NQQ_t1)s))+(@0*@0)*((%(NQ2_t1)s)/(%(NQQ_t1)s))))",mu)')
-        self.modelBuilder.factory_('expr::fqmu2_t1("((@0*@0)/(1.+(2.*@0+@0*@0)*((%(NQ1_t1)s)/(%(NQQ_t1)s))+(@0*@0)*((%(NQ2_t1)s)/(%(NQQ_t1)s))))",mu)')
-        self.modelBuilder.factory_('expr::fgmu0_t1("((1.)/(1.+@0*(1.+@0)*((%(NG1_t1)s)/(%(NGG_t1)s))+@0*@0*(1.+@0)*((%(NG2_t1)s)/(%(NGG_t1)s))+@0*@0*(1.-5.*@0)*((%(NG3_t1)s)/(%(NGG_t1)s))+@0*@0*@0*@0*((%(NG4_t1)s)/(%(NGG_t1)s))))",mu)')
-        self.modelBuilder.factory_('expr::fgmu1_t1("((@0+@0*@0)/(1.+@0*(1.+@0)*((%(NG1_t1)s)/(%(NGG_t1)s))+@0*@0*(1.+@0)*((%(NG2_t1)s)/(%(NGG_t1)s))+@0*@0*(1.-5.*@0)*((%(NG3_t1)s)/(%(NGG_t1)s))+@0*@0*@0*@0*((%(NG4_t1)s)/(%(NGG_t1)s))))",mu)')
-        self.modelBuilder.factory_('expr::fgmu2_t1("((@0*@0+@0*@0*@0)/(1.+@0*(1.+@0)*((%(NG1_t1)s)/(%(NGG_t1)s))+@0*@0*(1.+@0)*((%(NG2_t1)s)/(%(NGG_t1)s))+@0*@0*(1.-5.*@0)*((%(NG3_t1)s)/(%(NGG_t1)s))+@0*@0*@0*@0*((%(NG4_t1)s)/(%(NGG_t1)s))))",mu)')
-        self.modelBuilder.factory_('expr::fgmu3_t1("((@0*@0-5.*@0*@0*@0)/(1.+@0*(1.+@0)*((%(NG1_t1)s)/(%(NGG_t1)s))+@0*@0*(1.+@0)*((%(NG2_t1)s)/(%(NGG_t1)s))+@0*@0*(1.-5.*@0)*((%(NG3_t1)s)/(%(NGG_t1)s))+@0*@0*@0*@0*((%(NG4_t1)s)/(%(NGG_t1)s))))",mu)')
-        self.modelBuilder.factory_('expr::fgmu4_t1("((@0*@0*@0*@0)/(1.+@0*(1.+@0)*((%(NG1_t1)s)/(%(NGG_t1)s))+@0*@0*(1.+@0)*((%(NG2_t1)s)/(%(NGG_t1)s))+@0*@0*(1.-5.*@0)*((%(NG3_t1)s)/(%(NGG_t1)s))+@0*@0*@0*@0*((%(NG4_t1)s)/(%(NGG_t1)s))))",mu)')
-
-        self.modelBuilder.factory_('expr::fqmu0_t2("((1.)/(1.+(2.*@0+@0*@0)*((%(NQ1_t2)s)/(%(NQQ_t2)s))+(@0*@0)*((%(NQ2_t2)s)/(%(NQQ_t2)s))))",mu)')
-        self.modelBuilder.factory_('expr::fqmu1_t2("((2*@0+@0*@0)/(1.+(2.*@0+@0*@0)*((%(NQ1_t2)s)/(%(NQQ_t2)s))+(@0*@0)*((%(NQ2_t2)s)/(%(NQQ_t2)s))))",mu)')
-        self.modelBuilder.factory_('expr::fqmu2_t2("((@0*@0)/(1.+(2.*@0+@0*@0)*((%(NQ1_t2)s)/(%(NQQ_t2)s))+(@0*@0)*((%(NQ2_t2)s)/(%(NQQ_t2)s))))",mu)')
-        self.modelBuilder.factory_('expr::fgmu0_t2("((1.)/(1.+@0*(1.+@0)*((%(NG1_t2)s)/(%(NGG_t2)s))+@0*@0*(1.+@0)*((%(NG2_t2)s)/(%(NGG_t2)s))+@0*@0*(1.-5.*@0)*((%(NG3_t2)s)/(%(NGG_t2)s))+@0*@0*@0*@0*((%(NG4_t2)s)/(%(NGG_t2)s))))",mu)')
-        self.modelBuilder.factory_('expr::fgmu1_t2("((@0+@0*@0)/(1.+@0*(1.+@0)*((%(NG1_t2)s)/(%(NGG_t2)s))+@0*@0*(1.+@0)*((%(NG2_t2)s)/(%(NGG_t2)s))+@0*@0*(1.-5.*@0)*((%(NG3_t2)s)/(%(NGG_t2)s))+@0*@0*@0*@0*((%(NG4_t2)s)/(%(NGG_t2)s))))",mu)')
-        self.modelBuilder.factory_('expr::fgmu2_t2("((@0*@0+@0*@0*@0)/(1.+@0*(1.+@0)*((%(NG1_t2)s)/(%(NGG_t2)s))+@0*@0*(1.+@0)*((%(NG2_t2)s)/(%(NGG_t2)s))+@0*@0*(1.-5.*@0)*((%(NG3_t2)s)/(%(NGG_t2)s))+@0*@0*@0*@0*((%(NG4_t2)s)/(%(NGG_t2)s))))",mu)')
-        self.modelBuilder.factory_('expr::fgmu3_t2("((@0*@0-5.*@0*@0*@0)/(1.+@0*(1.+@0)*((%(NG1_t2)s)/(%(NGG_t2)s))+@0*@0*(1.+@0)*((%(NG2_t2)s)/(%(NGG_t2)s))+@0*@0*(1.-5.*@0)*((%(NG3_t2)s)/(%(NGG_t2)s))+@0*@0*@0*@0*((%(NG4_t2)s)/(%(NGG_t2)s))))",mu)')
-        self.modelBuilder.factory_('expr::fgmu4_t2("((@0*@0*@0*@0)/(1.+@0*(1.+@0)*((%(NG1_t2)s)/(%(NGG_t2)s))+@0*@0*(1.+@0)*((%(NG2_t2)s)/(%(NGG_t2)s))+@0*@0*(1.-5.*@0)*((%(NG3_t2)s)/(%(NGG_t2)s))+@0*@0*@0*@0*((%(NG4_t2)s)/(%(NGG_t2)s))))",mu)')
-
-        self.modelBuilder.factory_('expr::fqmu0_t3("((1.)/(1.+(2.*@0+@0*@0)*((%(NQ1_t3)s)/(%(NQQ_t3)s))+(@0*@0)*((%(NQ2_t3)s)/(%(NQQ_t3)s))))",mu)')
-        self.modelBuilder.factory_('expr::fqmu1_t3("((2*@0+@0*@0)/(1.+(2.*@0+@0*@0)*((%(NQ1_t3)s)/(%(NQQ_t3)s))+(@0*@0)*((%(NQ2_t3)s)/(%(NQQ_t3)s))))",mu)')
-        self.modelBuilder.factory_('expr::fqmu2_t3("((@0*@0)/(1.+(2.*@0+@0*@0)*((%(NQ1_t3)s)/(%(NQQ_t3)s))+(@0*@0)*((%(NQ2_t3)s)/(%(NQQ_t3)s))))",mu)')
-        self.modelBuilder.factory_('expr::fgmu0_t3("((1.)/(1.+@0*(1.+@0)*((%(NG1_t3)s)/(%(NGG_t3)s))+@0*@0*(1.+@0)*((%(NG2_t3)s)/(%(NGG_t3)s))+@0*@0*(1.-5.*@0)*((%(NG3_t3)s)/(%(NGG_t3)s))+@0*@0*@0*@0*((%(NG4_t3)s)/(%(NGG_t3)s))))",mu)')
-        self.modelBuilder.factory_('expr::fgmu1_t3("((@0+@0*@0)/(1.+@0*(1.+@0)*((%(NG1_t3)s)/(%(NGG_t3)s))+@0*@0*(1.+@0)*((%(NG2_t3)s)/(%(NGG_t3)s))+@0*@0*(1.-5.*@0)*((%(NG3_t3)s)/(%(NGG_t3)s))+@0*@0*@0*@0*((%(NG4_t3)s)/(%(NGG_t3)s))))",mu)')
-        self.modelBuilder.factory_('expr::fgmu2_t3("((@0*@0+@0*@0*@0)/(1.+@0*(1.+@0)*((%(NG1_t3)s)/(%(NGG_t3)s))+@0*@0*(1.+@0)*((%(NG2_t3)s)/(%(NGG_t3)s))+@0*@0*(1.-5.*@0)*((%(NG3_t3)s)/(%(NGG_t3)s))+@0*@0*@0*@0*((%(NG4_t3)s)/(%(NGG_t3)s))))",mu)')
-        self.modelBuilder.factory_('expr::fgmu3_t3("((@0*@0-5.*@0*@0*@0)/(1.+@0*(1.+@0)*((%(NG1_t3)s)/(%(NGG_t3)s))+@0*@0*(1.+@0)*((%(NG2_t3)s)/(%(NGG_t3)s))+@0*@0*(1.-5.*@0)*((%(NG3_t3)s)/(%(NGG_t3)s))+@0*@0*@0*@0*((%(NG4_t3)s)/(%(NGG_t3)s))))",mu)')
-        self.modelBuilder.factory_('expr::fgmu4_t3("((@0*@0*@0*@0)/(1.+@0*(1.+@0)*((%(NG1_t3)s)/(%(NGG_t3)s))+@0*@0*(1.+@0)*((%(NG2_t3)s)/(%(NGG_t3)s))+@0*@0*(1.-5.*@0)*((%(NG3_t3)s)/(%(NGG_t3)s))+@0*@0*@0*@0*((%(NG4_t3)s)/(%(NGG_t3)s))))",mu)')
+        ###FUNCTIONS BELOW
 
     def getYieldScale(self,bin,process):
+        #if it's not in the signal region, don't scale with PoI, and only include SM expectation
         if bin.find('SR')==-1 :
             if process in ['fqp1','fqm1','fqp2','fqm2','fg1','fg2','fg3','fg4'] :
                 return 0.
             else :
                 return 1.
-        if bin.find('t1')!=-1 :    
+        #the signal region processes must be scaled as functions of the PoI though
+        else :
+            #build the channel name to prepend to the reweighting function's name
+            cname=''
+            if bin.find('t1')!=-1 :
+                cname+='t1_'
+            elif bin.find('t2')!=-1 :
+                cname+='t2_'
+            elif bin.find('t3')!=-1 :
+                cname+='t3_'
+            if bin.find('muplus')!=-1 :
+                cname+='muplus'
+            elif bin.find('muminus')!=-1 :
+                cname+='muminus'
+            elif bin.find('elplus')!=-1 :
+                cname+='elplus'
+            elif bin.find('elminus')!=-1 :
+                cname+='elminus'
+            elif bin.find('mu')!=-1 :
+                cname+='mu'
+            elif bin.find('el')!=-1 :
+                cname+='el'
+            cname+='_'
             if process in ['fqp0','fqm0'] :
-                return 'fqmu0_t1'
+                return cname+'fqmu0'
             elif process in ['fqp1','fqm1'] :
-                return 'fqmu1_t1'
+                return cname+'fqmu1'
             elif process in ['fqp2','fqm2'] :
-                return 'fqmu2_t1'
+                return cname+'fqmu2'
             elif process in ['fg0'] :
-                return 'fgmu0_t1'
+                return cname+'fgmu0'
             elif process in ['fg1'] :
-                return 'fgmu1_t1'
+                return cname+'fgmu1'
             elif process in ['fg2'] :
-                return 'fgmu2_t1'
+                return cname+'fgmu2'
             elif process in ['fg3'] :
-                return 'fgmu3_t1'
+                return cname+'fgmu3'
             elif process in ['fg4'] :
-                return 'fgmu4_t1'
-        elif bin.find('t2')!=-1 :    
-            if process in ['fqp0','fqm0'] :
-                return 'fqmu0_t2'
-            elif process in ['fqp1','fqm1'] :
-                return 'fqmu1_t2'
-            elif process in ['fqp2','fqm2'] :
-                return 'fqmu2_t2'
-            elif process in ['fg0'] :
-                return 'fgmu0_t2'
-            elif process in ['fg1'] :
-                return 'fgmu1_t2'
-            elif process in ['fg2'] :
-                return 'fgmu2_t2'
-            elif process in ['fg3'] :
-                return 'fgmu3_t2'
-            elif process in ['fg4'] :
-                return 'fgmu4_t2'
-        elif bin.find('t3')!=-1 :    
-            if process in ['fqp0','fqm0'] :
-                return 'fqmu0_t3'
-            elif process in ['fqp1','fqm1'] :
-                return 'fqmu1_t3'
-            elif process in ['fqp2','fqm2'] :
-                return 'fqmu2_t3'
-            elif process in ['fg0'] :
-                return 'fgmu0_t3'
-            elif process in ['fg1'] :
-                return 'fgmu1_t3'
-            elif process in ['fg2'] :
-                return 'fgmu2_t3'
-            elif process in ['fg3'] :
-                return 'fgmu3_t3'
-            elif process in ['fg4'] :
-                return 'fgmu4_t3'
-        return 1
+                return cname+'fgmu4'
+            #otherwise it's not something that needs scaling, return 1
+            return 1.
 
 
 %(fitname)s_PhysicsModel = %(fitname)s_PhysicsModel()
