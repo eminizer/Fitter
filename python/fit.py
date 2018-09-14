@@ -53,8 +53,8 @@ class Fit(object) :
 		print cmd
 		os.system(cmd)
 		#delete the individual channel cards (housekeeping)
-		for i in range(len(dc_tuples)) : #DEBUG
-			os.system('rm -f %s'%(dc_tuples[i][0])) #DEBUG
+		#for i in range(len(dc_tuples)) : #DEBUG
+		#	os.system('rm -f %s'%(dc_tuples[i][0])) #DEBUG
 		print 'Done.'
 		#if desired, add in the rateParams at the end of the card
 		if not self._noRateParams :
@@ -223,7 +223,9 @@ class Fit(object) :
 		#open the template file to use
 		template_file = open(template_filename,'r')
 		#for each line in the template file
+		#print '---------------------------------------------' #DEBUG
 		for line in template_file.readlines() :
+			#print line #DEBUG
 			#exclude/skip a couple lines specifically
 			sys_to_skip = []
 			#ignore top pt reweighting if it's already there in the templates
@@ -233,6 +235,7 @@ class Fit(object) :
 				sys_to_skip += ['JES','JER']
 			if self._noss :
 				sys_to_skip += ['pileup_weight',rep_data['lt']+'_trig_eff_weight_'+rep_data['tr'],rep_data['lt']+'_ID_weight',rep_data['lt']+'_iso_weight','btag_eff_weight','ren_scale_weight','fact_scale_weight','pdfas_weight','top_pt_re_weight']
+			#print 'line split = %s'%(line.split()) #DEBUG
 			if line.split()[0]%rep_data in sys_to_skip :
 				continue
 			#if we're running with rateParams
