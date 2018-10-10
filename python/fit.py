@@ -216,6 +216,7 @@ class Fit(object) :
 					'lt':leptype,
 					'r':region,
 					'templatefilename':tfilepath,
+					#'templatefilename':tfilepath.rstrip('.root')+'_aux.root',
 					'topology':topology,
 					'tr':'b' if topology in ['t1','t2'] else 'r'}
 		#open the new file to write into
@@ -228,6 +229,7 @@ class Fit(object) :
 			#print line #DEBUG
 			#exclude/skip a couple lines specifically
 			sys_to_skip = []
+			#sys_to_skip = ['JES']#,'top_pt_re_weight']#,'btag_eff_weight_b','btag_eff_weight_r','el_trig_eff_weight_b','el_trig_eff_weight_r']
 			#ignore top pt reweighting if it's already there in the templates
 			#sys_to_skip.append('top_pt_re_weight')
 			#if we're running without systematics
@@ -285,8 +287,8 @@ class Fit(object) :
 			#make this channel's replacement dictionary
 			nwjets=temp_file.Get(cid+'__fwjets').Integral()
 			nbck=temp_file.Get(cid+'__fbck').Integral()
-			nqq=temp_file.Get(cid+'__fqq').Integral()
-			ngg=temp_file.Get(cid+'__fgg').Integral()
+			nqq=temp_file.Get(cid+'__fqp0').Integral()+temp_file.Get(cid+'__fqm0').Integral()
+			ngg=temp_file.Get(cid+'__fg0').Integral()
 			nqcd=temp_file.Get(cid+'__fqcd').Integral()
 			rep_data = {'NWJETS_'+cid:nwjets,
 						'NBCK_'+cid:nbck,
@@ -329,7 +331,7 @@ class Fit(object) :
 			cmd = 'combine -M MultiDimFit '+self._workspace_filename
 			#fix nuisance parameters
 			#if self._nojec and self._noss :
-			cmd+=' --toysNoSystematics'
+			#cmd+=' --toysNoSystematics'
 			#set observable value for toys
 			cmd+=' --setParameters %s=%.3f'%(self._fitpar,self._toypar)
 			#set the number of toys
@@ -398,7 +400,7 @@ class Fit(object) :
 		if toysfilename!='' :
 			cmd+=' --toysFile=%s'%(toysfilename)
 		#fix nuisance parameters
-		cmd+=' --toysNoSystematics'
+		#cmd+=' --toysNoSystematics'
 		#set observable value for toys
 		cmd+=' --setParameters %s=%.3f'%(self._fitpar,self._toypar)
 		#run on only one toy

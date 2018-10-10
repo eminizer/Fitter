@@ -6,7 +6,7 @@ from optparse import OptionParser
 
 parser = OptionParser()
 #What to do?
-parser.add_option('-M','--mode',  type='choice', action='store', dest='mode', choices=['data','toyGroup','singleToy'],
+parser.add_option('-M','--mode',  type='choice', action='store', dest='mode', choices=['data','toyGroup','singleToy','genWorkspace'],
 	help='Run on real data ("data") or toys ("toys")? Required.')
 parser.add_option('-P','--par', 	 type='choice', action='store', dest='par', choices=['Afb','mu','d'],
 	help='Which parameter ("Afb", "mu", "d") is the parameter of interest? Required.')
@@ -66,5 +66,6 @@ fit.refinePhysicsModel(options.tfilepath)
 #combine all of it into a workspace file using text2workspace.py
 fit.createWorkspace()
 
-#run the fits using Combine
-fit.runCombine(options.mode,options.ntoys,options.nthreads,options.savetoys,options.tfilepath,options.toysFile)
+if options.mode!='genWorkspace' :
+	#run the fits using Combine
+	fit.runCombine(options.mode,options.ntoys,options.nthreads,options.savetoys,options.tfilepath,options.toysFile)

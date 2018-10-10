@@ -28,8 +28,8 @@ pileup_weight                 shapeN2 1             1             1             
 %(lt)s_ID_weight              shapeN2 1             1             1             1             1             1             1             1             1             1             1             1             0   
 %(lt)s_iso_weight             shapeN2 1             1             1             1             1             1             1             1             1             1             1             1             0   
 btag_eff_weight_%(tr)s        shapeN2 1             1             1             1             1             1             1             1             1             1             1             1             0   
-JES_%(topology)s              shapeN2 1             1             1             1             1             1             1             1             1             1             1             1             0   
-JER_%(topology)s              shapeN2 1             1             1             1             1             1             1             1             1             1             1             1             0   
+JES                           shapeN2 1             1             1             1             1             1             1             1             1             1             1             1             0   
+JER                           shapeN2 1             1             1             1             1             1             1             1             1             1             1             1             0   
 # MC generation shape/rate uncertainties and top pt reweighting for ttbar and QCD
 ren_scale_weight              shapeN2 1             1             1             1             1             1             1             1             1             1             1             0             0
 fact_scale_weight             shapeN2 1             1             1             1             1             1             1             1             1             1             1             0             0
