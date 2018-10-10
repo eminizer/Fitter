@@ -227,8 +227,8 @@ class Fit(object) :
 		#print '---------------------------------------------' #DEBUG
 		for line in template_file.readlines() :
 			#print line #DEBUG
-			#exclude/skip a couple lines specifically
-			sys_to_skip = []
+			#exclude/skip a couple lines specifically (namely top tagging efficiency if there are no top tags)
+			sys_to_skip = ['ttag_eff_weight'] if topology=='t3' else []
 			#sys_to_skip = ['JES']#,'top_pt_re_weight']#,'btag_eff_weight_b','btag_eff_weight_r','el_trig_eff_weight_b','el_trig_eff_weight_r']
 			#ignore top pt reweighting if it's already there in the templates
 			#sys_to_skip.append('top_pt_re_weight')

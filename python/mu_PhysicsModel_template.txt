@@ -14,7 +14,7 @@ class %(fitname)s_PhysicsModel(PhysicsModel):
     def getYieldScale(self,bin,process):
         #if it's not in the signal region, don't scale with PoI, and only include SM expectation
         if bin.find('SR')==-1 :
-            if process in ['fqp1','fqm1','fqp2','fqm2','fg1','fg2','fg3','fg4'] :
+            if process in ['fq1','fq2','fg1','fg2','fg3','fg4'] :
                 return 0.
             else :
                 return 1.
@@ -41,11 +41,11 @@ class %(fitname)s_PhysicsModel(PhysicsModel):
             elif bin.find('el')!=-1 :
                 cname+='el'
             cname+='_'
-            if process in ['fqp0','fqm0'] :
+            if process in ['fq0'] :
                 return cname+'fqmu0'
-            elif process in ['fqp1','fqm1'] :
+            elif process in ['fq1'] :
                 return cname+'fqmu1'
-            elif process in ['fqp2','fqm2'] :
+            elif process in ['fq2'] :
                 return cname+'fqmu2'
             elif process in ['fg0'] :
                 return cname+'fgmu0'
