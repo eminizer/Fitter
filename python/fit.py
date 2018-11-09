@@ -228,13 +228,14 @@ class Fit(object) :
 		for line in template_file.readlines() :
 			#print line #DEBUG
 			#exclude/skip a couple lines specifically (namely top tagging efficiency if there are no top tags)
-			sys_to_skip = ['ttag_eff_weight_r'] if topology=='t3' else []
+			sys_to_skip = ['ttag_eff_weight','AK8JESPU','AK8JESEta','AK8JESPt','AK8JESScale','AK8JESTime','AK8JESFlav','AK8JERStat','AK8JERSys',] if topology=='t3' else []
 			#sys_to_skip = ['JES']#,'top_pt_re_weight']#,'btag_eff_weight_b','btag_eff_weight_r','el_trig_eff_weight_b','el_trig_eff_weight_r']
 			#ignore top pt reweighting if it's already there in the templates
 			#sys_to_skip.append('top_pt_re_weight')
 			#if we're running without systematics
 			if self._nojec :
-				sys_to_skip += ['JES','JER']
+				sys_to_skip += ['AK4JESPU','AK4JESEta','AK4JESPt','AK4JESScale','AK4JESTime','AK4JESFlav','AK4JERStat','AK4JERSys',
+								'AK8JESPU','AK8JESEta','AK8JESPt','AK8JESScale','AK8JESTime','AK8JESFlav','AK8JERStat','AK8JERSys',]
 			if self._noss :
 				sys_to_skip += ['pileup_weight',rep_data['lt']+'_trig_eff_weight_'+rep_data['tr'],rep_data['lt']+'_ID_weight',rep_data['lt']+'_iso_weight','btag_eff_weight_flavb_'+rep_data['tr'],'btag_eff_weight_flavc_'+rep_data['tr'],'btag_eff_weight_light_'+rep_data['tr'],'ttag_eff_weight_'+rep_data['tr'],'ren_scale_weight','fact_scale_weight','comb_scale_weight','pdfas_weight','top_pt_re_weight']
 			#print 'line split = %s'%(line.split()) #DEBUG
@@ -332,8 +333,8 @@ class Fit(object) :
 			print 'PARALLEL TOYS: each multiprocessing job will run %d toys (%d total)'%(ntoys/nthreads,nthreads*(ntoys/nthreads))
 			cmd = 'combine -M MultiDimFit '+self._workspace_filename
 			#fix nuisance parameters
-			#if self._nojec and self._noss :
-			#cmd+=' --toysNoSystematics'
+			if self._nojec and self._noss :
+				cmd+=' --toysNoSystematics'
 			#set observable value for toys
 			cmd+=' --setParameters %s=%.3f'%(self._fitpar,self._toypar)
 			#set the number of toys
