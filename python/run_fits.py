@@ -6,7 +6,7 @@ from optparse import OptionParser
 
 parser = OptionParser()
 #What to do?
-parser.add_option('-M','--mode',  type='choice', action='store', dest='mode', choices=['data','toyGroup','singleToy','genWorkspace'],
+parser.add_option('-M','--mode',  type='choice', action='store', dest='mode', choices=['data','toyGroup','singleToy','genWorkspace','genSingleToy'],
 	help='Run on real data ("data") or toys ("toys")? Required.')
 parser.add_option('-P','--par', 	 type='choice', action='store', dest='par', choices=['Afb','mu','d'],
 	help='Which parameter ("Afb", "mu", "d") is the parameter of interest? Required.')
@@ -18,8 +18,10 @@ parser.add_option('--topologies', type='string', action='store', default='t1__t2
 	help='Which topologies do you want to do fits for? Separated by double underscores. ("t1","t2","t3")')
 parser.add_option('--leptypes',   type='string', action='store', default='mu__el', 	   dest='leptypes',	   	  
 	help='Which lepton types do you want to do simultaneous fits for? Separated by double underscores. ("mu","el")')
+#With what JEC settings?
+parser.add_option('--JEC',  type='choice', action='store', dest='jec', choices=['nominal','JESUp','JESDown','JERUp','JERDown'], default='nominal',
+	help='What JEC settings do you want to use?')
 #With what level of involvement?
-parser.add_option('--noJEC', action='store_true', dest='nojec') #leave out JEC systematics
 parser.add_option('--noSS',  action='store_true', dest='noss')  #leave out other "simple" systematics
 parser.add_option('--noRateParams',  action='store_true', dest='norateparams')  #leave out 'rateParam' nuisances
 parser.add_option('--noCRs',  action='store_true', dest='nocontrolregions')  #fit in signal region only
@@ -42,6 +44,8 @@ parser.add_option('--toy-mu',  type='float', action='store', default=0.0, dest='
 	help='Toy mu value')
 parser.add_option('--toy-d',   type='float', action='store', default=0.0, dest='toyd',	   	  
 	help='Toy d value')
+parser.add_option('--toySeed', type='string', action='store', default='-1', dest='toySeed',	   	  
+	help='Seed for toy generation')
 parser.add_option('--saveToys',  action='store_true', dest='savetoys')
 parser.add_option('--toysFile', type='string', action='store', default='', dest='toysFile',	help='Name of file to pull pre-generated toys from')
 
@@ -55,7 +59,7 @@ fnamepieces = (options.out,options.append)
 ##########								Main Script								##########
 
 #start a new fit object (also initializes the parameter file)
-fit = Fit(topologies,leptypes,options.par,options.nojec,options.noss,options.norateparams,options.nocontrolregions,options.sumcharges,fnamepieces,options.toyAfb,options.toymu,options.toyd,options.vb,options.postplotsonly)
+fit = Fit(topologies,leptypes,options.par,options.jec,options.noss,options.norateparams,options.nocontrolregions,options.sumcharges,fnamepieces,options.toyAfb,options.toymu,options.toyd,options.toySeed,options.vb,options.postplotsonly)
 
 #build datacards
 fit.buildDatacards(options.tfilepath)

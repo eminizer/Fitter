@@ -6,7 +6,7 @@ jmax 5 # There are 4 backgrounds with QCD
 kmax * # Let Combine figure out how many nuisance parameters there are
 -------------------------------------------------------------------------------
 # Next declare how to find the histograms in the file
-shapes * * %(templatefilename)s %(topology)s_$CHANNEL__$PROCESS %(topology)s_$CHANNEL__$PROCESS__$SYSTEMATIC
+shapes * * %(templatefilename)s %(topology)s_$CHANNEL__$PROCESS%(jecfileappend)s %(topology)s_$CHANNEL__$PROCESS__$SYSTEMATIC
 shapes data_obs %(lt)splus_%(r)s %(templatefilename)s %(topology)s_%(lt)splus_%(r)s__data_obs
 shapes data_obs %(lt)sminus_%(r)s %(templatefilename)s %(topology)s_%(lt)sminus_%(r)s__data_obs
 -------------------------------------------------------------------------------
@@ -31,23 +31,7 @@ pileup_weight                 shapeN2 1                1                1       
 btag_eff_weight_flavb_%(tr)s  shapeN2 1                1                1                1                  1              0                1                 1                 1                 1                 1                 0
 btag_eff_weight_flavc_%(tr)s  shapeN2 1                1                1                1                  1              0                1                 1                 1                 1                 1                 0
 btag_eff_weight_light_%(tr)s  shapeN2 1                1                1                1                  1              0                1                 1                 1                 1                 1                 0
-ttag_eff_weight               shapeN2 1                1                1                1                  1              0                1                 1                 1                 1                 1                 0
-AK4JESPU                      shapeN2 1                1                1                1                  1              0                1                 1                 1                 1                 1                 0
-AK4JESEta                     shapeN2 1                1                1                1                  1              0                1                 1                 1                 1                 1                 0
-AK4JESPt                      shapeN2 1                1                1                1                  1              0                1                 1                 1                 1                 1                 0
-AK4JESScale                   shapeN2 1                1                1                1                  1              0                1                 1                 1                 1                 1                 0
-AK4JESTime                    shapeN2 1                1                1                1                  1              0                1                 1                 1                 1                 1                 0
-AK4JESFlav                    shapeN2 1                1                1                1                  1              0                1                 1                 1                 1                 1                 0
-AK4JERStat                    shapeN2 1                1                1                1                  1              0                1                 1                 1                 1                 1                 0
-AK4JERSys                     shapeN2 1                1                1                1                  1              0                1                 1                 1                 1                 1                 0
-AK8JESPU                      shapeN2 1                1                1                1                  1              0                1                 1                 1                 1                 1                 0
-AK8JESEta                     shapeN2 1                1                1                1                  1              0                1                 1                 1                 1                 1                 0
-AK8JESPt                      shapeN2 1                1                1                1                  1              0                1                 1                 1                 1                 1                 0
-AK8JESScale                   shapeN2 1                1                1                1                  1              0                1                 1                 1                 1                 1                 0
-AK8JESTime                    shapeN2 1                1                1                1                  1              0                1                 1                 1                 1                 1                 0
-AK8JESFlav                    shapeN2 1                1                1                1                  1              0                1                 1                 1                 1                 1                 0
-AK8JERStat                    shapeN2 1                1                1                1                  1              0                1                 1                 1                 1                 1                 0
-AK8JERSys                     shapeN2 1                1                1                1                  1              0                1                 1                 1                 1                 1                 0
+ttag_eff_weight_%(tr)s        shapeN2 1                1                1                1                  1              0                1                 1                 1                 1                 1                 0
 # MC generation shape/rate uncertainties and top pt reweighting for ttbar and QCD
 ren_scale_weight              shapeN2 1                1                1                1                  0              0                1                 1                 1                 1                 0                 0
 fact_scale_weight             shapeN2 1                1                1                1                  0              0                1                 1                 1                 1                 0                 0

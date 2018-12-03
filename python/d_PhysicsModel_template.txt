@@ -12,12 +12,13 @@ class %(fitname)s_PhysicsModel(PhysicsModel):
         ###FUNCTIONS BELOW
 
     def getYieldScale(self,bin,process):
+        returnstring = ''
         #if it's not in the signal region, don't scale with PoI, and only include SM expectation
         if bin.find('SR')==-1 :
             if process in ['fq1','fq2','fg1','fg2','fg3','fg4'] :
-                return 0.
+                returnstring=0
             else :
-                return 1.
+                returnstring=1
         #the signal region processes must be scaled as functions of the PoI though
         else :
             #build the channel name to prepend to the reweighting function's name
@@ -42,20 +43,23 @@ class %(fitname)s_PhysicsModel(PhysicsModel):
                 cname+='el'
             cname+='_'
             if process in ['fq0'] :
-                return cname+'fqd0'
+                returnstring=cname+'fqd0'
             elif process in ['fq1'] :
-                return cname+'fqd1'
+                returnstring=cname+'fqd1'
             elif process in ['fq2'] :
-                return cname+'fqd2'
+                returnstring=cname+'fqd2'
             elif process in ['fg0'] :
-                return cname+'fgd0'
+                returnstring=cname+'fgd0'
             elif process in ['fg2'] :
-                return cname+'fgd2'
+                returnstring=cname+'fgd2'
             elif process in ['fg3'] :
-                return cname+'fgd3'
+                returnstring=cname+'fgd3'
             elif process in ['fg4'] :
-                return cname+'fgd4'
-            #otherwise it's not something that needs scaling, return 1
-            return 1.
+                returnstring=cname+'fgd4'
+            #otherwise it's not something that needs scaling, returnstring=1
+            else :
+                returnstring=1
+        #print 'process '+str(process)+' in bin '+str(bin)+' returns '+str(returnstring)
+        return returnstring
 
 %(fitname)s_PhysicsModel = %(fitname)s_PhysicsModel()

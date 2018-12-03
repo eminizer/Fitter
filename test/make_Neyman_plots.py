@@ -51,9 +51,17 @@ os.chdir(options.toygroupdir)
 dirnamestem = 'toyGroup_'+options.par+'='
 dirlist = glob.glob(dirnamestem+'*')
 if options.unsigned :
-	input_values = array('d',[abs(float(dirname.split(dirnamestem)[1])) for dirname in dirlist if abs(float(dirname.split(dirnamestem)[1])) not in input_values])
+	input_values_from_dirnames = [abs(float(dirname.split(dirnamestem)[1])) for dirname in dirlist if abs(float(dirname.split(dirnamestem)[1])) not in input_values]
 else :
-	input_values = array('d',[float(dirname.split(dirnamestem)[1]) for dirname in dirlist])
+	input_values_from_dirnames = [float(dirname.split(dirnamestem)[1]) for dirname in dirlist]
+input_values = array('d',input_values_from_dirnames)
+#loop over the values and make the list of bin edges for the closure test histogram
+input_bins_list = []
+for i in range(len(input_values_from_dirnames)-1) :
+	input_bins_list.append(input_values_from_dirnames[i]-0.5*(input_values_from_dirnames[i+1]-input_values_from_dirnames[i]))
+input_bins_list.append(input_values_from_dirnames[-1]-0.5*(input_values_from_dirnames[-1]-input_values_from_dirnames[-2]))
+input_bins_list.append(input_values_from_dirnames[-1]+0.5*(input_values_from_dirnames[-1]-input_values_from_dirnames[-2]))
+input_bins = array('d',input_bins_list)
 os.chdir(cwd)
 if options.verbose : print 'input_values = %s'%(input_values) #DEBUG
 
@@ -75,29 +83,29 @@ title = ''
 #title+='for '
 if options.par == 'Afb' :
 	if options.unsigned :
-		#title += '|A_{FB}|; Input |A_{FB}|; Fitted |A_{FB}|'
-		title += '; Input |A_{FB}|; Fitted |A_{FB}|'
+		#title += '|A_{FB}|; True |A_{FB}|; Best Fit |A_{FB}|'
+		title += '; True |A_{FB}|; Best Fit |A_{FB}|'
 	else :
-		#title += 'A_{FB}; Input A_{FB}; Fitted A_{FB}'
-		title += '; Input A_{FB}; Fitted A_{FB}'
+		#title += 'A_{FB}; True A_{FB}; Best Fit A_{FB}'
+		title += '; True A_{FB}; Best Fit A_{FB}'
 elif options.par == 'mu' :
 	if options.unsigned :
-		#title += '|#mu|; Input |#mu|; Fitted |#mu|'
-		title += '; Input |#mu|; Fitted |#mu|'
+		#title += '|#mu|; True |#mu|; Best Fit |#mu|'
+		title += '; True |#mu|; Best Fit |#mu|'
 	else :
-		#title += '#mu; Input #mu; Fitted #mu'
-		title += '; Input #mu; Fitted #mu'
+		#title += '#mu; True #mu; Best Fit #mu'
+		title += '; True #mu; Best Fit #mu'
 elif options.par == 'd' :
 	if options.unsigned :
-		#title += '|d|; Input |d|; Fitted |d|'
-		title += '; Input |d|; Fitted |d|'
+		#title += '|d|; True |d|; Best Fit |d|'
+		title += '; True |d|; Best Fit |d|'
 	else :
-		#title += 'd; Input d; Fitted d'
-		title += '; Input d; Fitted d'
+		#title += 'd; True d; Best Fit d'
+		title += '; True d; Best Fit d'
 if options.par == 'Afb' :
-	closure_test_histo = TH2D('closure_test_histo',title,(n-1),input_values,4*n,2*input_values[0],2*input_values[n-1])
+	closure_test_histo = TH2D('closure_test_histo',title,n,input_bins,4*n+2,2*input_values[0]-0.025,2*input_values[n-1]+0.025)
 else :
-	closure_test_histo = TH2D('closure_test_histo',title,(n-1),input_values,4*n,input_values[0]-0.02,input_values[n-1]+0.02)
+	closure_test_histo = TH2D('closure_test_histo',title,n,input_bins,4*n+2,input_values[0]-0.02,input_values[n-1]+0.02)
 closure_test_histo.SetStats(0)
 
 #Set graph attributes
@@ -120,7 +128,7 @@ elif options.par=='d' :
 #tstitle+=formattedvar
 #if options.append.find('no_sys')!=-1 :
 #	tstitle += ' (no systematics)'
-tstitle+='; Input %s; Fitted %s'%(formattedvar,formattedvar)
+tstitle+='; True %s; Best Fit %s'%(formattedvar,formattedvar)
 twosigma_graph.SetTitle(tstitle)
 
 #for each of the data points tested
@@ -164,19 +172,20 @@ for i in range(n) :
 		closure_test_histo.Fill(input_values[i],value,1./len(par_values_list))
 		mean+=value
 	if options.verbose : print '	Got '+str(len(par_values_list))+' values' #DEBUG
-	#find the mean and +/- 1/2 sigma values
+	#find the mean and median and +/- 1/2 sigma values
 	mean=mean/len(par_values_list)
+	median=par_values_list[int(round(len(par_values_list)*0.5))]
 	#median = par_values_list[int(round(len(par_values_list)*(1.)/2.))]
 	p1sigma = par_values_list[int(round(len(par_values_list)*(1.+0.683)/2.))]
 	m1sigma = par_values_list[int(round(len(par_values_list)*(1-0.683)/2.))] 
 	p2sigma = par_values_list[min(len(par_values_list)-1,int(round(len(par_values_list)*(1.+0.955)/2.)))] 
 	m2sigma = par_values_list[min(len(par_values_list)-1,int(round(len(par_values_list)*(1.-0.955)/2.)))]
 	#Set graphs' point values
-	onesigma_graph.SetPoint(i,input_values[i],mean)
-	twosigma_graph.SetPoint(i,input_values[i],mean)
-	onesigma_graph.SetPointError(i,x_errs[i],x_errs[i],p1sigma-mean,abs(m1sigma-mean))
-	twosigma_graph.SetPointError(i,x_errs[i],x_errs[i],p2sigma-mean,abs(m2sigma-mean))
-	if options.verbose : print '	Bands: %.4f || %.4f | %.4f | %.4f || %.4f'%(m2sigma,m1sigma,mean,p1sigma,p2sigma) #DEBUG
+	onesigma_graph.SetPoint(i,input_values[i],median)
+	twosigma_graph.SetPoint(i,input_values[i],median)
+	onesigma_graph.SetPointError(i,x_errs[i],x_errs[i],p1sigma-median,abs(m1sigma-median))
+	twosigma_graph.SetPointError(i,x_errs[i],x_errs[i],p2sigma-median,abs(m2sigma-median))
+	if options.verbose : print '	Bands: %.4f || %.4f | %.4f | %.4f || %.4f'%(m2sigma,m1sigma,median,p1sigma,p2sigma) #DEBUG
 
 if options.centralvalue!=10000000. :
 	#Interpolate given the central value
@@ -193,13 +202,13 @@ if options.centralvalue!=10000000. :
 	dfosd_changed = False; dftsd_changed = False
 	data_fit_mean = options.centralvalue
 	for i in range(n-1) :
-		thisx = array('d',[0.0]); thisymean = array('d',[0.0])
-		nextx = array('d',[0.0]); nextymean = array('d',[0.0])
-		onesigma_graph.GetPoint(i,thisx,thisymean); onesigma_graph.GetPoint(i+1,nextx,nextymean)
-		thisyhi  = thisymean[0]+onesigma_graph.GetErrorYhigh(i)
-		thisylow = thisymean[0]-onesigma_graph.GetErrorYlow(i)
-		nextyhi  = nextymean[0]+onesigma_graph.GetErrorYhigh(i+1)
-		nextylow = nextymean[0]-onesigma_graph.GetErrorYlow(i+1)
+		thisymedian = array('d',[0.0]); thisx = array('d',[0.0])
+		nextymedian = array('d',[0.0]); nextx = array('d',[0.0])
+		onesigma_graph.GetPoint(i,thisx,thisymedian); onesigma_graph.GetPoint(i+1,nextx,nextymedian)
+		thisyhi  = thisymedian[0]+onesigma_graph.GetErrorYhigh(i)
+		thisylow = thisymedian[0]-onesigma_graph.GetErrorYlow(i)
+		nextyhi  = nextymedian[0]+onesigma_graph.GetErrorYhigh(i+1)
+		nextylow = nextymedian[0]-onesigma_graph.GetErrorYlow(i+1)
 		if thisyhi <= options.centralvalue and nextyhi > options.centralvalue and not dfosd_changed :
 			slope = (nextyhi-thisyhi)/(input_values[i+1]-input_values[i])
 			data_fit_one_sigma_down = (options.centralvalue-thisyhi)/slope+input_values[i]
@@ -207,17 +216,17 @@ if options.centralvalue!=10000000. :
 		if thisylow <= options.centralvalue and nextylow > options.centralvalue :
 			slope = (nextylow-thisylow)/(input_values[i+1]-input_values[i])
 			data_fit_one_sigma_up = (options.centralvalue-thisylow)/slope+input_values[i]
-		if thisymean[0] <= options.centralvalue and nextymean[0] > options.centralvalue :
-			slope = (nextymean[0]-thisymean[0])/(input_values[i+1]-input_values[i])
-			data_fit_mean = (options.centralvalue-thisymean[0])/slope+input_values[i]
+		if thisymedian[0] <= options.centralvalue and nextymedian[0] > options.centralvalue :
+			slope = (nextymedian[0]-thisymedian[0])/(input_values[i+1]-input_values[i])
+			data_fit_mean = (options.centralvalue-thisymedian[0])/slope+input_values[i]
 	for i in range(n-1) :
-		thisx = array('d',[0.0]); thisymean = array('d',[0.0])
-		nextx = array('d',[0.0]); nextymean = array('d',[0.0])
-		twosigma_graph.GetPoint(i,thisx,thisymean); twosigma_graph.GetPoint(i+1,nextx,nextymean)
-		thisyhi  = thisymean[0]+twosigma_graph.GetErrorYhigh(i)
-		thisylow = thisymean[0]-twosigma_graph.GetErrorYlow(i)
-		nextyhi  = nextymean[0]+twosigma_graph.GetErrorYhigh(i+1)
-		nextylow = nextymean[0]-twosigma_graph.GetErrorYlow(i+1)
+		thisymedian = array('d',[0.0]); thisx = array('d',[0.0])
+		nextymedian = array('d',[0.0]); nextx = array('d',[0.0])
+		twosigma_graph.GetPoint(i,thisx,thisymedian); twosigma_graph.GetPoint(i+1,nextx,nextymedian)
+		thisyhi  = thisymedian[0]+twosigma_graph.GetErrorYhigh(i)
+		thisylow = thisymedian[0]-twosigma_graph.GetErrorYlow(i)
+		nextyhi  = nextymedian[0]+twosigma_graph.GetErrorYhigh(i+1)
+		nextylow = nextymedian[0]-twosigma_graph.GetErrorYlow(i+1)
 		if thisyhi <= options.centralvalue and nextyhi > options.centralvalue and not dftsd_changed :
 			slope = (nextyhi-thisyhi)/(input_values[i+1]-input_values[i])
 			data_fit_two_sigma_down = (options.centralvalue-thisyhi)/slope+input_values[i]
@@ -226,9 +235,9 @@ if options.centralvalue!=10000000. :
 			slope = (nextylow-thisylow)/(input_values[i+1]-input_values[i])
 			data_fit_two_sigma_up = (options.centralvalue-thisylow)/slope+input_values[i]
 
-	if options.verbose : print 'Central value = %.5f, plus one sigma = %.5f, minus one sigma = %.5f'%(data_fit_mean,data_fit_one_sigma_up,data_fit_one_sigma_down) #DEBUG
-	if options.verbose : print '	plus two sigma = %.5f, minus two sigma = %.5f'%(data_fit_two_sigma_up,data_fit_two_sigma_down) #DEBUG
-	print 'FINAL RESULT: Parameter %s = %.5f + %.5f - %.5f (95%% CL ~= +/-%.5f)'%(options.par,data_fit_mean,data_fit_one_sigma_up-data_fit_mean,abs(data_fit_one_sigma_down-data_fit_mean),data_fit_two_sigma_up)
+	if options.verbose : print 'Central value = %.6f, plus one sigma = %.6f, minus one sigma = %.6f'%(data_fit_mean,data_fit_one_sigma_up,data_fit_one_sigma_down) #DEBUG
+	if options.verbose : print '	plus two sigma = %.6f, minus two sigma = %.6f'%(data_fit_two_sigma_up,data_fit_two_sigma_down) #DEBUG
+	print 'FINAL RESULT: Parameter %s = %.6f + %.6f - %.6f (95%% CL ~= +/-%.6f)'%(options.par,data_fit_mean,data_fit_one_sigma_up-data_fit_mean,abs(data_fit_one_sigma_down-data_fit_mean),data_fit_two_sigma_up)
 
 	#Build the lines to indicate based on the data fit value
 	lines = []

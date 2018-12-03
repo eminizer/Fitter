@@ -2,7 +2,8 @@ from optparse import OptionParser
 import os
 
 #stems for the different types of toy groups
-topdir_stems = ['with_sys','no_sys','JES_up','JES_down','JER_up','JER_down']
+topdir_stems = ['with_sys','no_sys','JESUp','JESDown','JERUp','JERDown']
+#topdir_stems = ['JESUp','JESDown','JERUp','JERDown']
 
 #command-line options
 parser = OptionParser()
@@ -39,20 +40,20 @@ for tdn in topdirnames :
 	os.chdir(cwd)
 
 #write the commands to run the toy groups into text files
-for tds,tdn in zip(topdirstems,topdirnames) :
+for tds,tdn in zip(topdir_stems,topdirnames) :
 	cmds = []
 	for s,dn in zip(stems,dirnames) :
 		#first command to get to the directory
-		cmd1 = 'cd '+os.path.join('~','fittertest',tdn,dn)+'; cmsenv'
+		cmd1 = 'cd '+os.path.join('~','fittertest',tdn,dn)+'; cmsenv\n'
 		#second command to run the fitter
 		cmd2 = 'python '+os.path.join('~','fittertest','..','python','run_fits.py')+' -M toyGroup -P '+options.par+' --tfile '+os.path.join('~','templatetest','total_template_files',options.tfilename)
 		if tds!='with_sys' : #remove the simple systematics and rateParams if we don't want them
 			cmd2+=' --noSS --noRateParams'
 			if tds!='no_sys' : #add the JEC type if applicable
 				cmd2+=' --JEC '+tds
-		cmd2+=' --toy-'+options.par+' '+s
+		cmd2+=' --toy-'+options.par+' '+s+'\n'
 		#just a blank line to separate them
-		cmd3+=''
+		cmd3='\n'
 		cmds+=[cmd1,cmd2,cmd3]
 	#open the new file and write the commands
 	with open(tds+'_int_cmds.txt','w') as fp :

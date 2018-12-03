@@ -9,14 +9,15 @@ import os, glob
 
 class Fit(object) :
 
-	def __init__(self,topologies,leptypes,parameter,nojec,noss,norateparams,nocontrolregions,sumcharges,fnparts,toyAfb,toymu,toyd,vb,ppo) :
+	def __init__(self,topologies,leptypes,parameter,jec,noss,norateparams,nocontrolregions,sumcharges,fnparts,toyAfb,toymu,toyd,toySeed,vb,ppo) :
 		self._topologies=topologies
 		self._ltypes=leptypes
 		self._fitpar=parameter
 		toyparsdict={'Afb':toyAfb,'mu':toymu,'d':toyd}
 		self._toypar=toyparsdict[self._fitpar]
 		self._toyAfb=toyAfb
-		self._nojec=nojec
+		self._toySeed=toySeed
+		self._jec=jec
 		self._noss=noss
 		self._noRateParams=norateparams
 		self._nocontrolregions=nocontrolregions
@@ -84,12 +85,9 @@ class Fit(object) :
 			for cname in channames :
 				nq1[cname]=0.; nq2[cname]=0.; nqq[cname]=0.; ng1[cname]=0.; ng2[cname]=0.; ng3[cname]=0.; ng4[cname]=0.; ngg[cname]=0.
 				#for qqbar
-				nqq[cname]+=temp_file.Get(cname+'_SR__fqp0').Integral()
-				nqq[cname]+=temp_file.Get(cname+'_SR__fqm0').Integral()
-				nq1[cname]+=temp_file.Get(cname+'_SR__fqp1').Integral()
-				nq1[cname]+=temp_file.Get(cname+'_SR__fqm1').Integral()
-				nq2[cname]+=temp_file.Get(cname+'_SR__fqp2').Integral()
-				nq2[cname]+=temp_file.Get(cname+'_SR__fqm2').Integral()
+				nqq[cname]+=temp_file.Get(cname+'_SR__fq0').Integral()
+				nq1[cname]+=temp_file.Get(cname+'_SR__fq1').Integral()
+				nq2[cname]+=temp_file.Get(cname+'_SR__fq2').Integral()
 				#for gg
 				ngg[cname]+=temp_file.Get(cname+'_SR__fg0').Integral()
 				ng1[cname]+=temp_file.Get(cname+'_SR__fg1').Integral()
@@ -106,6 +104,9 @@ class Fit(object) :
 					flines.append('self.modelBuilder.factory_(\'expr::%s_fqd0("((1.)/(%s))",d)\')'%(cname,FQQ))
 					flines.append('self.modelBuilder.factory_(\'expr::%s_fqd1("((-1.*@0*@0)/(%s))",d)\')'%(cname,FQQ))
 					flines.append('self.modelBuilder.factory_(\'expr::%s_fqd2("((@0*@0)/(%s))",d)\')'%(cname,FQQ))
+					#flines.append('self.modelBuilder.factory_(\'expr::%s_fqd0("1.+@0-@0",d)\')'%(cname))
+					#flines.append('self.modelBuilder.factory_(\'expr::%s_fqd1("1.+@0-@0",d)\')'%(cname))
+					#flines.append('self.modelBuilder.factory_(\'expr::%s_fqd2("1.+@0-@0",d)\')'%(cname))
 					#for gg
 					FGG='(1.+@0*@0*((%f)/(%f))+@0*@0*((%f)/(%f))+@0*@0*@0*@0*((%f)/(%f)))'%(ng2[cname],ngg[cname],ng3[cname],ngg[cname],ng4[cname],ngg[cname])
 					flines.append('self.modelBuilder.factory_(\'expr::%s_fgd0("((1.)/(%s))",d)\')'%(cname,FGG))
@@ -113,7 +114,6 @@ class Fit(object) :
 					flines.append('self.modelBuilder.factory_(\'expr::%s_fgd3("((@0*@0)/(%s))",d)\')'%(cname,FGG))
 					flines.append('self.modelBuilder.factory_(\'expr::%s_fgd4("((@0*@0*@0*@0)/(%s))",d)\')'%(cname,FGG))
 				elif self._fitpar=='mu' :
-					pass #add this in if it works better for d
 					#for qqbar
 					FQQ='(1.+(2.*@0+@0*@0)*((%f)/(%f))+(@0*@0)*((%f)/(%f)))'%(nq1[cname],nqq[cname],nq2[cname],nqq[cname])
 					flines.append('self.modelBuilder.factory_(\'expr::%s_fqmu0("((1.)/(%s))",mu)\')'%(cname,FQQ))
@@ -141,7 +141,7 @@ class Fit(object) :
 			#if it is that line, though, write all of the function lines instead
 			else :
 				for fline in flines :
-					newfile.write('	%s\n'%fline)
+					newfile.write('        %s\n'%fline)
 		#close the files
 		template_file.close(); newfile.close()
 		#set this fit's model filename
@@ -186,9 +186,11 @@ class Fit(object) :
 			#run a group of toys and produce a fit with all the bestfit parameter values for use in the Neyman construction
 			self._runToyGroup_(ntoys,nthreads,savetoys)
 		elif mode=='singleToy' : 
-			#run a single toy with the given input value of the POI and make nuisance impact and fit comparison plots
 			fit_diagnostics_filename = self._runSingleToyFit_(savetoys,toysfilename)
 			self._makePostfitCompPlots_(fit_diagnostics_filename,tfilepath)
+		elif mode=='genSingleToy' :
+			#generate one toy with all the current settings and quit
+			self._generateSingleToy_()
 
 	########		GETTERS/SETTERS 			########
 
@@ -212,13 +214,15 @@ class Fit(object) :
 			template_filename+='sep'
 		template_filename+='_datacard_template.txt'
 		#make the dictionary of variables to replace in the template file
+		jecappend='' if self._jec=='nominal' else '__'+self._jec
 		rep_data = {'fitname':self._name,
 					'lt':leptype,
 					'r':region,
 					'templatefilename':tfilepath,
 					#'templatefilename':tfilepath.rstrip('.root')+'_aux.root',
 					'topology':topology,
-					'tr':'b' if topology in ['t1','t2'] else 'r'}
+					'tr':'b' if topology in ['t1','t2'] else 'r',
+					'jecfileappend':jecappend}
 		#open the new file to write into
 		newfile = open(fn,'w')
 		#open the template file to use
@@ -228,16 +232,25 @@ class Fit(object) :
 		for line in template_file.readlines() :
 			#print line #DEBUG
 			#exclude/skip a couple lines specifically (namely top tagging efficiency if there are no top tags)
-			sys_to_skip = ['ttag_eff_weight','AK8JESPU','AK8JESEta','AK8JESPt','AK8JESScale','AK8JESTime','AK8JESFlav','AK8JERStat','AK8JERSys',] if topology=='t3' else []
-			#sys_to_skip = ['JES']#,'top_pt_re_weight']#,'btag_eff_weight_b','btag_eff_weight_r','el_trig_eff_weight_b','el_trig_eff_weight_r']
+			#sys_to_skip = ['ttag_eff_weight','AK8JESPU','AK8JESEta','AK8JESPt','AK8JESScale','AK8JESTime','AK8JESFlav','AK8JERStat','AK8JERSys',] if topology=='t3' else []
+			sys_to_skip = ['ttag_eff_weight'] if topology!='t1' else []
 			#ignore top pt reweighting if it's already there in the templates
 			#sys_to_skip.append('top_pt_re_weight')
 			#if we're running without systematics
-			if self._nojec :
-				sys_to_skip += ['AK4JESPU','AK4JESEta','AK4JESPt','AK4JESScale','AK4JESTime','AK4JESFlav','AK4JERStat','AK4JERSys',
-								'AK8JESPU','AK8JESEta','AK8JESPt','AK8JESScale','AK8JESTime','AK8JESFlav','AK8JERStat','AK8JERSys',]
 			if self._noss :
-				sys_to_skip += ['pileup_weight',rep_data['lt']+'_trig_eff_weight_'+rep_data['tr'],rep_data['lt']+'_ID_weight',rep_data['lt']+'_iso_weight','btag_eff_weight_flavb_'+rep_data['tr'],'btag_eff_weight_flavc_'+rep_data['tr'],'btag_eff_weight_light_'+rep_data['tr'],'ttag_eff_weight_'+rep_data['tr'],'ren_scale_weight','fact_scale_weight','comb_scale_weight','pdfas_weight','top_pt_re_weight']
+				sys_to_skip += ['pileup_weight',
+								rep_data['lt']+'_trig_eff_weight_'+rep_data['tr'],
+								rep_data['lt']+'_ID_weight',
+								rep_data['lt']+'_iso_weight',
+								'btag_eff_weight_flavb_'+rep_data['tr'],
+								'btag_eff_weight_flavc_'+rep_data['tr'],
+								'btag_eff_weight_light_'+rep_data['tr'],
+								'ttag_eff_weight',
+								'ren_scale_weight',
+								'fact_scale_weight',
+								'comb_scale_weight',
+								'pdfas_weight',
+								'top_pt_re_weight']
 			#print 'line split = %s'%(line.split()) #DEBUG
 			if line.split()[0]%rep_data in sys_to_skip :
 				continue
@@ -333,14 +346,14 @@ class Fit(object) :
 			print 'PARALLEL TOYS: each multiprocessing job will run %d toys (%d total)'%(ntoys/nthreads,nthreads*(ntoys/nthreads))
 			cmd = 'combine -M MultiDimFit '+self._workspace_filename
 			#fix nuisance parameters
-			if self._nojec and self._noss :
+			if self._noss :
 				cmd+=' --toysNoSystematics'
 			#set observable value for toys
 			cmd+=' --setParameters %s=%.3f'%(self._fitpar,self._toypar)
 			#set the number of toys
 			cmd+=' --toys %d'%(ntoys/nthreads)
-			#set a random seed for the RNG
-			cmd+=' -s -1'
+			#set the seed for the RNG
+			cmd+=' -s '+self._toySeed
 			if savetoys : #save the toys
 				cmd+=' --saveToys'
 			#save the fit results to multidimfitNAME.root
@@ -403,13 +416,14 @@ class Fit(object) :
 		if toysfilename!='' :
 			cmd+=' --toysFile=%s'%(toysfilename)
 		#fix nuisance parameters
-		#cmd+=' --toysNoSystematics'
+		if self._noss :
+			cmd+=' --toysNoSystematics'
 		#set observable value for toys
 		cmd+=' --setParameters %s=%.3f'%(self._fitpar,self._toypar)
 		#run on only one toy
 		cmd+=' --toys 1'
-		#set a random seed for the RNG
-		cmd+=' -s -1'
+		#set the seed for the RNG
+		cmd+=' -s '+self._toySeed
 		if savetoys : #save the toys
 			cmd+=' --saveToys'
 		#save shapes with uncertainty
@@ -425,27 +439,53 @@ class Fit(object) :
 		if not self._post_plots_only :
 			print cmd
 			os.system(cmd)
-		#run the nuisance impacts plots
-		print 'Plotting nuisance impacts for fit %s'%(self._name)
-		#make the first command to run the initial fit through combineTool.py
-		cmd = 'combineTool.py -M Impacts -d %s -t -1 --setParameters %s=%.3f -m 125 --doInitialFit  --robustFit 1'%(self._workspace_filename,self._fitpar,self._toypar)
-		print cmd
-		os.system(cmd)
-		#make the second command to do scans for each nuisance parameter
-		cmd = 'combineTool.py -M Impacts -d %s -t -1 --setParameters %s=%.3f --robustFit 1 -m 125 --doFits --parallel %d'%(self._workspace_filename,self._fitpar,self._toypar,4)
-		print cmd
-		os.system(cmd)
-		#make the third command to collect the results and put them in a json file
-		cmd = 'combineTool.py -M Impacts -d %s -t -1 --setParameters %s=%.3f -m 125 -o impacts_%s.json'%(self._workspace_filename,self._fitpar,self._toypar,self._name)
-		print cmd
-		os.system(cmd)
-		#make the final command to plot the impacts
-		cmd = 'plotImpacts.py -i impacts_%s.json -o impacts_%s'%(self._name,self._name)
-		print cmd
-		os.system(cmd)
+			#run the nuisance impacts plots
+			print 'Plotting nuisance impacts for fit %s'%(self._name)
+			#make the first command to run the initial fit through combineTool.py
+			cmd = 'combineTool.py -M Impacts -d %s -t -1 --setParameters %s=%.3f -m 125 --doInitialFit  --robustFit 1'%(self._workspace_filename,self._fitpar,self._toypar)
+			print cmd
+			os.system(cmd)
+			#make the second command to do scans for each nuisance parameter
+			cmd = 'combineTool.py -M Impacts -d %s -t -1 --setParameters %s=%.3f --robustFit 1 -m 125 --doFits --parallel %d'%(self._workspace_filename,self._fitpar,self._toypar,4)
+			print cmd
+			os.system(cmd)
+			#make the third command to collect the results and put them in a json file
+			cmd = 'combineTool.py -M Impacts -d %s -t -1 --setParameters %s=%.3f -m 125 -o impacts_%s.json'%(self._workspace_filename,self._fitpar,self._toypar,self._name)
+			print cmd
+			os.system(cmd)
+			#make the final command to plot the impacts
+			cmd = 'plotImpacts.py -i impacts_%s.json -o impacts_%s'%(self._name,self._name)
+			print cmd
+			os.system(cmd)
 		#return the filename of the output
 		outputfilename = 'fitDiagnosticsToys%s%.3f.root'%(self._fitpar,self._toypar)
 		return outputfilename
+
+	def _generateSingleToy_(self) :
+		#start the command to run combine
+		cmd = 'combine -M GenerateOnly '+self._workspace_filename
+		#fix nuisance parameters
+		if self._noss :
+			cmd+=' --toysNoSystematics'
+		#set observable value for toys
+		cmd+=' --setParameters %s=%.3f'%(self._fitpar,self._toypar)
+		#run on only one toy
+		cmd+=' --toys 1'
+		#set the seed for the RNG
+		cmd+=' -s '+self._toySeed
+		#save the toy
+		cmd+=' --saveToys'
+		#make it print out progress, etc.
+		cmd+=' --verbose 5' if self._verbose else ' --verbose 0'
+		#set the fit name 
+		cmd+=' --name GeneratedToy%s%.3f'%(self._fitpar,self._toypar)
+		print cmd
+		os.system(cmd)
+		toyfilename=glob.glob('higgsCombineGeneratedToy%s%.3f.GenerateOnly.mH120.*.root'%(self._fitpar,self._toypar))
+		if len(toyfilename)>1 :
+			print 'WARNING: more than one toy file with these settings has been generated in this directory! Only one will be printed!'
+		print 'single generated toy will be in file '+toyfilename[0]
+
 
 	def _makeNuisanceImpactPlots_(self) :
 		print 'Plotting nuisance impacts for fit %s'%(self._name)
