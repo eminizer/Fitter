@@ -9,7 +9,7 @@ import os, glob
 
 class Fit(object) :
 
-	def __init__(self,topologies,leptypes,parameter,jec,noss,norateparams,nocontrolregions,sumcharges,fnparts,toyAfb,toymu,toyd,toySeed,vb,ppo) :
+	def __init__(self,topologies,leptypes,parameter,postsys,noss,norateparams,nocontrolregions,sumcharges,fnparts,toyAfb,toymu,toyd,toySeed,vb,ppo) :
 		self._topologies=topologies
 		self._ltypes=leptypes
 		self._fitpar=parameter
@@ -17,7 +17,7 @@ class Fit(object) :
 		self._toypar=toyparsdict[self._fitpar]
 		self._toyAfb=toyAfb
 		self._toySeed=toySeed
-		self._jec=jec
+		self._postsys=postsys
 		self._noss=noss
 		self._noRateParams=norateparams
 		self._nocontrolregions=nocontrolregions
@@ -214,7 +214,8 @@ class Fit(object) :
 			template_filename+='sep'
 		template_filename+='_datacard_template.txt'
 		#make the dictionary of variables to replace in the template file
-		jecappend='' if self._jec=='nominal' else '__'+self._jec
+		signalsysID='' if self._postsys=='nominal' else '__'+self._postsys
+		backgroundsysID='__'+self._postsys if (self._postsys.startswith('JES') or self._postsys.startswith('JER')) else ''
 		rep_data = {'fitname':self._name,
 					'lt':leptype,
 					'r':region,
@@ -222,7 +223,8 @@ class Fit(object) :
 					#'templatefilename':tfilepath.rstrip('.root')+'_aux.root',
 					'topology':topology,
 					'tr':'b' if topology in ['t1','t2'] else 'r',
-					'jecfileappend':jecappend}
+					'signalsysID':signalsysID,
+					'backgroundsysID':backgroundsysID}
 		#open the new file to write into
 		newfile = open(fn,'w')
 		#open the template file to use
@@ -232,10 +234,7 @@ class Fit(object) :
 		for line in template_file.readlines() :
 			#print line #DEBUG
 			#exclude/skip a couple lines specifically (namely top tagging efficiency if there are no top tags)
-			#sys_to_skip = ['ttag_eff_weight','AK8JESPU','AK8JESEta','AK8JESPt','AK8JESScale','AK8JESTime','AK8JESFlav','AK8JERStat','AK8JERSys',] if topology=='t3' else []
-			sys_to_skip = ['ttag_eff_weight'] if topology!='t1' else []
-			#ignore top pt reweighting if it's already there in the templates
-			#sys_to_skip.append('top_pt_re_weight')
+			sys_to_skip = ['ttag_eff_weight_merged','ttag_eff_weight_semimerged','ttag_eff_weight_notmerged'] if topology!='t1' else []
 			#if we're running without systematics
 			if self._noss :
 				sys_to_skip += ['pileup_weight',
@@ -245,12 +244,17 @@ class Fit(object) :
 								'btag_eff_weight_flavb_'+rep_data['tr'],
 								'btag_eff_weight_flavc_'+rep_data['tr'],
 								'btag_eff_weight_light_'+rep_data['tr'],
-								'ttag_eff_weight',
+								'ttag_eff_weight_merged',
+								'ttag_eff_weight_semimerged',
+								'ttag_eff_weight_notmerged',
 								'ren_scale_weight',
 								'fact_scale_weight',
 								'comb_scale_weight',
 								'pdfas_weight',
-								'top_pt_re_weight']
+								'B_frag_weight',
+								'B_br_weight',
+								'top_pt_re_weight',
+								]
 			#print 'line split = %s'%(line.split()) #DEBUG
 			if line.split()[0]%rep_data in sys_to_skip :
 				continue
@@ -298,6 +302,9 @@ class Fit(object) :
 			rate_params_lines.append('fqp_scale_'+cid+' rateParam '+cid+' fqp* (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.+@2)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets,Rbck')
 			rate_params_lines.append('fqm_scale_'+cid+' rateParam '+cid+' fqm* (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.+@2)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets,Rbck')
 			rate_params_lines.append('fgg_scale_'+cid+' rateParam '+cid+' fg* ((%(NTT_'+cid+')s-(1.+@0)*%(NQQ_'+cid+')s)/(%(NGG_'+cid+')s))*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.+@2)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets,Rbck')
+			#rate_params_lines.append('fqp_scale_'+cid+' rateParam '+cid+' fqp* (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets')
+			#rate_params_lines.append('fqm_scale_'+cid+' rateParam '+cid+' fqm* (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets')
+			#rate_params_lines.append('fgg_scale_'+cid+' rateParam '+cid+' fg* ((%(NTT_'+cid+')s-(1.+@0)*%(NQQ_'+cid+')s)/(%(NGG_'+cid+')s))*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets')
 			#make this channel's replacement dictionary
 			nwjets=temp_file.Get(cid+'__fwjets').Integral()
 			nbck=temp_file.Get(cid+'__fbck').Integral()

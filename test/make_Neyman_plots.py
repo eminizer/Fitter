@@ -137,11 +137,11 @@ for i in range(n) :
 	#build the path to the file holding the toy results
 	filepath = ''; filepath_opp_sign = ''
 	if options.par=='Afb' :
-		filepath = '%s/toyGroup_%s=%.2f/higgsCombineToys%s%.3f.MultiDimFit.all.root'%(options.toygroupdir,options.par,input_values[i],options.par,input_values[i])
-		filepath_opp_sign = '%s/toyGroup_%s=%.2f/higgsCombineToys%s%.3f.MultiDimFit.all.root'%(options.toygroupdir,options.par,-1*input_values[i],options.par,-1*input_values[i])
-	else :
 		filepath = '%s/toyGroup_%s=%.3f/higgsCombineToys%s%.3f.MultiDimFit.all.root'%(options.toygroupdir,options.par,input_values[i],options.par,input_values[i])
 		filepath_opp_sign = '%s/toyGroup_%s=%.3f/higgsCombineToys%s%.3f.MultiDimFit.all.root'%(options.toygroupdir,options.par,-1*input_values[i],options.par,-1*input_values[i])
+	else :
+		filepath = '%s/toyGroup_%s=%.5f/higgsCombineToys%s%.3f.MultiDimFit.all.root'%(options.toygroupdir,options.par,input_values[i],options.par,input_values[i])
+		filepath_opp_sign = '%s/toyGroup_%s=%.5f/higgsCombineToys%s%.3f.MultiDimFit.all.root'%(options.toygroupdir,options.par,-1*input_values[i],options.par,-1*input_values[i])
 	files_to_read = [filepath]
 	if options.unsigned :
 		files_to_read.append(filepath_opp_sign)

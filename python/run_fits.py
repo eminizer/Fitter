@@ -18,9 +18,18 @@ parser.add_option('--topologies', type='string', action='store', default='t1__t2
 	help='Which topologies do you want to do fits for? Separated by double underscores. ("t1","t2","t3")')
 parser.add_option('--leptypes',   type='string', action='store', default='mu__el', 	   dest='leptypes',	   	  
 	help='Which lepton types do you want to do simultaneous fits for? Separated by double underscores. ("mu","el")')
-#With what JEC settings?
-parser.add_option('--JEC',  type='choice', action='store', dest='jec', choices=['nominal','JESUp','JESDown','JERUp','JERDown'], default='nominal',
-	help='What JEC settings do you want to use?')
+#With what a-posteriori systematic settings?
+parser.add_option('--postsys',  type='choice', action='store', dest='postsys', 
+	choices=['nominal',
+			 'JESUp','JESDown',
+			 'JERUp','JERDown',
+			 'isrUp','isrDown',
+			 'fsrUp','fsrDown',
+			 'hdampUp','hdampDown',
+			 'tuneUp','tuneDown',
+			 'crUp','crDown',
+			 ], 
+	default='nominal', help='What a-posteriori systematic settings do you want to use?')
 #With what level of involvement?
 parser.add_option('--noSS',  action='store_true', dest='noss')  #leave out other "simple" systematics
 parser.add_option('--noRateParams',  action='store_true', dest='norateparams')  #leave out 'rateParam' nuisances
@@ -59,7 +68,7 @@ fnamepieces = (options.out,options.append)
 ##########								Main Script								##########
 
 #start a new fit object (also initializes the parameter file)
-fit = Fit(topologies,leptypes,options.par,options.jec,options.noss,options.norateparams,options.nocontrolregions,options.sumcharges,fnamepieces,options.toyAfb,options.toymu,options.toyd,options.toySeed,options.vb,options.postplotsonly)
+fit = Fit(topologies,leptypes,options.par,options.postsys,options.noss,options.norateparams,options.nocontrolregions,options.sumcharges,fnamepieces,options.toyAfb,options.toymu,options.toyd,options.toySeed,options.vb,options.postplotsonly)
 
 #build datacards
 fit.buildDatacards(options.tfilepath)

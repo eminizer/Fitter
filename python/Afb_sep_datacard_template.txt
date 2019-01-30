@@ -6,9 +6,13 @@ jmax 5 # There are 4 backgrounds with QCD
 kmax * # Let Combine figure out how many nuisance parameters there are
 -------------------------------------------------------------------------------
 # Next declare how to find the histograms in the file
-shapes * * %(templatefilename)s %(topology)s_$CHANNEL__$PROCESS%(jecfileappend)s %(topology)s_$CHANNEL__$PROCESS__$SYSTEMATIC
-shapes data_obs %(lt)splus_%(r)s %(templatefilename)s %(topology)s_%(lt)splus_%(r)s__data_obs
-shapes data_obs %(lt)sminus_%(r)s %(templatefilename)s %(topology)s_%(lt)sminus_%(r)s__data_obs
+shapes fqp0 * %(templatefilename)s %(topology)s_$CHANNEL__$PROCESS%(signalsysID)s %(topology)s_$CHANNEL__$PROCESS__$SYSTEMATIC
+shapes fqm0 * %(templatefilename)s %(topology)s_$CHANNEL__$PROCESS%(signalsysID)s %(topology)s_$CHANNEL__$PROCESS__$SYSTEMATIC
+shapes fg0 * %(templatefilename)s %(topology)s_$CHANNEL__$PROCESS%(signalsysID)s %(topology)s_$CHANNEL__$PROCESS__$SYSTEMATIC
+shapes fbck * %(templatefilename)s %(topology)s_$CHANNEL__$PROCESS%(signalsysID)s %(topology)s_$CHANNEL__$PROCESS__$SYSTEMATIC
+shapes fwjets * %(templatefilename)s %(topology)s_$CHANNEL__$PROCESS%(backgroundsysID)s %(topology)s_$CHANNEL__$PROCESS__$SYSTEMATIC
+shapes fqcd * %(templatefilename)s %(topology)s_$CHANNEL__$PROCESS %(topology)s_$CHANNEL__$PROCESS__$SYSTEMATIC
+shapes data_obs * %(templatefilename)s %(topology)s_$CHANNEL__data_obs
 -------------------------------------------------------------------------------
 # Add what's observed in the lepton charge plus/minus bins
 bin         %(lt)splus_%(r)s %(lt)sminus_%(r)s
@@ -31,12 +35,16 @@ pileup_weight                 shapeN2 1                1                1       
 btag_eff_weight_flavb_%(tr)s  shapeN2 1                1                1                1                  1              0                1                 1                 1                 1                 1                 0
 btag_eff_weight_flavc_%(tr)s  shapeN2 1                1                1                1                  1              0                1                 1                 1                 1                 1                 0
 btag_eff_weight_light_%(tr)s  shapeN2 1                1                1                1                  1              0                1                 1                 1                 1                 1                 0
-ttag_eff_weight_%(tr)s        shapeN2 1                1                1                1                  1              0                1                 1                 1                 1                 1                 0
-# MC generation shape/rate uncertainties and top pt reweighting for ttbar and QCD
+ttag_eff_weight_merged        shapeN2 1                1                1                1                  1              0                1                 1                 1                 1                 1                 0
+ttag_eff_weight_semimerged    shapeN2 1                1                1                1                  1              0                1                 1                 1                 1                 1                 0
+ttag_eff_weight_notmerged     shapeN2 1                1                1                1                  1              0                1                 1                 1                 1                 1                 0
+# MC generation shape/rate uncertainties and top pt reweighting for ttbar
 ren_scale_weight              shapeN2 1                1                1                1                  0              0                1                 1                 1                 1                 0                 0
 fact_scale_weight             shapeN2 1                1                1                1                  0              0                1                 1                 1                 1                 0                 0
 comb_scale_weight             shapeN2 1                1                1                1                  0              0                1                 1                 1                 1                 0                 0
 pdfas_weight                  shapeN2 1                1                1                1                  0              0                1                 1                 1                 1                 0                 0
+B_frag_weight                 shapeN2 1                1                1                1                  0              0                1                 1                 1                 1                 0                 0
+B_br_weight                   shapeN2 1                1                1                1                  0              0                1                 1                 1                 1                 0                 0
 top_pt_re_weight              shapeN2 1                1                1                1                  0              0                1                 1                 1                 1                 0                 0
 # "Rate"params for individual processes
 Rwjets param 0.0 0.1 [-1.,1.]
