@@ -19,7 +19,7 @@ parser.add_option('--topologies', type='string', action='store', default='t1__t2
 parser.add_option('--leptypes',   type='string', action='store', default='mu__el', 	   dest='leptypes',	   	  
 	help='Which lepton types do you want to do simultaneous fits for? Separated by double underscores. ("mu","el")')
 #With what a-posteriori systematic settings?
-parser.add_option('--postsys',  type='choice', action='store', dest='postsys', 
+parser.add_option('--postsys',  type='choice', action='store', dest='postsys', default='nominal',
 	choices=['nominal',
 			 'JESUp','JESDown',
 			 'JERUp','JERDown',
@@ -29,7 +29,7 @@ parser.add_option('--postsys',  type='choice', action='store', dest='postsys',
 			 'tuneUp','tuneDown',
 			 'crUp','crDown',
 			 ], 
-	default='nominal', help='What a-posteriori systematic settings do you want to use?')
+	help='What a-posteriori systematic settings do you want to use?')
 #With what level of involvement?
 parser.add_option('--noSS',  action='store_true', dest='noss')  #leave out other "simple" systematics
 parser.add_option('--noRateParams',  action='store_true', dest='norateparams')  #leave out 'rateParam' nuisances

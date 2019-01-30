@@ -219,12 +219,14 @@ class Fit(object) :
 		rep_data = {'fitname':self._name,
 					'lt':leptype,
 					'r':region,
-					'templatefilename':tfilepath,
-					#'templatefilename':tfilepath.rstrip('.root')+'_aux.root',
+					#'templatefilename':tfilepath,
+					'templatefilename':tfilepath.rstrip('.root')+'_aux.root' if region=='WJets_CR' else tfilepath,
 					'topology':topology,
 					'tr':'b' if topology in ['t1','t2'] else 'r',
 					'signalsysID':signalsysID,
-					'backgroundsysID':backgroundsysID}
+					'backgroundsysID':backgroundsysID,
+					'crapp':'_z' if region=='WJets_CR' else '',
+					}
 		#open the new file to write into
 		newfile = open(fn,'w')
 		#open the template file to use

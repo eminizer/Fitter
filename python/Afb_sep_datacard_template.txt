@@ -6,13 +6,13 @@ jmax 5 # There are 4 backgrounds with QCD
 kmax * # Let Combine figure out how many nuisance parameters there are
 -------------------------------------------------------------------------------
 # Next declare how to find the histograms in the file
-shapes fqp0 * %(templatefilename)s %(topology)s_$CHANNEL__$PROCESS%(signalsysID)s %(topology)s_$CHANNEL__$PROCESS__$SYSTEMATIC
-shapes fqm0 * %(templatefilename)s %(topology)s_$CHANNEL__$PROCESS%(signalsysID)s %(topology)s_$CHANNEL__$PROCESS__$SYSTEMATIC
-shapes fg0 * %(templatefilename)s %(topology)s_$CHANNEL__$PROCESS%(signalsysID)s %(topology)s_$CHANNEL__$PROCESS__$SYSTEMATIC
-shapes fbck * %(templatefilename)s %(topology)s_$CHANNEL__$PROCESS%(signalsysID)s %(topology)s_$CHANNEL__$PROCESS__$SYSTEMATIC
-shapes fwjets * %(templatefilename)s %(topology)s_$CHANNEL__$PROCESS%(backgroundsysID)s %(topology)s_$CHANNEL__$PROCESS__$SYSTEMATIC
-shapes fqcd * %(templatefilename)s %(topology)s_$CHANNEL__$PROCESS %(topology)s_$CHANNEL__$PROCESS__$SYSTEMATIC
-shapes data_obs * %(templatefilename)s %(topology)s_$CHANNEL__data_obs
+shapes fqp0 * %(templatefilename)s %(topology)s_$CHANNEL__$PROCESS%(signalsysID)s%(crapp)s %(topology)s_$CHANNEL__$PROCESS__$SYSTEMATIC%(crapp)s
+shapes fqm0 * %(templatefilename)s %(topology)s_$CHANNEL__$PROCESS%(signalsysID)s%(crapp)s %(topology)s_$CHANNEL__$PROCESS__$SYSTEMATIC%(crapp)s
+shapes fg0 * %(templatefilename)s %(topology)s_$CHANNEL__$PROCESS%(signalsysID)s%(crapp)s %(topology)s_$CHANNEL__$PROCESS__$SYSTEMATIC%(crapp)s
+shapes fbck * %(templatefilename)s %(topology)s_$CHANNEL__$PROCESS%(signalsysID)s%(crapp)s %(topology)s_$CHANNEL__$PROCESS__$SYSTEMATIC%(crapp)s
+shapes fwjets * %(templatefilename)s %(topology)s_$CHANNEL__$PROCESS%(backgroundsysID)s%(crapp)s %(topology)s_$CHANNEL__$PROCESS__$SYSTEMATIC%(crapp)s
+shapes fqcd * %(templatefilename)s %(topology)s_$CHANNEL__$PROCESS%(crapp)s %(topology)s_$CHANNEL__$PROCESS__$SYSTEMATIC%(crapp)s
+shapes data_obs * %(templatefilename)s %(topology)s_$CHANNEL__data_obs%(crapp)s
 -------------------------------------------------------------------------------
 # Add what's observed in the lepton charge plus/minus bins
 bin         %(lt)splus_%(r)s %(lt)sminus_%(r)s
