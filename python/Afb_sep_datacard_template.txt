@@ -48,6 +48,7 @@ B_br_weight                   shapeN2 1                1                1       
 top_pt_re_weight              shapeN2 1                1                1                1                  0              0                1                 1                 1                 1                 0                 0
 # "Rate"params for individual processes
 Rwjets param 0.0 0.1 [-1.,1.]
+Rbck param 0.0 0.1 [-1.,1.]
 Rqqbar param 0.0 0.01 [-1.,1.]
 Rqcd_%(topology)s_%(lt)splus_%(r)s param 0.0 %(rqcderr)s [-1.,1.]
 Rqcd_%(topology)s_%(lt)sminus_%(r)s param 0.0 %(rqcderr)s [-1.,1.]
