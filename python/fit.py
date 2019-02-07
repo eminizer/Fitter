@@ -247,16 +247,16 @@ class Fit(object) :
 					't1_elminus_WJets_CR':0.241,
 					't2_muplus_SR':0.155,
 					't2_muminus_SR':0.173,
-					't2_elplus_SR':0.122,
-					't2_elminus_SR':0.127,
+					't2_elplus_SR':0.15,
+					't2_elminus_SR':0.15,
 					't2_muplus_WJets_CR':0.161,
 					't2_muminus_WJets_CR':0.174,
-					't2_elplus_WJets_CR':0.072,
-					't2_elminus_WJets_CR':0.071,
-					't3_muplus_SR':0.059,
-					't3_muminus_SR':0.054,
-					't3_elplus_SR':0.041,
-					't3_elminus_SR':0.035,
+					't2_elplus_WJets_CR':0.15,
+					't2_elminus_WJets_CR':0.15,
+					't3_muplus_SR':0.15,
+					't3_muminus_SR':0.15,
+					't3_elplus_SR':0.15,
+					't3_elminus_SR':0.15,
 					}
 		rep_data = {'fitname':self._name,
 					'lt':leptype,
@@ -327,7 +327,7 @@ class Fit(object) :
 		outfile.write('# Rateparams for individual processes\n')
 		#fwjets/fbck scaled agnostic of channel
 		outfile.write('fwjets_scale rateParam * fwjets (1.+@0) Rwjets\n')
-		outfile.write('fbck_scale rateParam * fbck (1.+@0) Rbck\n')
+		#outfile.write('fbck_scale rateParam * fbck (1.+@0) Rbck\n')
 		#build list of channel identifiers for fqcd/fqp/fqm/fgg rateParams which need individual scales (fqcd) or normalizations (others)
 		cids=[]
 		for t in self._topologies :
@@ -347,12 +347,12 @@ class Fit(object) :
 		for cid in cids :
 			rate_params_lines = []
 			rate_params_lines.append('fqcd_scale_'+cid+' rateParam '+cid+' fqcd (1.+@0) Rqcd_'+cid+'')
-			rate_params_lines.append('fqp_scale_'+cid+' rateParam '+cid+' fqp0 (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.+@2)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets,Rbck')
-			rate_params_lines.append('fqm_scale_'+cid+' rateParam '+cid+' fqm0 (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.+@2)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets,Rbck')
-			rate_params_lines.append('fgg_scale_'+cid+' rateParam '+cid+' fg0 ((%(NTT_'+cid+')s-(1.+@0)*%(NQQ_'+cid+')s)/(%(NGG_'+cid+')s))*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.+@2)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets,Rbck')
-			#rate_params_lines.append('fqp_scale_'+cid+' rateParam '+cid+' fqp* (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets')
-			#rate_params_lines.append('fqm_scale_'+cid+' rateParam '+cid+' fqm* (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets')
-			#rate_params_lines.append('fgg_scale_'+cid+' rateParam '+cid+' fg* ((%(NTT_'+cid+')s-(1.+@0)*%(NQQ_'+cid+')s)/(%(NGG_'+cid+')s))*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets')
+			#rate_params_lines.append('fqp_scale_'+cid+' rateParam '+cid+' fqp0 (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.+@2)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets,Rbck')
+			#rate_params_lines.append('fqm_scale_'+cid+' rateParam '+cid+' fqm0 (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.+@2)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets,Rbck')
+			#rate_params_lines.append('fgg_scale_'+cid+' rateParam '+cid+' fg0 ((%(NTT_'+cid+')s-(1.+@0)*%(NQQ_'+cid+')s)/(%(NGG_'+cid+')s))*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.+@2)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets,Rbck')
+			rate_params_lines.append('fqp_scale_'+cid+' rateParam '+cid+' fqp* (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets')
+			rate_params_lines.append('fqm_scale_'+cid+' rateParam '+cid+' fqm* (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets')
+			rate_params_lines.append('fgg_scale_'+cid+' rateParam '+cid+' fg* ((%(NTT_'+cid+')s-(1.+@0)*%(NQQ_'+cid+')s)/(%(NGG_'+cid+')s))*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets')
 			#make this channel's replacement dictionary
 			nwjets=temp_file.Get(cid+'__fwjets').Integral()
 			nbck=temp_file.Get(cid+'__fbck').Integral()
