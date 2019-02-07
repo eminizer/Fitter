@@ -216,11 +216,48 @@ class Fit(object) :
 		#make the dictionary of variables to replace in the template file
 		signalsysID='' if self._postsys=='nominal' else '__'+self._postsys
 		backgroundsysID='__'+self._postsys if (self._postsys.startswith('JES') or self._postsys.startswith('JER')) else ''
-		rqcderr = 0.3
-		#if topology=='t2' :
-		#	rqcderr=0.2
-		#elif topology=='t3' :
-		#	rqcderr=0.1
+		rqcdvals = {'t1_muplus_SR':-0.104,
+					't1_muminus_SR':-0.395,
+					't1_elplus_SR':-0.207,
+					't1_elminus_SR':0.143,
+					't1_muplus_WJets_CR':0.086,
+					't1_muminus_WJets_CR':0.296,
+					't1_elplus_WJets_CR':0.548,
+					't1_elminus_WJets_CR':0.553,
+					't2_muplus_SR':-0.214,
+					't2_muminus_SR':0.118,
+					't2_elplus_SR':-0.220,
+					't2_elminus_SR':-0.263,
+					't2_muplus_WJets_CR':-0.865,
+					't2_muminus_WJets_CR':-0.307,
+					't2_elplus_WJets_CR':0.287,
+					't2_elminus_WJets_CR':0.292,
+					't3_muplus_SR':-0.042,
+					't3_muminus_SR':-0.046,
+					't3_elplus_SR':-0.640,
+					't3_elminus_SR':-0.686,
+					}
+		rqcderrs = {'t1_muplus_SR':0.291,
+					't1_muminus_SR':0.269,
+					't1_elplus_SR':0.168,
+					't1_elminus_SR':0.230,
+					't1_muplus_WJets_CR':0.298,
+					't1_muminus_WJets_CR':0.289,
+					't1_elplus_WJets_CR':0.223,
+					't1_elminus_WJets_CR':0.241,
+					't2_muplus_SR':0.155,
+					't2_muminus_SR':0.173,
+					't2_elplus_SR':0.122,
+					't2_elminus_SR':0.127,
+					't2_muplus_WJets_CR':0.161,
+					't2_muminus_WJets_CR':0.174,
+					't2_elplus_WJets_CR':0.072,
+					't2_elminus_WJets_CR':0.071,
+					't3_muplus_SR':0.059,
+					't3_muminus_SR':0.054,
+					't3_elplus_SR':0.041,
+					't3_elminus_SR':0.035,
+					}
 		rep_data = {'fitname':self._name,
 					'lt':leptype,
 					'r':region,
@@ -231,7 +268,10 @@ class Fit(object) :
 					'signalsysID':signalsysID,
 					'backgroundsysID':backgroundsysID,
 					'crapp':'_z' if region=='WJets_CR' else '',
-					'rqcderr':rqcderr,
+					'rqcdplusval':rqcdvals[topology+'_'+leptype+'plus_'+region],
+					'rqcdpluserr':rqcderrs[topology+'_'+leptype+'plus_'+region],
+					'rqcdminusval':rqcdvals[topology+'_'+leptype+'minus_'+region],
+					'rqcdminuserr':rqcderrs[topology+'_'+leptype+'minus_'+region],
 					}
 		#open the new file to write into
 		newfile = open(fn,'w')
