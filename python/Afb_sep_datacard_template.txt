@@ -39,16 +39,16 @@ ttag_eff_weight_merged        shapeN2 1                1                1       
 ttag_eff_weight_semimerged    shapeN2 1                1                1                1                  1              0                1                 1                 1                 1                 1                 0
 ttag_eff_weight_notmerged     shapeN2 1                1                1                1                  1              0                1                 1                 1                 1                 1                 0
 # MC generation shape/rate uncertainties and top pt reweighting for ttbar
-ren_scale_weight              shapeN2 1                1                1                1                  0              0                1                 1                 1                 1                 0                 0
-fact_scale_weight             shapeN2 1                1                1                1                  0              0                1                 1                 1                 1                 0                 0
-comb_scale_weight             shapeN2 1                1                1                1                  0              0                1                 1                 1                 1                 0                 0
-pdfas_weight                  shapeN2 1                1                1                1                  0              0                1                 1                 1                 1                 0                 0
-B_frag_weight                 shapeN2 1                1                1                1                  0              0                1                 1                 1                 1                 0                 0
-B_br_weight                   shapeN2 1                1                1                1                  0              0                1                 1                 1                 1                 0                 0
-top_pt_re_weight              shapeN2 1                1                1                1                  0              0                1                 1                 1                 1                 0                 0
+ren_scale_weight              shapeN2 1                1                1                0                  0              0                1                 1                 1                 0                 0                 0
+fact_scale_weight             shapeN2 1                1                1                0                  0              0                1                 1                 1                 0                 0                 0
+comb_scale_weight             shapeN2 1                1                1                0                  0              0                1                 1                 1                 0                 0                 0
+pdfas_weight                  shapeN2 1                1                1                0                  0              0                1                 1                 1                 0                 0                 0
+B_frag_weight                 shapeN2 1                1                1                0                  0              0                1                 1                 1                 0                 0                 0
+B_br_weight                   shapeN2 1                1                1                0                  0              0                1                 1                 1                 0                 0                 0
+top_pt_re_weight              shapeN2 1                1                1                0                  0              0                1                 1                 1                 0                 0                 0
 # "Rate"params for individual processes
 Rwjets param 0.0 0.1 [-1.,1.]
-Rbck param 0.0 0.1 [-1.,1.]
+#Rbck param 0.0 0.1 [-1.,1.]
 Rqqbar param 0.0 0.01 [-1.,1.]
 Rqcd_%(topology)s_%(lt)splus_%(r)s param %(rqcdplusval)s %(rqcdpluserr)s [-1.,2.]
 Rqcd_%(topology)s_%(lt)sminus_%(r)s param %(rqcdminusval)s %(rqcdminuserr)s [-1.,2.]
