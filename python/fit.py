@@ -303,6 +303,12 @@ class Fit(object) :
 								'B_br_weight',
 								'top_pt_re_weight',
 								]
+			#add the systematics to skip
+			#sys_to_skip.append('B_br_weight')
+			#sys_to_skip.append('btag_eff_weight_light_r')
+			#sys_to_skip.append('el_ID_weight')
+			#sys_to_skip.append('top_pt_re_weight')
+			#sys_to_skip.append('pdfas_weight')
 			#print 'line split = %s'%(line.split()) #DEBUG
 			if line.split()[0]%rep_data in sys_to_skip :
 				continue
