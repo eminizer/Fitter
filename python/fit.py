@@ -261,19 +261,17 @@ class Fit(object) :
 		rep_data = {'fitname':self._name,
 					'lt':leptype,
 					'r':region,
-					#'templatefilename':tfilepath,
-					'templatefilename':tfilepath.rstrip('.root')+'_aux.root' if region=='WJets_CR' else tfilepath,
+					'templatefilename':tfilepath,
 					'topology':topology,
 					'tr':'b' if topology in ['t1','t2'] else 'r',
 					'signalsysID':signalsysID,
 					'backgroundsysID':backgroundsysID,
-					'crapp':'_z' if region=='WJets_CR' else '',
-					'rwjetsval':-0.2752,
+					'rwjetsval':0.0,
 					'rwjetserr':0.1,
-					'rqcdplusval':rqcdvals[topology+'_'+leptype+'plus_'+region],
-					'rqcdpluserr':rqcderrs[topology+'_'+leptype+'plus_'+region],
-					'rqcdminusval':rqcdvals[topology+'_'+leptype+'minus_'+region],
-					'rqcdminuserr':rqcderrs[topology+'_'+leptype+'minus_'+region],
+					'rqcdplusval':0.0,#rqcdvals[topology+'_'+leptype+'plus_'+region],
+					'rqcdpluserr':1.0,#rqcderrs[topology+'_'+leptype+'plus_'+region],
+					'rqcdminusval':0.0,#rqcdvals[topology+'_'+leptype+'minus_'+region],
+					'rqcdminuserr':1.0,#rqcderrs[topology+'_'+leptype+'minus_'+region],
 					}
 		#open the new file to write into
 		newfile = open(fn,'w')
@@ -303,7 +301,7 @@ class Fit(object) :
 								'pdfas_weight',
 								'B_frag_weight',
 								'B_br_weight',
-								'top_pt_re_weight',
+								#'top_pt_re_weight',
 								]
 			#add the systematics to skip
 			#sys_to_skip.append('B_br_weight')
