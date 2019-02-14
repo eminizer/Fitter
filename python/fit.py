@@ -266,12 +266,12 @@ class Fit(object) :
 					'tr':'b' if topology in ['t1','t2'] else 'r',
 					'signalsysID':signalsysID,
 					'backgroundsysID':backgroundsysID,
-					'rwjetsval':-0.1951,
+					'rwjetsval':0.0,
 					'rwjetserr':0.1,
-					'rqcdplusval':rqcdvals[topology+'_'+leptype+'plus_'+region],
-					'rqcdpluserr':rqcderrs[topology+'_'+leptype+'plus_'+region],
-					'rqcdminusval':rqcdvals[topology+'_'+leptype+'minus_'+region],
-					'rqcdminuserr':rqcderrs[topology+'_'+leptype+'minus_'+region],
+					'rqcdplusval':0.0,#rqcdvals[topology+'_'+leptype+'plus_'+region],
+					'rqcdpluserr':1.0,#rqcderrs[topology+'_'+leptype+'plus_'+region],
+					'rqcdminusval':0.0,#rqcdvals[topology+'_'+leptype+'minus_'+region],
+					'rqcdminuserr':1.0,#rqcderrs[topology+'_'+leptype+'minus_'+region],
 					}
 		#open the new file to write into
 		newfile = open(fn,'w')
@@ -285,7 +285,9 @@ class Fit(object) :
 			sys_to_skip = ['ttag_eff_weight_merged','ttag_eff_weight_semimerged','ttag_eff_weight_notmerged'] if topology!='t1' else []
 			#if we're running without systematics
 			if self._noss :
-				sys_to_skip += ['pileup_weight',
+				sys_to_skip += ['JES',
+								'JER',
+								'pileup_weight',
 								rep_data['lt']+'_trig_eff_weight_'+rep_data['tr'],
 								rep_data['lt']+'_ID_weight',
 								rep_data['lt']+'_iso_weight',
@@ -302,6 +304,11 @@ class Fit(object) :
 								'B_frag_weight',
 								'B_br_weight',
 								'top_pt_re_weight',
+								'isr',
+								'fsr',
+								'hdamp',
+								'tune',
+								'color_reconnection',
 								]
 			#add the systematics to skip
 			#sys_to_skip.append('B_br_weight')
@@ -356,9 +363,12 @@ class Fit(object) :
 			#rate_params_lines.append('fqp_scale_'+cid+' rateParam '+cid+' fqp0 (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.+@2)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets,Rbck')
 			#rate_params_lines.append('fqm_scale_'+cid+' rateParam '+cid+' fqm0 (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.+@2)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets,Rbck')
 			#rate_params_lines.append('fgg_scale_'+cid+' rateParam '+cid+' fg0 ((%(NTT_'+cid+')s-(1.+@0)*%(NQQ_'+cid+')s)/(%(NGG_'+cid+')s))*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.+@2)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets,Rbck')
-			rate_params_lines.append('fqp_scale_'+cid+' rateParam '+cid+' fqp* (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets')
-			rate_params_lines.append('fqm_scale_'+cid+' rateParam '+cid+' fqm* (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets')
-			rate_params_lines.append('fgg_scale_'+cid+' rateParam '+cid+' fg* ((%(NTT_'+cid+')s-(1.+@0)*%(NQQ_'+cid+')s)/(%(NGG_'+cid+')s))*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets')
+			#rate_params_lines.append('fqp_scale_'+cid+' rateParam '+cid+' fqp* (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets')
+			#rate_params_lines.append('fqm_scale_'+cid+' rateParam '+cid+' fqm* (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets')
+			#rate_params_lines.append('fgg_scale_'+cid+' rateParam '+cid+' fg* ((%(NTT_'+cid+')s-(1.+@0)*%(NQQ_'+cid+')s)/(%(NGG_'+cid+')s))*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets')
+			rate_params_lines.append('fqp_scale_'+cid+' rateParam '+cid+' fqp* (1.+@0) Rqqbar')
+			rate_params_lines.append('fqm_scale_'+cid+' rateParam '+cid+' fqm* (1.+@0) Rqqbar')
+			rate_params_lines.append('fgg_scale_'+cid+' rateParam '+cid+' fg* ((%(NTT_'+cid+')s-(1.+@0)*%(NQQ_'+cid+')s)/(%(NGG_'+cid+')s)) Rqqbar')
 			#make this channel's replacement dictionary
 			nwjets=temp_file.Get(cid+'__fwjets').Integral()
 			nbck=temp_file.Get(cid+'__fbck').Integral()

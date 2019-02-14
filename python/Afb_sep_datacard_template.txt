@@ -48,6 +48,11 @@ pdfas_weight                  shapeN2 1                1                1       
 B_frag_weight                 shapeN2 1                1                1                1                  0              0                1                 1                 1                 1                 0                 0
 B_br_weight                   shapeN2 1                1                1                1                  0              0                1                 1                 1                 1                 0                 0
 top_pt_re_weight              shapeN2 1                1                1                1                  0              0                1                 1                 1                 1                 0                 0
+isr                           shapeN2 1                1                1                1                  0              0                1                 1                 1                 1                 0                 0
+fsr                           shapeN2 1                1                1                1                  0              0                1                 1                 1                 1                 0                 0
+hdamp                         shapeN2 1                1                1                1                  0              0                1                 1                 1                 1                 0                 0
+tune                          shapeN2 1                1                1                1                  0              0                1                 1                 1                 1                 0                 0
+color_reconnection            shapeN2 1                1                1                1                  0              0                1                 1                 1                 1                 0                 0
 # "Rate"params for individual processes
 Rwjets param %(rwjetsval)s %(rwjetserr)s [-1.,1.]
 #Rbck param 0.0 0.1 [-1.,1.]
