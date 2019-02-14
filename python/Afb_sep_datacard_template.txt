@@ -28,6 +28,8 @@ rate                                  -1               -1               -1      
 # Luminosity lnN
 lumi                          lnN     1.025            1.025            1.025            1.025              1.025          0                1.025             1.025             1.025             1.025             1.025             0
 # shape/rate uncertainties for all processes
+JES                           shapeN2 1                1                1                1                  1              0                1                 1                 1                 1                 1                 0
+JER                           shapeN2 1                1                1                1                  1              0                1                 1                 1                 1                 1                 0
 pileup_weight                 shapeN2 1                1                1                1                  1              0                1                 1                 1                 1                 1                 0
 %(lt)s_trig_eff_weight_%(tr)s shapeN2 1                1                1                1                  1              0                1                 1                 1                 1                 1                 0
 %(lt)s_ID_weight              shapeN2 1                1                1                1                  1              0                1                 1                 1                 1                 1                 0
