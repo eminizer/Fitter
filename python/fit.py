@@ -216,28 +216,28 @@ class Fit(object) :
 		#make the dictionary of variables to replace in the template file
 		signalsysID='' if self._postsys=='nominal' else '__'+self._postsys
 		backgroundsysID='__'+self._postsys if (self._postsys.startswith('JES') or self._postsys.startswith('JER')) else ''
-		rqcdvals = {'t1_muplus_SR':0.261,
-					't1_muminus_SR':-0.242,
-					't1_elplus_SR':-0.003,
-					't1_elminus_SR':0.557,
+		rqcdvals = {'t1_muplus_SR':-0.308,
+					't1_muminus_SR':-0.704,
+					't1_elplus_SR':-0.093,
+					't1_elminus_SR':0.361,
 					't1_muplus_WJets_CR':0.0,
 					't1_muminus_WJets_CR':0.0,
-					't1_elplus_WJets_CR':0.617,
+					't1_elplus_WJets_CR':0.704,
 					't1_elminus_WJets_CR':0.704,
-					't2_muplus_SR':-0.161,
-					't2_muminus_SR':0.197,
-					't2_elplus_SR':0.036,
-					't2_elminus_SR':-0.123,
-					't2_muplus_WJets_CR':-0.704,
-					't2_muminus_WJets_CR':-0.296,
-					't2_elplus_WJets_CR':0.202,
-					't2_elminus_WJets_CR':0.212,
-					't3_muplus_SR':-0.026,
-					't3_muminus_SR':-0.040,
-					't3_elplus_SR':-0.411,
-					't3_elminus_SR':-0.471,
+					't2_muplus_SR':0.131,
+					't2_muminus_SR':0.365,
+					't2_elplus_SR':0.094,
+					't2_elminus_SR':-0.091,
+					't2_muplus_WJets_CR':0.601,
+					't2_muminus_WJets_CR':0.649,
+					't2_elplus_WJets_CR':0.405,
+					't2_elminus_WJets_CR':0.344,
+					't3_muplus_SR':-0.048,
+					't3_muminus_SR':-0.071,
+					't3_elplus_SR':-0.432,
+					't3_elminus_SR':-0.493,
 					}
-		rqcderrs = {'t1_muplus_SR':0.502,
+		rqcderrs = {'t1_muplus_SR':0.470,
 					't1_muminus_SR':0.385,
 					't1_elplus_SR':0.3,
 					't1_elminus_SR':0.3,
@@ -266,12 +266,12 @@ class Fit(object) :
 					'tr':'b' if topology in ['t1','t2'] else 'r',
 					'signalsysID':signalsysID,
 					'backgroundsysID':backgroundsysID,
-					'rwjetsval':0.0,
+					'rwjetsval':-0.287,
 					'rwjetserr':0.1,
-					'rqcdplusval':0.0,#rqcdvals[topology+'_'+leptype+'plus_'+region],
-					'rqcdpluserr':1.0,#rqcderrs[topology+'_'+leptype+'plus_'+region],
-					'rqcdminusval':0.0,#rqcdvals[topology+'_'+leptype+'minus_'+region],
-					'rqcdminuserr':1.0,#rqcderrs[topology+'_'+leptype+'minus_'+region],
+					'rqcdplusval':rqcdvals[topology+'_'+leptype+'plus_'+region],
+					'rqcdpluserr':rqcderrs[topology+'_'+leptype+'plus_'+region],
+					'rqcdminusval':rqcdvals[topology+'_'+leptype+'minus_'+region],
+					'rqcdminuserr':rqcderrs[topology+'_'+leptype+'minus_'+region],
 					}
 		#open the new file to write into
 		newfile = open(fn,'w')
@@ -308,14 +308,16 @@ class Fit(object) :
 								'fsr',
 								'hdamp',
 								'tune',
-								'color_reconnection',
+								'cr',
 								]
-			#add the systematics to skip
-			#sys_to_skip.append('B_br_weight')
-			#sys_to_skip.append('btag_eff_weight_light_r')
-			#sys_to_skip.append('el_ID_weight')
-			#sys_to_skip.append('top_pt_re_weight')
-			#sys_to_skip.append('pdfas_weight')
+			#sys_to_skip+= ['JES',
+			#			   'JER',
+			#			   'isr',
+			#			   'fsr',
+			#			   'hdamp',
+			#			   'tune',
+			#			   'cr',
+			#			   ]
 			#print 'line split = %s'%(line.split()) #DEBUG
 			if line.split()[0]%rep_data in sys_to_skip :
 				continue

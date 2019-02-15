@@ -52,7 +52,7 @@ isr                           shapeN2 1                1                1       
 fsr                           shapeN2 1                1                1                1                  0              0                1                 1                 1                 1                 0                 0
 hdamp                         shapeN2 1                1                1                1                  0              0                1                 1                 1                 1                 0                 0
 tune                          shapeN2 1                1                1                1                  0              0                1                 1                 1                 1                 0                 0
-color_reconnection            shapeN2 1                1                1                1                  0              0                1                 1                 1                 1                 0                 0
+cr                            shapeN2 1                1                1                1                  0              0                1                 1                 1                 1                 0                 0
 # "Rate"params for individual processes
 Rwjets param %(rwjetsval)s %(rwjetserr)s [-1.,1.]
 #Rbck param 0.0 0.1 [-1.,1.]
