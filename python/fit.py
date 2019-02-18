@@ -100,19 +100,19 @@ class Fit(object) :
 				#for d fits
 				if self._fitpar=='d' :
 					#for qqbar
-					FQQ='(1.-@0*@0*((%f)/(%f))+@0*@0*((%f)/(%f)))'%(nq1[cname],nqq[cname],nq2[cname],nqq[cname])
-					flines.append('self.modelBuilder.factory_(\'expr::%s_fqd0("((1.)/(%s))",d)\')'%(cname,FQQ))
-					flines.append('self.modelBuilder.factory_(\'expr::%s_fqd1("((-1.*@0*@0)/(%s))",d)\')'%(cname,FQQ))
-					flines.append('self.modelBuilder.factory_(\'expr::%s_fqd2("((@0*@0)/(%s))",d)\')'%(cname,FQQ))
+					FQQ='(1.-@0*((%f)/(%f))+@0*((%f)/(%f)))'%(nq1[cname],nqq[cname],nq2[cname],nqq[cname])
+					flines.append('self.modelBuilder.factory_(\'expr::%s_fqd0("((1.)/(%s))",d2)\')'%(cname,FQQ))
+					flines.append('self.modelBuilder.factory_(\'expr::%s_fqd1("((-1.*@0)/(%s))",d2)\')'%(cname,FQQ))
+					flines.append('self.modelBuilder.factory_(\'expr::%s_fqd2("((@0)/(%s))",d2)\')'%(cname,FQQ))
 					#flines.append('self.modelBuilder.factory_(\'expr::%s_fqd0("1.+@0-@0",d)\')'%(cname))
 					#flines.append('self.modelBuilder.factory_(\'expr::%s_fqd1("1.+@0-@0",d)\')'%(cname))
 					#flines.append('self.modelBuilder.factory_(\'expr::%s_fqd2("1.+@0-@0",d)\')'%(cname))
 					#for gg
-					FGG='(1.+@0*@0*((%f)/(%f))+@0*@0*((%f)/(%f))+@0*@0*@0*@0*((%f)/(%f)))'%(ng2[cname],ngg[cname],ng3[cname],ngg[cname],ng4[cname],ngg[cname])
-					flines.append('self.modelBuilder.factory_(\'expr::%s_fgd0("((1.)/(%s))",d)\')'%(cname,FGG))
-					flines.append('self.modelBuilder.factory_(\'expr::%s_fgd2("((@0*@0)/(%s))",d)\')'%(cname,FGG))
-					flines.append('self.modelBuilder.factory_(\'expr::%s_fgd3("((@0*@0)/(%s))",d)\')'%(cname,FGG))
-					flines.append('self.modelBuilder.factory_(\'expr::%s_fgd4("((@0*@0*@0*@0)/(%s))",d)\')'%(cname,FGG))
+					FGG='(1.+@0*((%f)/(%f))+@0*((%f)/(%f))+@0*@0*((%f)/(%f)))'%(ng2[cname],ngg[cname],ng3[cname],ngg[cname],ng4[cname],ngg[cname])
+					flines.append('self.modelBuilder.factory_(\'expr::%s_fgd0("((1.)/(%s))",d2)\')'%(cname,FGG))
+					flines.append('self.modelBuilder.factory_(\'expr::%s_fgd2("((@0)/(%s))",d2)\')'%(cname,FGG))
+					flines.append('self.modelBuilder.factory_(\'expr::%s_fgd3("((@0)/(%s))",d2)\')'%(cname,FGG))
+					flines.append('self.modelBuilder.factory_(\'expr::%s_fgd4("((@0*@0)/(%s))",d2)\')'%(cname,FGG))
 				elif self._fitpar=='mu' :
 					#for qqbar
 					FQQ='(1.+(2.*@0+@0*@0)*((%f)/(%f))+(@0*@0)*((%f)/(%f)))'%(nq1[cname],nqq[cname],nq2[cname],nqq[cname])
@@ -266,12 +266,12 @@ class Fit(object) :
 					'tr':'b' if topology in ['t1','t2'] else 'r',
 					'signalsysID':signalsysID,
 					'backgroundsysID':backgroundsysID,
-					'rwjetsval':0.0,
+					'rwjetsval':-0.2287,
 					'rwjetserr':0.1,
-					'rqcdplusval':0.0,#rqcdvals[topology+'_'+leptype+'plus_'+region],
-					'rqcdpluserr':1.0,#rqcderrs[topology+'_'+leptype+'plus_'+region],
-					'rqcdminusval':0.0,#rqcdvals[topology+'_'+leptype+'minus_'+region],
-					'rqcdminuserr':1.0,#rqcderrs[topology+'_'+leptype+'minus_'+region],
+					'rqcdplusval':rqcdvals[topology+'_'+leptype+'plus_'+region],
+					'rqcdpluserr':rqcderrs[topology+'_'+leptype+'plus_'+region],
+					'rqcdminusval':rqcdvals[topology+'_'+leptype+'minus_'+region],
+					'rqcdminuserr':rqcderrs[topology+'_'+leptype+'minus_'+region],
 					}
 		#open the new file to write into
 		newfile = open(fn,'w')
