@@ -266,12 +266,12 @@ class Fit(object) :
 					'tr':'b' if topology in ['t1','t2'] else 'r',
 					'signalsysID':signalsysID,
 					'backgroundsysID':backgroundsysID,
-					'rwjetsval':-0.287,
+					'rwjetsval':0.0,
 					'rwjetserr':0.1,
-					'rqcdplusval':rqcdvals[topology+'_'+leptype+'plus_'+region],
-					'rqcdpluserr':rqcderrs[topology+'_'+leptype+'plus_'+region],
-					'rqcdminusval':rqcdvals[topology+'_'+leptype+'minus_'+region],
-					'rqcdminuserr':rqcderrs[topology+'_'+leptype+'minus_'+region],
+					'rqcdplusval':0.0,#rqcdvals[topology+'_'+leptype+'plus_'+region],
+					'rqcdpluserr':1.0,#rqcderrs[topology+'_'+leptype+'plus_'+region],
+					'rqcdminusval':0.0,#rqcdvals[topology+'_'+leptype+'minus_'+region],
+					'rqcdminuserr':1.0,#rqcderrs[topology+'_'+leptype+'minus_'+region],
 					}
 		#open the new file to write into
 		newfile = open(fn,'w')
