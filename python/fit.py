@@ -81,19 +81,20 @@ class Fit(object) :
 						channames.append(topology+'_'+ltype+'plus')
 						channames.append(topology+'_'+ltype+'minus')
 			#get the process yields in each channel
+			signalsysID='' if self._postsys=='nominal' else '__'+self._postsys
 			temp_file = TFile.Open(tfilepath)
 			for cname in channames :
 				nq1[cname]=0.; nq2[cname]=0.; nqq[cname]=0.; ng1[cname]=0.; ng2[cname]=0.; ng3[cname]=0.; ng4[cname]=0.; ngg[cname]=0.
 				#for qqbar
-				nqq[cname]+=temp_file.Get(cname+'_SR__fq0').Integral()
-				nq1[cname]+=temp_file.Get(cname+'_SR__fq1').Integral()
-				nq2[cname]+=temp_file.Get(cname+'_SR__fq2').Integral()
+				nqq[cname]+=temp_file.Get(cname+'_SR__fq0'+signalsysID).Integral()
+				nq1[cname]+=temp_file.Get(cname+'_SR__fq1'+signalsysID).Integral()
+				nq2[cname]+=temp_file.Get(cname+'_SR__fq2'+signalsysID).Integral()
 				#for gg
-				ngg[cname]+=temp_file.Get(cname+'_SR__fg0').Integral()
-				ng1[cname]+=temp_file.Get(cname+'_SR__fg1').Integral()
-				ng2[cname]+=temp_file.Get(cname+'_SR__fg2').Integral()
-				ng3[cname]+=temp_file.Get(cname+'_SR__fg3').Integral()
-				ng4[cname]+=temp_file.Get(cname+'_SR__fg4').Integral()
+				ngg[cname]+=temp_file.Get(cname+'_SR__fg0'+signalsysID).Integral()
+				ng1[cname]+=temp_file.Get(cname+'_SR__fg1'+signalsysID).Integral()
+				ng2[cname]+=temp_file.Get(cname+'_SR__fg2'+signalsysID).Integral()
+				ng3[cname]+=temp_file.Get(cname+'_SR__fg3'+signalsysID).Integral()
+				ng4[cname]+=temp_file.Get(cname+'_SR__fg4'+signalsysID).Integral()
 			temp_file.Close()
 			#make the list of function lines to add to the template physicsModel file
 			for cname in channames :
@@ -216,40 +217,36 @@ class Fit(object) :
 		#make the dictionary of variables to replace in the template file
 		signalsysID='' if self._postsys=='nominal' else '__'+self._postsys
 		backgroundsysID='__'+self._postsys if (self._postsys.startswith('JES') or self._postsys.startswith('JER')) else ''
-		rqcdvals = {'t1_muplus_SR':-0.308,
-					't1_muminus_SR':-0.704,
-					't1_elplus_SR':-0.093,
-					't1_elminus_SR':0.361,
-					't1_muplus_WJets_CR':0.0,
-					't1_muminus_WJets_CR':0.0,
-					't1_elplus_WJets_CR':0.704,
-					't1_elminus_WJets_CR':0.704,
-					't2_muplus_SR':0.131,
-					't2_muminus_SR':0.365,
-					't2_elplus_SR':0.094,
-					't2_elminus_SR':-0.091,
-					't2_muplus_WJets_CR':0.601,
-					't2_muminus_WJets_CR':0.649,
-					't2_elplus_WJets_CR':0.405,
-					't2_elminus_WJets_CR':0.344,
-					't3_muplus_SR':-0.048,
-					't3_muminus_SR':-0.071,
-					't3_elplus_SR':-0.432,
-					't3_elminus_SR':-0.493,
+		rqcdvals = {'t1_muplus_SR':0.0,
+					't1_muminus_SR':0.0,
+					't1_elplus_SR':-0.243,
+					't1_elminus_SR':0.371,
+					't1_elplus_WJets_CR':1.089,
+					't1_elminus_WJets_CR':1.294,
+					't2_muplus_SR':-0.188,
+					't2_muminus_SR':0.248,
+					't2_elplus_SR':-0.048,
+					't2_elminus_SR':-0.263,
+					't2_muplus_WJets_CR':-0.659,
+					't2_muminus_WJets_CR':0.028,
+					't2_elplus_WJets_CR':0.332,
+					't2_elminus_WJets_CR':0.314,
+					't3_muplus_SR':0.001,
+					't3_muminus_SR':-0.033,
+					't3_elplus_SR':-0.574,
+					't3_elminus_SR':-0.668,
 					}
-		rqcderrs = {'t1_muplus_SR':0.470,
-					't1_muminus_SR':0.385,
+		rqcderrs = {'t1_muplus_SR':0.489,
+					't1_muminus_SR':0.3,
 					't1_elplus_SR':0.3,
-					't1_elminus_SR':0.3,
-					't1_muplus_WJets_CR':0.7,
-					't1_muminus_WJets_CR':0.7,
-					't1_elplus_WJets_CR':0.3,
-					't1_elminus_WJets_CR':0.3,
+					't1_elminus_SR':0.357,
+					't1_elplus_WJets_CR':0.352,
+					't1_elminus_WJets_CR':0.423,
 					't2_muplus_SR':0.3,
 					't2_muminus_SR':0.3,
 					't2_elplus_SR':0.3,
 					't2_elminus_SR':0.3,
-					't2_muplus_WJets_CR':0.3,
+					't2_muplus_WJets_CR':0.309,
 					't2_muminus_WJets_CR':0.3,
 					't2_elplus_WJets_CR':0.3,
 					't2_elminus_WJets_CR':0.3,
@@ -266,13 +263,14 @@ class Fit(object) :
 					'tr':'b' if topology in ['t1','t2'] else 'r',
 					'signalsysID':signalsysID,
 					'backgroundsysID':backgroundsysID,
-					'rwjetsval':-0.2287,
+					'rwjetsval':0.0,
 					'rwjetserr':0.1,
-					'rqcdplusval':rqcdvals[topology+'_'+leptype+'plus_'+region],
-					'rqcdpluserr':rqcderrs[topology+'_'+leptype+'plus_'+region],
-					'rqcdminusval':rqcdvals[topology+'_'+leptype+'minus_'+region],
-					'rqcdminuserr':rqcderrs[topology+'_'+leptype+'minus_'+region],
 					}
+		if not (topology=='t1' and leptype.startswith('mu') and region=='WJets_CR') :
+			rep_data['rqcdplusval']=rqcdvals[topology+'_'+leptype+'plus_'+region]
+			rep_data['rqcdpluserr']=rqcderrs[topology+'_'+leptype+'plus_'+region]
+			rep_data['rqcdminusval']=rqcdvals[topology+'_'+leptype+'minus_'+region]
+			rep_data['rqcdminuserr']=rqcderrs[topology+'_'+leptype+'minus_'+region]
 		#open the new file to write into
 		newfile = open(fn,'w')
 		#open the template file to use
@@ -281,8 +279,9 @@ class Fit(object) :
 		#print '---------------------------------------------' #DEBUG
 		for line in template_file.readlines() :
 			#print line #DEBUG
-			#exclude/skip a couple lines specifically (namely top tagging efficiency if there are no top tags)
+			#exclude/skip a couple lines specifically (namely top tagging efficiency if there are no top tags, and some RQCD parameters where there is no QCD)
 			sys_to_skip = ['ttag_eff_weight_merged','ttag_eff_weight_semimerged','ttag_eff_weight_notmerged'] if topology!='t1' else []
+			sys_to_skip+= ['Rqcd_t1_muplus_WJets_CR','Rqcd_t1_muminus_WJets_CR']
 			#if we're running without systematics
 			if self._noss :
 				sys_to_skip += ['JES',
@@ -361,21 +360,24 @@ class Fit(object) :
 		temp_file = TFile.Open(tfilepath)
 		for cid in cids :
 			rate_params_lines = []
-			rate_params_lines.append('fqcd_scale_'+cid+' rateParam '+cid+' fqcd (1.+@0) Rqcd_'+cid+'')
+			if cid not in ['t1_muplus_WJets_CR','t1_muminus_WJets_CR'] :
+				rate_params_lines.append('fqcd_scale_'+cid+' rateParam '+cid+' fqcd (1.+@0) Rqcd_'+cid+'')
 			#rate_params_lines.append('fqp_scale_'+cid+' rateParam '+cid+' fqp0 (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.+@2)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets,Rbck')
 			#rate_params_lines.append('fqm_scale_'+cid+' rateParam '+cid+' fqm0 (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.+@2)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets,Rbck')
 			#rate_params_lines.append('fgg_scale_'+cid+' rateParam '+cid+' fg0 ((%(NTT_'+cid+')s-(1.+@0)*%(NQQ_'+cid+')s)/(%(NGG_'+cid+')s))*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.+@2)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets,Rbck')
-			#rate_params_lines.append('fqp_scale_'+cid+' rateParam '+cid+' fqp* (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets')
-			#rate_params_lines.append('fqm_scale_'+cid+' rateParam '+cid+' fqm* (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets')
-			#rate_params_lines.append('fgg_scale_'+cid+' rateParam '+cid+' fg* ((%(NTT_'+cid+')s-(1.+@0)*%(NQQ_'+cid+')s)/(%(NGG_'+cid+')s))*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets')
+			rate_params_lines.append('fqp_scale_'+cid+' rateParam '+cid+' fqp* (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets')
+			rate_params_lines.append('fqm_scale_'+cid+' rateParam '+cid+' fqm* (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets')
+			rate_params_lines.append('fgg_scale_'+cid+' rateParam '+cid+' fg* ((%(NTT_'+cid+')s-(1.+@0)*%(NQQ_'+cid+')s)/(%(NGG_'+cid+')s))*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets')
 			rate_params_lines.append('fqp_scale_'+cid+' rateParam '+cid+' fqp* (1.+@0) Rqqbar')
 			rate_params_lines.append('fqm_scale_'+cid+' rateParam '+cid+' fqm* (1.+@0) Rqqbar')
 			rate_params_lines.append('fgg_scale_'+cid+' rateParam '+cid+' fg* ((%(NTT_'+cid+')s-(1.+@0)*%(NQQ_'+cid+')s)/(%(NGG_'+cid+')s)) Rqqbar')
 			#make this channel's replacement dictionary
-			nwjets=temp_file.Get(cid+'__fwjets').Integral()
-			nbck=temp_file.Get(cid+'__fbck').Integral()
-			nqq=temp_file.Get(cid+'__fqp0').Integral()+temp_file.Get(cid+'__fqm0').Integral()
-			ngg=temp_file.Get(cid+'__fg0').Integral()
+			signalsysID='' if self._postsys=='nominal' else '__'+self._postsys
+			backgroundsysID='__'+self._postsys if (self._postsys.startswith('JES') or self._postsys.startswith('JER')) else ''
+			nwjets=temp_file.Get(cid+'__fwjets'+backgroundsysID).Integral()
+			nbck=temp_file.Get(cid+'__fbck'+signalsysID).Integral()
+			nqq=temp_file.Get(cid+'__fqp0'+signalsysID).Integral()+temp_file.Get(cid+'__fqm0'+signalsysID).Integral()
+			ngg=temp_file.Get(cid+'__fg0'+signalsysID).Integral()
 			nqcd=temp_file.Get(cid+'__fqcd').Integral()
 			rep_data = {'NWJETS_'+cid:nwjets,
 						'NBCK_'+cid:nbck,
