@@ -217,36 +217,40 @@ class Fit(object) :
 		#make the dictionary of variables to replace in the template file
 		signalsysID='' if self._postsys=='nominal' else '__'+self._postsys
 		backgroundsysID='__'+self._postsys if (self._postsys.startswith('JES') or self._postsys.startswith('JER')) else ''
-		rqcdvals = {'t1_muplus_SR':0.0,
-					't1_muminus_SR':0.0,
-					't1_elplus_SR':-0.243,
-					't1_elminus_SR':0.371,
-					't1_elplus_WJets_CR':1.089,
+		rqcdvals = {'t1_muplus_SR':-0.367,
+					't1_muminus_SR':-0.532,
+					't1_elplus_SR':-0.116,
+					't1_elminus_SR':0.538,
+					't1_muplus_WJets_CR':0.0,
+					't1_muminus_WJets_CR':0.0,
+					't1_elplus_WJets_CR':1.289,
 					't1_elminus_WJets_CR':1.294,
-					't2_muplus_SR':-0.188,
-					't2_muminus_SR':0.248,
-					't2_elplus_SR':-0.048,
-					't2_elminus_SR':-0.263,
-					't2_muplus_WJets_CR':-0.659,
-					't2_muminus_WJets_CR':0.028,
-					't2_elplus_WJets_CR':0.332,
-					't2_elminus_WJets_CR':0.314,
-					't3_muplus_SR':0.001,
-					't3_muminus_SR':-0.033,
-					't3_elplus_SR':-0.574,
-					't3_elminus_SR':-0.668,
+					't2_muplus_SR':0.272,
+					't2_muminus_SR':0.587,
+					't2_elplus_SR':0.160,
+					't2_elminus_SR':-0.109,
+					't2_muplus_WJets_CR':1.158,
+					't2_muminus_WJets_CR':1.113,
+					't2_elplus_WJets_CR':0.618,
+					't2_elminus_WJets_CR':0.520,
+					't3_muplus_SR':-0.067,
+					't3_muminus_SR':-0.102,
+					't3_elplus_SR':-0.614,
+					't3_elminus_SR':-0.700,
 					}
-		rqcderrs = {'t1_muplus_SR':0.489,
+		rqcderrs = {'t1_muplus_SR':0.708,
 					't1_muminus_SR':0.3,
 					't1_elplus_SR':0.3,
-					't1_elminus_SR':0.357,
+					't1_elminus_SR':0.356,
+					't1_muplus_WJets_CR':1.000,
+					't1_muminus_WJets_CR':1.000,
 					't1_elplus_WJets_CR':0.352,
 					't1_elminus_WJets_CR':0.423,
 					't2_muplus_SR':0.3,
 					't2_muminus_SR':0.3,
 					't2_elplus_SR':0.3,
 					't2_elminus_SR':0.3,
-					't2_muplus_WJets_CR':0.309,
+					't2_muplus_WJets_CR':0.321,
 					't2_muminus_WJets_CR':0.3,
 					't2_elplus_WJets_CR':0.3,
 					't2_elminus_WJets_CR':0.3,
@@ -263,14 +267,13 @@ class Fit(object) :
 					'tr':'b' if topology in ['t1','t2'] else 'r',
 					'signalsysID':signalsysID,
 					'backgroundsysID':backgroundsysID,
-					'rwjetsval':0.0,
+					'rwjetsval':-0.2566,
 					'rwjetserr':0.1,
+					'rqcdplusval':rqcdvals[topology+'_'+leptype+'plus_'+region],
+					'rqcdpluserr':rqcderrs[topology+'_'+leptype+'plus_'+region],
+					'rqcdminusval':rqcdvals[topology+'_'+leptype+'minus_'+region],
+					'rqcdminuserr':rqcderrs[topology+'_'+leptype+'minus_'+region],
 					}
-		if not (topology=='t1' and leptype.startswith('mu') and region=='WJets_CR') :
-			rep_data['rqcdplusval']=rqcdvals[topology+'_'+leptype+'plus_'+region]
-			rep_data['rqcdpluserr']=rqcderrs[topology+'_'+leptype+'plus_'+region]
-			rep_data['rqcdminusval']=rqcdvals[topology+'_'+leptype+'minus_'+region]
-			rep_data['rqcdminuserr']=rqcderrs[topology+'_'+leptype+'minus_'+region]
 		#open the new file to write into
 		newfile = open(fn,'w')
 		#open the template file to use
@@ -281,7 +284,6 @@ class Fit(object) :
 			#print line #DEBUG
 			#exclude/skip a couple lines specifically (namely top tagging efficiency if there are no top tags, and some RQCD parameters where there is no QCD)
 			sys_to_skip = ['ttag_eff_weight_merged','ttag_eff_weight_semimerged','ttag_eff_weight_notmerged'] if topology!='t1' else []
-			sys_to_skip+= ['Rqcd_t1_muplus_WJets_CR','Rqcd_t1_muminus_WJets_CR']
 			#if we're running without systematics
 			if self._noss :
 				sys_to_skip += ['JES',
@@ -365,9 +367,9 @@ class Fit(object) :
 			#rate_params_lines.append('fqp_scale_'+cid+' rateParam '+cid+' fqp0 (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.+@2)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets,Rbck')
 			#rate_params_lines.append('fqm_scale_'+cid+' rateParam '+cid+' fqm0 (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.+@2)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets,Rbck')
 			#rate_params_lines.append('fgg_scale_'+cid+' rateParam '+cid+' fg0 ((%(NTT_'+cid+')s-(1.+@0)*%(NQQ_'+cid+')s)/(%(NGG_'+cid+')s))*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.+@2)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets,Rbck')
-			rate_params_lines.append('fqp_scale_'+cid+' rateParam '+cid+' fqp* (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets')
-			rate_params_lines.append('fqm_scale_'+cid+' rateParam '+cid+' fqm* (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets')
-			rate_params_lines.append('fgg_scale_'+cid+' rateParam '+cid+' fg* ((%(NTT_'+cid+')s-(1.+@0)*%(NQQ_'+cid+')s)/(%(NGG_'+cid+')s))*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets')
+			#rate_params_lines.append('fqp_scale_'+cid+' rateParam '+cid+' fqp* (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets')
+			#rate_params_lines.append('fqm_scale_'+cid+' rateParam '+cid+' fqm* (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets')
+			#rate_params_lines.append('fgg_scale_'+cid+' rateParam '+cid+' fg* ((%(NTT_'+cid+')s-(1.+@0)*%(NQQ_'+cid+')s)/(%(NGG_'+cid+')s))*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets')
 			rate_params_lines.append('fqp_scale_'+cid+' rateParam '+cid+' fqp* (1.+@0) Rqqbar')
 			rate_params_lines.append('fqm_scale_'+cid+' rateParam '+cid+' fqm* (1.+@0) Rqqbar')
 			rate_params_lines.append('fgg_scale_'+cid+' rateParam '+cid+' fg* ((%(NTT_'+cid+')s-(1.+@0)*%(NQQ_'+cid+')s)/(%(NGG_'+cid+')s)) Rqqbar')
@@ -569,7 +571,7 @@ class Fit(object) :
 		print cmd
 		os.system(cmd)
 		#make the second command to do scans for each nuisance parameter
-		cmd = 'combineTool.py -M Impacts -d %s -m 125 --doFits --parallel %d'%(self._workspace_filename,4)
+		cmd = 'combineTool.py -M Impacts -d %s -m 125 --doFits --parallel %d'%(self._workspace_filename,2)
 		print cmd
 		os.system(cmd)
 		#make the third command to collect the results and put them in a json file
