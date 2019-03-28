@@ -217,48 +217,69 @@ class Fit(object) :
 		#make the dictionary of variables to replace in the template file
 		signalsysID='' if self._postsys=='nominal' else '__'+self._postsys
 		backgroundsysID='__'+self._postsys if (self._postsys.startswith('JES') or self._postsys.startswith('JER')) else ''
-		rqcdvals = {'t1_muplus_SR':-0.367,
-					't1_muminus_SR':-0.532,
-					't1_elplus_SR':-0.116,
-					't1_elminus_SR':0.538,
+		rqcdvals = {'t1_muplus_SR':-1.000,
+					't1_muminus_SR':-1.000,
+					't1_elplus_SR':-0.212,
+					't1_elminus_SR':0.446,
 					't1_muplus_WJets_CR':0.0,
 					't1_muminus_WJets_CR':0.0,
-					't1_elplus_WJets_CR':1.289,
-					't1_elminus_WJets_CR':1.294,
-					't2_muplus_SR':0.272,
-					't2_muminus_SR':0.587,
-					't2_elplus_SR':0.160,
-					't2_elminus_SR':-0.109,
-					't2_muplus_WJets_CR':1.158,
-					't2_muminus_WJets_CR':1.113,
-					't2_elplus_WJets_CR':0.618,
-					't2_elminus_WJets_CR':0.520,
-					't3_muplus_SR':-0.067,
-					't3_muminus_SR':-0.102,
-					't3_elplus_SR':-0.614,
-					't3_elminus_SR':-0.700,
+					't1_elplus_WJets_CR':1.082,
+					't1_elminus_WJets_CR':1.734,
+					't2_muplus_SR':-0.900,
+					't2_muminus_SR':-0.467,
+					't2_elplus_SR':0.006,
+					't2_elminus_SR':-0.031,
+					't2_muplus_WJets_CR':-1.000,
+					't2_muminus_WJets_CR':-0.978,
+					't2_elplus_WJets_CR':0.092,
+					't2_elminus_WJets_CR':0.120,
+					't3_muplus_SR':-0.384,
+					't3_muminus_SR':-0.310,
+					't3_elplus_SR':-0.663,
+					't3_elminus_SR':-0.812,
 					}
-		rqcderrs = {'t1_muplus_SR':0.708,
-					't1_muminus_SR':0.3,
-					't1_elplus_SR':0.3,
-					't1_elminus_SR':0.356,
-					't1_muplus_WJets_CR':1.000,
-					't1_muminus_WJets_CR':1.000,
-					't1_elplus_WJets_CR':0.352,
-					't1_elminus_WJets_CR':0.423,
-					't2_muplus_SR':0.3,
-					't2_muminus_SR':0.3,
-					't2_elplus_SR':0.3,
-					't2_elminus_SR':0.3,
-					't2_muplus_WJets_CR':0.321,
+		rqcderrs = {'t1_muplus_SR':0.0001,
+					't1_muminus_SR':0.0001,
+					't1_elplus_SR':0.243,
+					't1_elminus_SR':0.403,
+					't1_muplus_WJets_CR':0.994,
+					't1_muminus_WJets_CR':0.994,
+					't1_elplus_WJets_CR':0.315,
+					't1_elminus_WJets_CR':0.388,
+					't2_muplus_SR':0.135,
+					't2_muminus_SR':0.215,
+					't2_elplus_SR':0.179,
+					't2_elminus_SR':0.194,
+					't2_muplus_WJets_CR':0.3,
 					't2_muminus_WJets_CR':0.3,
 					't2_elplus_WJets_CR':0.3,
 					't2_elminus_WJets_CR':0.3,
-					't3_muplus_SR':0.3,
-					't3_muminus_SR':0.3,
-					't3_elplus_SR':0.3,
-					't3_elminus_SR':0.3,
+					't3_muplus_SR':0.063,
+					't3_muminus_SR':0.056,
+					't3_elplus_SR':0.059,
+					't3_elminus_SR':0.052,
 					}
+		rqcdstaterrs = {'t1_muplus_SR':0.2987,
+						't1_muminus_SR':0.2037,
+						't1_elplus_SR':0.1040,
+						't1_elminus_SR':0.1294,
+						't1_muplus_WJets_CR':1.000,
+						't1_muminus_WJets_CR':1.000,
+						't1_elplus_WJets_CR':0.0895,
+						't1_elminus_WJets_CR':0.1042,
+						't2_muplus_SR':0.0409,
+						't2_muminus_SR':0.0448,
+						't2_elplus_SR':0.0549,
+						't2_elminus_SR':0.0586,
+						't2_muplus_WJets_CR':0.0440,
+						't2_muminus_WJets_CR':0.0407,
+						't2_elplus_WJets_CR':0.0324,
+						't2_elminus_WJets_CR':0.0325,
+						't3_muplus_SR':0.0208,
+						't3_muminus_SR':0.0200,
+						't3_elplus_SR':0.0288,
+						't3_elminus_SR':0.0290,
+						}
 		rep_data = {'fitname':self._name,
 					'lt':leptype,
 					'r':region,
@@ -267,12 +288,33 @@ class Fit(object) :
 					'tr':'b' if topology in ['t1','t2'] else 'r',
 					'signalsysID':signalsysID,
 					'backgroundsysID':backgroundsysID,
-					'rwjetsval':-0.2566,
+					'rwjetsval':0.0,
 					'rwjetserr':0.1,
+			#		#for stat error only
+			#		'rqcdplusval':0.0,
+			#		'rqcdpluserr':rqcdstaterrs[topology+'_'+leptype+'plus_'+region],
+			#		'rqcdminusval':0.0,
+			#		'rqcdminuserr':rqcdstaterrs[topology+'_'+leptype+'minus_'+region],
+			#		#for tuning with large errors
+			#		'rqcdplusval':0.0,
+			#		'rqcdpluserr':1.0,
+			#		'rqcdminusval':0.0,
+			#		'rqcdminuserr':1.0,
+					#tuned with large errors
 					'rqcdplusval':rqcdvals[topology+'_'+leptype+'plus_'+region],
-					'rqcdpluserr':rqcderrs[topology+'_'+leptype+'plus_'+region],
+					'rqcdpluserr':max(rqcderrs[topology+'_'+leptype+'plus_'+region],rqcdstaterrs[topology+'_'+leptype+'plus_'+region]),
 					'rqcdminusval':rqcdvals[topology+'_'+leptype+'minus_'+region],
-					'rqcdminuserr':rqcderrs[topology+'_'+leptype+'minus_'+region],
+					'rqcdminuserr':max(rqcderrs[topology+'_'+leptype+'minus_'+region],rqcdstaterrs[topology+'_'+leptype+'minus_'+region]),
+				#	#for tuning with stat errors
+				#	'rqcdplusval':0.0,
+				#	'rqcdpluserr':rqcdstaterrs[topology+'_'+leptype+'plus_'+region],
+				#	'rqcdminusval':0.0,
+				#	'rqcdminuserr':rqcdstaterrs[topology+'_'+leptype+'minus_'+region],
+				#	#tuned with stat errors
+				#	'rqcdplusval':rqcdvals[topology+'_'+leptype+'plus_'+region]*rqcdstaterrs[topology+'_'+leptype+'plus_'+region],
+				#	'rqcdpluserr':rqcderrs[topology+'_'+leptype+'plus_'+region]*rqcdstaterrs[topology+'_'+leptype+'plus_'+region],
+				#	'rqcdminusval':rqcdvals[topology+'_'+leptype+'minus_'+region]*rqcdstaterrs[topology+'_'+leptype+'plus_'+region],
+				#	'rqcdminuserr':rqcderrs[topology+'_'+leptype+'minus_'+region]*rqcdstaterrs[topology+'_'+leptype+'plus_'+region],
 					}
 		#open the new file to write into
 		newfile = open(fn,'w')
@@ -286,7 +328,8 @@ class Fit(object) :
 			sys_to_skip = ['ttag_eff_weight_merged','ttag_eff_weight_semimerged','ttag_eff_weight_notmerged'] if topology!='t1' else []
 			#if we're running without systematics
 			if self._noss :
-				sys_to_skip += ['JES',
+				sys_to_skip += ['lumi',
+								'JES',
 								'JER',
 								'pileup_weight',
 								rep_data['lt']+'_trig_eff_weight_'+rep_data['tr'],
@@ -367,12 +410,12 @@ class Fit(object) :
 			#rate_params_lines.append('fqp_scale_'+cid+' rateParam '+cid+' fqp0 (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.+@2)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets,Rbck')
 			#rate_params_lines.append('fqm_scale_'+cid+' rateParam '+cid+' fqm0 (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.+@2)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets,Rbck')
 			#rate_params_lines.append('fgg_scale_'+cid+' rateParam '+cid+' fg0 ((%(NTT_'+cid+')s-(1.+@0)*%(NQQ_'+cid+')s)/(%(NGG_'+cid+')s))*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.+@2)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets,Rbck')
-			#rate_params_lines.append('fqp_scale_'+cid+' rateParam '+cid+' fqp* (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets')
-			#rate_params_lines.append('fqm_scale_'+cid+' rateParam '+cid+' fqm* (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets')
-			#rate_params_lines.append('fgg_scale_'+cid+' rateParam '+cid+' fg* ((%(NTT_'+cid+')s-(1.+@0)*%(NQQ_'+cid+')s)/(%(NGG_'+cid+')s))*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets')
-			rate_params_lines.append('fqp_scale_'+cid+' rateParam '+cid+' fqp* (1.+@0) Rqqbar')
-			rate_params_lines.append('fqm_scale_'+cid+' rateParam '+cid+' fqm* (1.+@0) Rqqbar')
-			rate_params_lines.append('fgg_scale_'+cid+' rateParam '+cid+' fg* ((%(NTT_'+cid+')s-(1.+@0)*%(NQQ_'+cid+')s)/(%(NGG_'+cid+')s)) Rqqbar')
+			rate_params_lines.append('fqp_scale_'+cid+' rateParam '+cid+' fqp* (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets')
+			rate_params_lines.append('fqm_scale_'+cid+' rateParam '+cid+' fqm* (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets')
+			rate_params_lines.append('fgg_scale_'+cid+' rateParam '+cid+' fg* ((%(NTT_'+cid+')s-(1.+@0)*%(NQQ_'+cid+')s)/(%(NGG_'+cid+')s))*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets')
+			#rate_params_lines.append('fqp_scale_'+cid+' rateParam '+cid+' fqp* (1.+@0) Rqqbar')
+			#rate_params_lines.append('fqm_scale_'+cid+' rateParam '+cid+' fqm* (1.+@0) Rqqbar')
+			#rate_params_lines.append('fgg_scale_'+cid+' rateParam '+cid+' fg* ((%(NTT_'+cid+')s-(1.+@0)*%(NQQ_'+cid+')s)/(%(NGG_'+cid+')s)) Rqqbar')
 			#make this channel's replacement dictionary
 			signalsysID='' if self._postsys=='nominal' else '__'+self._postsys
 			backgroundsysID='__'+self._postsys if (self._postsys.startswith('JES') or self._postsys.startswith('JER')) else ''
