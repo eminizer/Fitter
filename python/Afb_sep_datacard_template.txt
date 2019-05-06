@@ -60,4 +60,4 @@ Rqqbar param 0.0 0.01 [-1.,1.]
 Rqcd_%(topology)s_%(lt)splus_%(r)s param %(rqcdplusval)s %(rqcdpluserr)s [-1.,4.]
 Rqcd_%(topology)s_%(lt)sminus_%(r)s param %(rqcdminusval)s %(rqcdminuserr)s [-1.,4.]
 # auto  MC stats
-# * autoMCStats 0
+#* autoMCStats 0 1

@@ -3,30 +3,32 @@ import os
 
 #stems for the different types of toy groups
 topdir_stems = ['with_sys','no_sys',
-				'JESUp','JESDown',
-				'JERUp','JERDown',
-				'isrUp','isrDown',
-				'fsrUp','fsrDown',
-				'hdampUp','hdampDown',
-				'tuneUp','tuneDown',
-				'crUp','crDown',
+				#'JESUp','JESDown',
+				#'JERUp','JERDown',
+				#'isrUp','isrDown',
+				#'fsrUp','fsrDown',
+				#'hdampUp','hdampDown',
+				#'tuneUp','tuneDown',
+				#'crUp','crDown',
 				]
-#topdir_stems = ['JESUp','JESDown','JERUp','JERDown']
 
 #command-line options
 parser = OptionParser()
 parser.add_option('-P','--par',type='choice', action='store', dest='par', choices=['Afb','mu','d'], help='Which parameter ("Afb", "mu", "d") is the parameter of interest? Required.')
-parser.add_option('-T', '--tfilename', type='string', action='store', dest='tfilename', default='templates_powheg_aggregated_all.root')
+parser.add_option('-T', '--tfilename', type='string', action='store', dest='tfilename', default='templates_powheg_dynamic_binning_smoothed_with_JEC.root')
 (options, args) = parser.parse_args()
 
 #stems for numerical values of parameters in toyGroups
 stems = []
 if options.par=='Afb' :
-	stems = ['-0.279','-0.243','-0.207','-0.171','-0.135','-0.099','-0.063','-0.027','0.009','0.045','0.081','0.117','0.153','0.189','0.225','0.261','0.297','0.333','0.369']
+	centralval = 0.05352; errfromdatafit = 0.10326
+	stems = ['{0:.{1}f}'.format(centralval+(i-10)*(errfromdatafit/2.), 5) for i in range(21)]
 elif options.par=='d' :
-	stems = ['-0.02471','-0.02196','-0.01921','-0.01646','-0.01371','-0.01096','-0.00821','-0.00546','-0.00271','0.00004','0.00278','0.00553','0.00828','0.01103','0.01378','0.01653','0.01928','0.02203','0.02478']
+	centralval = 2.22045e-14; errfromdatafit = 0.00011
+	stems = ['{0:.{1}f}'.format((i)*(errfromdatafit*10), 5) for i in range(21)]
 elif options.par=='mu' :
-	stems = ['-0.03343','-0.03078','-0.02813','-0.02548','-0.02283','-0.02018','-0.01753','-0.01488','-0.01223','-0.00958','-0.00693','-0.00428','-0.00163','0.00102','0.00367','0.00632','0.00897','0.01162','0.01427']
+	centralval = -0.02280; errfromdatafit = 0.00748
+	stems = ['{0:.{1}f}'.format(centralval+(i-10)*(errfromdatafit/2.), 5) for i in range(21)]
 topdirnames = ['toyGroups_'+options.par+'_'+tds for tds in topdir_stems]
 dirnames = ['toyGroup_'+options.par+'='+stem for stem in stems]
 #print dirnames #DEBUG

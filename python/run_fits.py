@@ -21,13 +21,13 @@ parser.add_option('--leptypes',   type='string', action='store', default='mu__el
 #With what a-posteriori systematic settings?
 parser.add_option('--postsys',  type='choice', action='store', dest='postsys', default='nominal',
 	choices=['nominal',
-			 'JESUp','JESDown',
-			 'JERUp','JERDown',
-			 'isrUp','isrDown',
-			 'fsrUp','fsrDown',
-			 'hdampUp','hdampDown',
-			 'tuneUp','tuneDown',
-			 'crUp','crDown',
+			 #'JESUp','JESDown',
+			 #'JERUp','JERDown',
+			 #'isrUp','isrDown',
+			 #'fsrUp','fsrDown',
+			 #'hdampUp','hdampDown',
+			 #'tuneUp','tuneDown',
+			 #'crUp','crDown',
 			 ], 
 	help='What a-posteriori systematic settings do you want to use?')
 #With what level of involvement?

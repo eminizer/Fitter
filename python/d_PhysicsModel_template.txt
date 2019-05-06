@@ -6,7 +6,7 @@ class %(fitname)s_PhysicsModel(PhysicsModel):
         """Create POI and other parameters, and define the POI set."""
         rws = {}
 
-        self.modelBuilder.doVar("d2[0.0,0.0,10.0]");
+        self.modelBuilder.doVar("d2[0.0,0.0,100.0]");
         self.modelBuilder.doSet("POI","d2")
         
         ###FUNCTIONS BELOW

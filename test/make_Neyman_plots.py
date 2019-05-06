@@ -136,12 +136,8 @@ for i in range(n) :
 	realvalues=[]
 	#build the path to the file holding the toy results
 	filepath = ''; filepath_opp_sign = ''
-	if options.par=='Afb' :
-		filepath = '%s/toyGroup_%s=%.3f/higgsCombineToys%s%.3f.MultiDimFit.all.root'%(options.toygroupdir,options.par,input_values[i],options.par,input_values[i])
-		filepath_opp_sign = '%s/toyGroup_%s=%.3f/higgsCombineToys%s%.3f.MultiDimFit.all.root'%(options.toygroupdir,options.par,-1*input_values[i],options.par,-1*input_values[i])
-	else :
-		filepath = '%s/toyGroup_%s=%.5f/higgsCombineToys%s%.3f.MultiDimFit.all.root'%(options.toygroupdir,options.par,input_values[i],options.par,input_values[i])
-		filepath_opp_sign = '%s/toyGroup_%s=%.5f/higgsCombineToys%s%.3f.MultiDimFit.all.root'%(options.toygroupdir,options.par,-1*input_values[i],options.par,-1*input_values[i])
+	filepath = '%s/toyGroup_%s=%.5f/higgsCombineToys%s%.3f.MultiDimFit.all.root'%(options.toygroupdir,options.par,input_values[i],options.par,input_values[i])
+	filepath_opp_sign = '%s/toyGroup_%s=%.5f/higgsCombineToys%s%.3f.MultiDimFit.all.root'%(options.toygroupdir,options.par,-1*input_values[i],options.par,-1*input_values[i])
 	files_to_read = [filepath]
 	if options.unsigned :
 		files_to_read.append(filepath_opp_sign)
@@ -156,7 +152,10 @@ for i in range(n) :
 		readArray = array('f',[0.])
 		tree=par_values_file.Get(treename)
 		n_tree_entries = tree.GetEntries()
-		tree.SetBranchAddress(options.par,readArray)
+		if options.par=='d' :
+			tree.SetBranchAddress('d2',readArray)
+		else :
+			tree.SetBranchAddress(options.par,readArray)
 		for j in range(n_tree_entries) :
 			tree.GetEntry(j)
 			#add the value
@@ -180,6 +179,16 @@ for i in range(n) :
 	m1sigma = par_values_list[int(round(len(par_values_list)*(1-0.683)/2.))] 
 	p2sigma = par_values_list[min(len(par_values_list)-1,int(round(len(par_values_list)*(1.+0.955)/2.)))] 
 	m2sigma = par_values_list[min(len(par_values_list)-1,int(round(len(par_values_list)*(1.-0.955)/2.)))]
+	if options.par=='d' :
+		stddev=0.
+		for value in par_values_list :
+			stddev+=(value-mean)**2
+		stddev=sqrt(stddev/len(par_values_list))
+		p1sigma = median+stddev
+		m1sigma = max(0.0,median-stddev)
+		p2sigma = median+2*stddev
+		m2sigma = max(0.0,median-2*stddev)
+		print('mean = {:.15f}, median = {:.15f}, stddev = {:.15f}'.format(mean,median,stddev))
 	#Set graphs' point values
 	onesigma_graph.SetPoint(i,input_values[i],median)
 	twosigma_graph.SetPoint(i,input_values[i],median)
@@ -200,7 +209,7 @@ if options.centralvalue!=10000000. :
 		data_fit_two_sigma_down = input_values[0]-0.02
 		data_fit_two_sigma_up   = input_values[n-1]+0.02
 	dfosd_changed = False; dftsd_changed = False
-	data_fit_mean = options.centralvalue
+	data_fit_median = options.centralvalue
 	for i in range(n-1) :
 		thisymedian = array('d',[0.0]); thisx = array('d',[0.0])
 		nextymedian = array('d',[0.0]); nextx = array('d',[0.0])
@@ -218,7 +227,7 @@ if options.centralvalue!=10000000. :
 			data_fit_one_sigma_up = (options.centralvalue-thisylow)/slope+input_values[i]
 		if thisymedian[0] <= options.centralvalue and nextymedian[0] > options.centralvalue :
 			slope = (nextymedian[0]-thisymedian[0])/(input_values[i+1]-input_values[i])
-			data_fit_mean = (options.centralvalue-thisymedian[0])/slope+input_values[i]
+			data_fit_median = (options.centralvalue-thisymedian[0])/slope+input_values[i]
 	for i in range(n-1) :
 		thisymedian = array('d',[0.0]); thisx = array('d',[0.0])
 		nextymedian = array('d',[0.0]); nextx = array('d',[0.0])
@@ -235,9 +244,9 @@ if options.centralvalue!=10000000. :
 			slope = (nextylow-thisylow)/(input_values[i+1]-input_values[i])
 			data_fit_two_sigma_up = (options.centralvalue-thisylow)/slope+input_values[i]
 
-	if options.verbose : print 'Central value = %.6f, plus one sigma = %.6f, minus one sigma = %.6f'%(data_fit_mean,data_fit_one_sigma_up,data_fit_one_sigma_down) #DEBUG
+	if options.verbose : print 'Central value = %.6f, plus one sigma = %.6f, minus one sigma = %.6f'%(data_fit_median,data_fit_one_sigma_up,data_fit_one_sigma_down) #DEBUG
 	if options.verbose : print '	plus two sigma = %.6f, minus two sigma = %.6f'%(data_fit_two_sigma_up,data_fit_two_sigma_down) #DEBUG
-	print 'FINAL RESULT: Parameter %s = %.6f + %.6f - %.6f (95%% CL ~= +/-%.6f)'%(options.par,data_fit_mean,data_fit_one_sigma_up-data_fit_mean,abs(data_fit_one_sigma_down-data_fit_mean),data_fit_two_sigma_up)
+	print 'FINAL RESULT: Parameter %s = %.15f + %.6f - %.6f (95%% CL ~= +/-%.6f)'%(options.par,data_fit_median,data_fit_one_sigma_up-data_fit_median,abs(data_fit_one_sigma_down-data_fit_median),data_fit_two_sigma_up)
 
 	#Build the lines to indicate based on the data fit value
 	lines = []
@@ -247,13 +256,13 @@ if options.centralvalue!=10000000. :
 	lines.append(TLine(x_low,options.centralvalue,data_fit_one_sigma_up,options.centralvalue))
 	lines.append(TLine(data_fit_one_sigma_down,options.centralvalue,data_fit_one_sigma_down,y_low))
 	lines.append(TLine(data_fit_one_sigma_up,options.centralvalue,data_fit_one_sigma_up,y_low))
-	lines.append(TLine(data_fit_mean,options.centralvalue,data_fit_mean,y_low))
+	lines.append(TLine(data_fit_median,options.centralvalue,data_fit_median,y_low))
 	for line in lines :
 		line.SetLineWidth(3); line.SetLineColor(kRed); line.SetLineStyle(2)
 
 	#Build a legend
 	leg = TLegend(0.62,0.67,0.9,0.9)
-	leg.AddEntry(onesigma_graph,'toy mean values','PL')
+	leg.AddEntry(onesigma_graph,'toy median values','PL')
 	leg.AddEntry(onesigma_graph,'#pm 1 #sigma','F')
 	leg.AddEntry(twosigma_graph,'#pm 2 #sigma','F')
 	leg.AddEntry(lines[0],'data fit','L')

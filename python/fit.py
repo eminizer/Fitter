@@ -105,9 +105,6 @@ class Fit(object) :
 					flines.append('self.modelBuilder.factory_(\'expr::%s_fqd0("((1.)/(%s))",d2)\')'%(cname,FQQ))
 					flines.append('self.modelBuilder.factory_(\'expr::%s_fqd1("((-1.*@0)/(%s))",d2)\')'%(cname,FQQ))
 					flines.append('self.modelBuilder.factory_(\'expr::%s_fqd2("((@0)/(%s))",d2)\')'%(cname,FQQ))
-					#flines.append('self.modelBuilder.factory_(\'expr::%s_fqd0("1.+@0-@0",d)\')'%(cname))
-					#flines.append('self.modelBuilder.factory_(\'expr::%s_fqd1("1.+@0-@0",d)\')'%(cname))
-					#flines.append('self.modelBuilder.factory_(\'expr::%s_fqd2("1.+@0-@0",d)\')'%(cname))
 					#for gg
 					FGG='(1.+@0*((%f)/(%f))+@0*((%f)/(%f))+@0*@0*((%f)/(%f)))'%(ng2[cname],ngg[cname],ng3[cname],ngg[cname],ng4[cname],ngg[cname])
 					flines.append('self.modelBuilder.factory_(\'expr::%s_fgd0("((1.)/(%s))",d2)\')'%(cname,FGG))
@@ -166,6 +163,8 @@ class Fit(object) :
 			cmd+=' --verbose 5'
 		cmd+=' -o '+self._workspace_filename
 		cmd+=' -P '+self._physics_model_filename.split('.')[0]+':'+self._physics_model_filename.split('.')[0]
+		#add option to include channel mask variables
+		cmd+=' --channel-masks'
 		print cmd
 		os.system(cmd)
 		#reset the pythonpath
@@ -217,47 +216,47 @@ class Fit(object) :
 		#make the dictionary of variables to replace in the template file
 		signalsysID='' if self._postsys=='nominal' else '__'+self._postsys
 		backgroundsysID='__'+self._postsys if (self._postsys.startswith('JES') or self._postsys.startswith('JER')) else ''
-		rqcdvals = {'t1_muplus_SR':-1.000,
-					't1_muminus_SR':-1.000,
-					't1_elplus_SR':-0.212,
-					't1_elminus_SR':0.446,
+		rqcdvals = {'t1_muplus_SR':-0.492,#0.557,
+					't1_muminus_SR':-1.103,#-1.000,
+					't1_elplus_SR':-0.127,#-0.102,
+					't1_elminus_SR':0.162,#0.381,
 					't1_muplus_WJets_CR':0.0,
 					't1_muminus_WJets_CR':0.0,
-					't1_elplus_WJets_CR':1.082,
-					't1_elminus_WJets_CR':1.734,
-					't2_muplus_SR':-0.900,
-					't2_muminus_SR':-0.467,
-					't2_elplus_SR':0.006,
-					't2_elminus_SR':-0.031,
-					't2_muplus_WJets_CR':-1.000,
-					't2_muminus_WJets_CR':-0.978,
-					't2_elplus_WJets_CR':0.092,
-					't2_elminus_WJets_CR':0.120,
-					't3_muplus_SR':-0.384,
-					't3_muminus_SR':-0.310,
-					't3_elplus_SR':-0.663,
-					't3_elminus_SR':-0.812,
+					't1_elplus_WJets_CR':1.767,#2.011,
+					't1_elminus_WJets_CR':1.796,#2.450,
+					't2_muplus_SR':-0.578,#-0.307,
+					't2_muminus_SR':-0.057,#0.120,
+					't2_elplus_SR':0.271,#0.404,
+					't2_elminus_SR':0.058,#0.104,
+					't2_muplus_WJets_CR':-0.090,#0.513,
+					't2_muminus_WJets_CR':0.243,#0.655,
+					't2_elplus_WJets_CR':1.811,#0.465,
+					't2_elminus_WJets_CR':1.631,#0.390,
+					't3_muplus_SR':-1.820,#-0.463,
+					't3_muminus_SR':-1.888,#-0.379,
+					't3_elplus_SR':-3.367,#-0.667,
+					't3_elminus_SR':-4.524,#-0.739,
 					}
-		rqcderrs = {'t1_muplus_SR':0.0001,
-					't1_muminus_SR':0.0001,
-					't1_elplus_SR':0.243,
-					't1_elminus_SR':0.403,
-					't1_muplus_WJets_CR':0.994,
-					't1_muminus_WJets_CR':0.994,
-					't1_elplus_WJets_CR':0.315,
-					't1_elminus_WJets_CR':0.388,
-					't2_muplus_SR':0.135,
-					't2_muminus_SR':0.215,
-					't2_elplus_SR':0.179,
-					't2_elminus_SR':0.194,
-					't2_muplus_WJets_CR':0.3,
-					't2_muminus_WJets_CR':0.3,
-					't2_elplus_WJets_CR':0.3,
-					't2_elminus_WJets_CR':0.3,
-					't3_muplus_SR':0.063,
-					't3_muminus_SR':0.056,
-					't3_elplus_SR':0.059,
-					't3_elminus_SR':0.052,
+		rqcderrs = {'t1_muplus_SR':1.0,#0.972,#0.628,
+					't1_muminus_SR':1.0,#0.949,#0.005,
+					't1_elplus_SR':1.0,#0.958,#0.454,
+					't1_elminus_SR':1.0,#0.975,#0.665,
+					't1_muplus_WJets_CR':1.0,#0.994,#0.995,
+					't1_muminus_WJets_CR':1.0,#0.994,#0.995,
+					't1_elplus_WJets_CR':1.0,#0.950,#0.388,
+					't1_elminus_WJets_CR':1.0,#0.954,#0.457,
+					't2_muplus_SR':1.0,#0.977,#0.289,
+					't2_muminus_SR':1.0,#0.978,#0.329,
+					't2_elplus_SR':1.0,#0.975,#0.330,
+					't2_elminus_SR':1.0,#0.978,#0.371,
+					't2_muplus_WJets_CR':1.0,#0.984,#0.395,
+					't2_muminus_WJets_CR':1.0,#0.979,#0.290,
+					't2_elplus_WJets_CR':1.0,#0.914,#0.099,
+					't2_elminus_WJets_CR':1.0,#0.908,#0.094,
+					't3_muplus_SR':1.0,#0.960,#0.099,
+					't3_muminus_SR':1.0,#0.953,#0.087,
+					't3_elplus_SR':1.0,#0.928,#0.098,
+					't3_elminus_SR':1.0,#0.913,#0.088,
 					}
 		rqcdstaterrs = {'t1_muplus_SR':0.2987,
 						't1_muminus_SR':0.2037,
@@ -288,8 +287,8 @@ class Fit(object) :
 					'tr':'b' if topology in ['t1','t2'] else 'r',
 					'signalsysID':signalsysID,
 					'backgroundsysID':backgroundsysID,
-					'rwjetsval':0.0,
-					'rwjetserr':0.1,
+					'rwjetsval':-0.1715,#-0.2287,
+					'rwjetserr':0.1,#0.0241,
 			#		#for stat error only
 			#		'rqcdplusval':0.0,
 			#		'rqcdpluserr':rqcdstaterrs[topology+'_'+leptype+'plus_'+region],
@@ -300,21 +299,21 @@ class Fit(object) :
 			#		'rqcdpluserr':1.0,
 			#		'rqcdminusval':0.0,
 			#		'rqcdminuserr':1.0,
-					#tuned with large errors
-					'rqcdplusval':rqcdvals[topology+'_'+leptype+'plus_'+region],
-					'rqcdpluserr':max(rqcderrs[topology+'_'+leptype+'plus_'+region],rqcdstaterrs[topology+'_'+leptype+'plus_'+region]),
-					'rqcdminusval':rqcdvals[topology+'_'+leptype+'minus_'+region],
-					'rqcdminuserr':max(rqcderrs[topology+'_'+leptype+'minus_'+region],rqcdstaterrs[topology+'_'+leptype+'minus_'+region]),
+			#		#tuned with large errors
+			#		'rqcdplusval':rqcdvals[topology+'_'+leptype+'plus_'+region],
+			#		'rqcdpluserr':max(rqcderrs[topology+'_'+leptype+'plus_'+region],rqcdstaterrs[topology+'_'+leptype+'plus_'+region]),
+			#		'rqcdminusval':rqcdvals[topology+'_'+leptype+'minus_'+region],
+			#		'rqcdminuserr':max(rqcderrs[topology+'_'+leptype+'minus_'+region],rqcdstaterrs[topology+'_'+leptype+'minus_'+region]),
 				#	#for tuning with stat errors
 				#	'rqcdplusval':0.0,
 				#	'rqcdpluserr':rqcdstaterrs[topology+'_'+leptype+'plus_'+region],
 				#	'rqcdminusval':0.0,
 				#	'rqcdminuserr':rqcdstaterrs[topology+'_'+leptype+'minus_'+region],
-				#	#tuned with stat errors
-				#	'rqcdplusval':rqcdvals[topology+'_'+leptype+'plus_'+region]*rqcdstaterrs[topology+'_'+leptype+'plus_'+region],
-				#	'rqcdpluserr':rqcderrs[topology+'_'+leptype+'plus_'+region]*rqcdstaterrs[topology+'_'+leptype+'plus_'+region],
-				#	'rqcdminusval':rqcdvals[topology+'_'+leptype+'minus_'+region]*rqcdstaterrs[topology+'_'+leptype+'plus_'+region],
-				#	'rqcdminuserr':rqcderrs[topology+'_'+leptype+'minus_'+region]*rqcdstaterrs[topology+'_'+leptype+'plus_'+region],
+					#tuned with stat errors
+					'rqcdplusval':rqcdvals[topology+'_'+leptype+'plus_'+region]*rqcdstaterrs[topology+'_'+leptype+'plus_'+region],
+					'rqcdpluserr':rqcderrs[topology+'_'+leptype+'plus_'+region]*rqcdstaterrs[topology+'_'+leptype+'plus_'+region],
+					'rqcdminusval':rqcdvals[topology+'_'+leptype+'minus_'+region]*rqcdstaterrs[topology+'_'+leptype+'plus_'+region],
+					'rqcdminuserr':rqcderrs[topology+'_'+leptype+'minus_'+region]*rqcdstaterrs[topology+'_'+leptype+'plus_'+region],
 					}
 		#open the new file to write into
 		newfile = open(fn,'w')
@@ -372,6 +371,9 @@ class Fit(object) :
 			if topology in ['t1','t2'] or (topology=='t3' and leptype=='el') :
 				if line.split()[0]%rep_data==rep_data['lt']+'_iso_weight' :
 					continue
+			##remove autoMCstats from some topologies
+			#if topology in ['t1','t2'] and line.find('autoMCStats')!=-1 :
+			#	continue
 			#otherwise write the substituted line
 			#if line.startswith('process') : #DEBUG
 			#	print 'old: %s \nnew: %s \n------------------------------------'%(line, line%rep_data) #DEBUG
@@ -410,12 +412,12 @@ class Fit(object) :
 			#rate_params_lines.append('fqp_scale_'+cid+' rateParam '+cid+' fqp0 (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.+@2)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets,Rbck')
 			#rate_params_lines.append('fqm_scale_'+cid+' rateParam '+cid+' fqm0 (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.+@2)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets,Rbck')
 			#rate_params_lines.append('fgg_scale_'+cid+' rateParam '+cid+' fg0 ((%(NTT_'+cid+')s-(1.+@0)*%(NQQ_'+cid+')s)/(%(NGG_'+cid+')s))*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.+@2)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets,Rbck')
-			rate_params_lines.append('fqp_scale_'+cid+' rateParam '+cid+' fqp* (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets')
-			rate_params_lines.append('fqm_scale_'+cid+' rateParam '+cid+' fqm* (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets')
-			rate_params_lines.append('fgg_scale_'+cid+' rateParam '+cid+' fg* ((%(NTT_'+cid+')s-(1.+@0)*%(NQQ_'+cid+')s)/(%(NGG_'+cid+')s))*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets')
-			#rate_params_lines.append('fqp_scale_'+cid+' rateParam '+cid+' fqp* (1.+@0) Rqqbar')
-			#rate_params_lines.append('fqm_scale_'+cid+' rateParam '+cid+' fqm* (1.+@0) Rqqbar')
-			#rate_params_lines.append('fgg_scale_'+cid+' rateParam '+cid+' fg* ((%(NTT_'+cid+')s-(1.+@0)*%(NQQ_'+cid+')s)/(%(NGG_'+cid+')s)) Rqqbar')
+			#rate_params_lines.append('fqp_scale_'+cid+' rateParam '+cid+' fqp* (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets')
+			#rate_params_lines.append('fqm_scale_'+cid+' rateParam '+cid+' fqm* (1.+@0)*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets')
+			#rate_params_lines.append('fgg_scale_'+cid+' rateParam '+cid+' fg* ((%(NTT_'+cid+')s-(1.+@0)*%(NQQ_'+cid+')s)/(%(NGG_'+cid+')s))*((%(NTOT_'+cid+')s-(1.+@1)*%(NWJETS_'+cid+')s-(1.)*%(NBCK_'+cid+')s)/(%(NTT_'+cid+')s)) Rqqbar,Rwjets')
+			rate_params_lines.append('fqp_scale_'+cid+' rateParam '+cid+' fqp* (1.+@0) Rqqbar')
+			rate_params_lines.append('fqm_scale_'+cid+' rateParam '+cid+' fqm* (1.+@0) Rqqbar')
+			rate_params_lines.append('fgg_scale_'+cid+' rateParam '+cid+' fg* ((%(NTT_'+cid+')s-(1.+@0)*%(NQQ_'+cid+')s)/(%(NGG_'+cid+')s)) Rqqbar')
 			#make this channel's replacement dictionary
 			signalsysID='' if self._postsys=='nominal' else '__'+self._postsys
 			backgroundsysID='__'+self._postsys if (self._postsys.startswith('JES') or self._postsys.startswith('JER')) else ''
@@ -609,16 +611,32 @@ class Fit(object) :
 
 	def _makeNuisanceImpactPlots_(self) :
 		print 'Plotting nuisance impacts for fit %s'%(self._name)
+		#start by making the part of the commands that will be used to mask out the control regions
+		maskstring = ''
+		#if not self._nocontrolregions :
+		#	maskstring = ' --setParameters '
+		#	cnames_to_mask = []
+		#	for t in self._topologies :
+		#		if t=='t3' :
+		#			continue
+		#		for lt in self._ltypes :
+		#			if self._sumcharges :
+		#				cnames_to_mask.append(t+'_'+lt+'_WJets_CR')
+		#			else :
+		#				cnames_to_mask.append(t+'_'+lt+'plus_WJets_CR')
+		#				cnames_to_mask.append(t+'_'+lt+'minus_WJets_CR')
+		#	for cn in cnames_to_mask :
+		#		maskstring+='mask_'+cn+'=1,'
 		#make the first command to run the initial fit through combineTool.py
-		cmd = 'combineTool.py -M Impacts -d %s -m 125 --doInitialFit'%(self._workspace_filename)
+		cmd = 'combineTool.py -M Impacts -d %s -m 125 --doInitialFit %s'%(self._workspace_filename,maskstring)
 		print cmd
 		os.system(cmd)
 		#make the second command to do scans for each nuisance parameter
-		cmd = 'combineTool.py -M Impacts -d %s -m 125 --doFits --parallel %d'%(self._workspace_filename,2)
+		cmd = 'combineTool.py -M Impacts -d %s -m 125 --doFits --parallel %d %s'%(self._workspace_filename,2,maskstring)
 		print cmd
 		os.system(cmd)
 		#make the third command to collect the results and put them in a json file
-		cmd = 'combineTool.py -M Impacts -d %s -m 125 -o impacts_%s.json'%(self._workspace_filename,self._name)
+		cmd = 'combineTool.py -M Impacts -d %s -m 125 -o impacts_%s.json %s'%(self._workspace_filename,self._name,maskstring)
 		print cmd
 		os.system(cmd)
 		#make the final command to plot the impacts
