@@ -101,16 +101,16 @@ class Fit(object) :
 				#for d fits
 				if self._fitpar=='d' :
 					#for qqbar
-					FQQ='(1.-@0*((%f)/(%f))+@0*((%f)/(%f)))'%(nq1[cname],nqq[cname],nq2[cname],nqq[cname])
-					flines.append('self.modelBuilder.factory_(\'expr::%s_fqd0("((1.)/(%s))",d2)\')'%(cname,FQQ))
-					flines.append('self.modelBuilder.factory_(\'expr::%s_fqd1("((-1.*@0)/(%s))",d2)\')'%(cname,FQQ))
-					flines.append('self.modelBuilder.factory_(\'expr::%s_fqd2("((@0)/(%s))",d2)\')'%(cname,FQQ))
+					FQQ='(1.-(@0*@0)*((%f)/(%f))+(@0*@0)*((%f)/(%f)))'%(nq1[cname],nqq[cname],nq2[cname],nqq[cname])
+					flines.append('self.modelBuilder.factory_(\'expr::%s_fqd0("((1.)/(%s))",d)\')'%(cname,FQQ))
+					flines.append('self.modelBuilder.factory_(\'expr::%s_fqd1("((-1.*(@0*@0))/(%s))",d)\')'%(cname,FQQ))
+					flines.append('self.modelBuilder.factory_(\'expr::%s_fqd2("((@0*@0)/(%s))",d)\')'%(cname,FQQ))
 					#for gg
-					FGG='(1.+@0*((%f)/(%f))+@0*((%f)/(%f))+@0*@0*((%f)/(%f)))'%(ng2[cname],ngg[cname],ng3[cname],ngg[cname],ng4[cname],ngg[cname])
-					flines.append('self.modelBuilder.factory_(\'expr::%s_fgd0("((1.)/(%s))",d2)\')'%(cname,FGG))
-					flines.append('self.modelBuilder.factory_(\'expr::%s_fgd2("((@0)/(%s))",d2)\')'%(cname,FGG))
-					flines.append('self.modelBuilder.factory_(\'expr::%s_fgd3("((@0)/(%s))",d2)\')'%(cname,FGG))
-					flines.append('self.modelBuilder.factory_(\'expr::%s_fgd4("((@0*@0)/(%s))",d2)\')'%(cname,FGG))
+					FGG='(1.+(@0*@0)*((%f)/(%f))+(@0*@0)*((%f)/(%f))+(@0*@0*@0*@0)*((%f)/(%f)))'%(ng2[cname],ngg[cname],ng3[cname],ngg[cname],ng4[cname],ngg[cname])
+					flines.append('self.modelBuilder.factory_(\'expr::%s_fgd0("((1.)/(%s))",d)\')'%(cname,FGG))
+					flines.append('self.modelBuilder.factory_(\'expr::%s_fgd2("((@0*@0)/(%s))",d)\')'%(cname,FGG))
+					flines.append('self.modelBuilder.factory_(\'expr::%s_fgd3("((@0*@0)/(%s))",d)\')'%(cname,FGG))
+					flines.append('self.modelBuilder.factory_(\'expr::%s_fgd4("((@0*@0*@0*@0)/(%s))",d)\')'%(cname,FGG))
 				elif self._fitpar=='mu' :
 					#for qqbar
 					FQQ='(1.+(2.*@0+@0*@0)*((%f)/(%f))+(@0*@0)*((%f)/(%f)))'%(nq1[cname],nqq[cname],nq2[cname],nqq[cname])
@@ -176,8 +176,8 @@ class Fit(object) :
 		if mode=='data' : 
 			#run a single fit to the observed data
 			fit_diagnostics_filename = self._runSingleDataFit_()
-			if not self._post_plots_only :
-				self._makeNuisanceImpactPlots_()
+			#if not self._post_plots_only :
+			#	self._makeNuisanceImpactPlots_()
 			self._makePostfitCompPlots_(fit_diagnostics_filename,tfilepath)
 		elif mode=='toyGroup' : 
 			if self._post_plots_only :
