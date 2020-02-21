@@ -10,7 +10,8 @@ gROOT.SetBatch()
 #Set some TDR options
 tdrstyle.setTDRStyle()
 iPeriod = 4 #13TeV iPeriod = 1*(0/1 7 TeV) + 2*(0/1 8 TeV)  + 4*(0/1 13 TeV)
-CMS_lumi.writeExtraText = 1
+#CMS_lumi.writeExtraText = 1
+CMS_lumi.writeExtraText = False
 CMS_lumi.extraText = "Preliminary"
 
 ##########								Parser Options								##########
@@ -50,8 +51,12 @@ cwd = os.getcwd()
 os.chdir(options.toygroupdir)
 dirnamestem = 'toyGroup_'+options.par+'='
 dirlist = glob.glob(dirnamestem+'*')
+input_values_from_dirnames = []
 if options.unsigned :
-	input_values_from_dirnames = [abs(float(dirname.split(dirnamestem)[1])) for dirname in dirlist if abs(float(dirname.split(dirnamestem)[1])) not in input_values]
+	input_values_from_dirnames = [float(dirname.split(dirnamestem)[1]) for dirname in dirlist]
+#	for dirname in dirlist :
+#		if abs(float(dirname.split(dirnamestem)[1])) not in input_values_from_dirnames :
+#			input_values_from_dirnames.append(abs(float(dirname.split(dirnamestem)[1])))
 else :
 	input_values_from_dirnames = [float(dirname.split(dirnamestem)[1]) for dirname in dirlist]
 input_values = array('d',input_values_from_dirnames)
@@ -83,25 +88,25 @@ title = ''
 #title+='for '
 if options.par == 'Afb' :
 	if options.unsigned :
-		#title += '|A_{FB}|; True |A_{FB}|; Best Fit |A_{FB}|'
-		title += '; True |A_{FB}|; Best Fit |A_{FB}|'
+		#title += '|A_{FB}^{(1)}|; True |A_{FB}^{(1)}|; Fitted |A_{FB}^{(1)}|'
+		title += '; Input |A_{FB}^{(1)}|; Fitted |A_{FB}^{(1)}|'
 	else :
-		#title += 'A_{FB}; True A_{FB}; Best Fit A_{FB}'
-		title += '; True A_{FB}; Best Fit A_{FB}'
+		#title += 'A_{FB}^{(1)}; True A_{FB}^{(1)}; Fitted A_{FB}^{(1)}'
+		title += '; Input A_{FB}^{(1)}; Fitted A_{FB}^{(1)}'
 elif options.par == 'mu' :
 	if options.unsigned :
-		#title += '|#mu|; True |#mu|; Best Fit |#mu|'
-		title += '; True |#mu|; Best Fit |#mu|'
+		#title += '|#mu|; True |#mu|; Fitted |#mu|'
+		title += '; Input |#mu|; Fitted |#mu|'
 	else :
-		#title += '#mu; True #mu; Best Fit #mu'
-		title += '; True #mu; Best Fit #mu'
+		#title += '#mu; True #mu; Fitted #mu'
+		title += '; Input #mu; Fitted #mu'
 elif options.par == 'd' :
 	if options.unsigned :
-		#title += '|d|; True |d|; Best Fit |d|'
-		title += '; True |d|; Best Fit |d|'
+		#title += '|d|; True |d|; Fitted |d|'
+		title += '; Input |d|; Fitted |d|'
 	else :
-		#title += 'd; True d; Best Fit d'
-		title += '; True d; Best Fit d'
+		#title += 'd; True d; Fitted d'
+		title += '; Input d; Fitted d'
 if options.par == 'Afb' :
 	closure_test_histo = TH2D('closure_test_histo',title,n,input_bins,4*n+2,2*input_values[0]-0.025,2*input_values[n-1]+0.025)
 else :
@@ -120,15 +125,15 @@ twosigma_graph.SetFillColor(kYellow)
 tstitle=''
 formattedvar = ''
 if options.par=='Afb' :
-	formattedvar = 'A_{FB}'
+	formattedvar = 'A_{FB}^{(1)}'
 elif options.par=='mu' :
-	formattedvar = '#mu'
+	formattedvar = '#hat{#mu}_{t}'
 elif options.par=='d' :
-	formattedvar = 'd'
+	formattedvar = '#hat{d}_{t}'
 #tstitle+=formattedvar
 #if options.append.find('no_sys')!=-1 :
 #	tstitle += ' (no systematics)'
-tstitle+='; True %s; Best Fit %s'%(formattedvar,formattedvar)
+tstitle+='; Input %s; Fitted %s'%(formattedvar,formattedvar)
 twosigma_graph.SetTitle(tstitle)
 
 #for each of the data points tested
@@ -139,8 +144,8 @@ for i in range(n) :
 	filepath = '%s/toyGroup_%s=%.5f/higgsCombineToys%s%.3f.MultiDimFit.all.root'%(options.toygroupdir,options.par,input_values[i],options.par,input_values[i])
 	filepath_opp_sign = '%s/toyGroup_%s=%.5f/higgsCombineToys%s%.3f.MultiDimFit.all.root'%(options.toygroupdir,options.par,-1*input_values[i],options.par,-1*input_values[i])
 	files_to_read = [filepath]
-	if options.unsigned :
-		files_to_read.append(filepath_opp_sign)
+	#if options.unsigned :
+	#	files_to_read.append(filepath_opp_sign)
 	#make a list of all the fitted parameter values
 	par_values_list = []
 	for fp in files_to_read :
@@ -152,10 +157,7 @@ for i in range(n) :
 		readArray = array('f',[0.])
 		tree=par_values_file.Get(treename)
 		n_tree_entries = tree.GetEntries()
-		if options.par=='d' :
-			tree.SetBranchAddress('d2',readArray)
-		else :
-			tree.SetBranchAddress(options.par,readArray)
+		tree.SetBranchAddress(options.par,readArray)
 		for j in range(n_tree_entries) :
 			tree.GetEntry(j)
 			#add the value
@@ -179,22 +181,18 @@ for i in range(n) :
 	m1sigma = par_values_list[int(round(len(par_values_list)*(1-0.683)/2.))] 
 	p2sigma = par_values_list[min(len(par_values_list)-1,int(round(len(par_values_list)*(1.+0.955)/2.)))] 
 	m2sigma = par_values_list[min(len(par_values_list)-1,int(round(len(par_values_list)*(1.-0.955)/2.)))]
-	if options.par=='d' :
-		stddev=0.
-		for value in par_values_list :
-			stddev+=(value-mean)**2
-		stddev=sqrt(stddev/len(par_values_list))
-		p1sigma = median+stddev
-		m1sigma = max(0.0,median-stddev)
-		p2sigma = median+2*stddev
-		m2sigma = max(0.0,median-2*stddev)
-		print('mean = {:.15f}, median = {:.15f}, stddev = {:.15f}'.format(mean,median,stddev))
 	#Set graphs' point values
 	onesigma_graph.SetPoint(i,input_values[i],median)
 	twosigma_graph.SetPoint(i,input_values[i],median)
-	onesigma_graph.SetPointError(i,x_errs[i],x_errs[i],p1sigma-median,abs(m1sigma-median))
-	twosigma_graph.SetPointError(i,x_errs[i],x_errs[i],p2sigma-median,abs(m2sigma-median))
-	if options.verbose : print '	Bands: %.4f || %.4f | %.4f | %.4f || %.4f'%(m2sigma,m1sigma,median,p1sigma,p2sigma) #DEBUG
+	onesigma_graph.SetPointError(i,x_errs[i],x_errs[i],abs(m1sigma-median),p1sigma-median)
+	twosigma_graph.SetPointError(i,x_errs[i],x_errs[i],abs(m2sigma-median),p2sigma-median)
+	if options.verbose : 
+		print '	Bands: %.4f || %.4f | %.4f | %.4f || %.4f'%(m2sigma,m1sigma,median,p1sigma,p2sigma) #DEBUG
+		xarr = array('d',[0.]); yarr = array('d',[0.]) #DEBUG
+		onesigma_graph.GetPoint(i,xarr,yarr) #DEBUG
+		print 'onesigma graph point %d x/y = %.4f /%.4f, down/up = %.4f / %.4f'%(i,xarr[0],yarr[0],yarr[0]-onesigma_graph.GetErrorYlow(i),yarr[0]+onesigma_graph.GetErrorYhigh(i)) #DEBUG
+		twosigma_graph.GetPoint(i,xarr,yarr) #DEBUG
+		print 'twosigma graph point %d x/y = %.4f /%.4f, down/up = %.4f / %.4f'%(i,xarr[0],yarr[0],yarr[0]-twosigma_graph.GetErrorYlow(i),yarr[0]+twosigma_graph.GetErrorYhigh(i)) #DEBUG
 
 if options.centralvalue!=10000000. :
 	#Interpolate given the central value
@@ -246,8 +244,26 @@ if options.centralvalue!=10000000. :
 
 	if options.verbose : print 'Central value = %.6f, plus one sigma = %.6f, minus one sigma = %.6f'%(data_fit_median,data_fit_one_sigma_up,data_fit_one_sigma_down) #DEBUG
 	if options.verbose : print '	plus two sigma = %.6f, minus two sigma = %.6f'%(data_fit_two_sigma_up,data_fit_two_sigma_down) #DEBUG
-	print 'FINAL RESULT: Parameter %s = %.15f + %.6f - %.6f (95%% CL ~= +/-%.6f)'%(options.par,data_fit_median,data_fit_one_sigma_up-data_fit_median,abs(data_fit_one_sigma_down-data_fit_median),data_fit_two_sigma_up)
+	print 'FINAL RESULT: Parameter %s = %.15f + %.15f - %.15f (95%% CL ~= +/-%.6f)'%(options.par,data_fit_median,data_fit_one_sigma_up-data_fit_median,abs(data_fit_one_sigma_down-data_fit_median),data_fit_two_sigma_up)
 
+	#Plot the neyman construction histogram
+	neyman_canv = TCanvas('neyman_canv','neyman_canv',900,900)
+	neyman_canv.SetTopMargin(0.07)
+	neyman_canv.cd()
+	#plot
+	twosigma_graph.Draw('A E3')
+	if options.par=='Afb' :
+		twosigma_graph.GetXaxis().SetRangeUser(-0.5,0.65)
+		twosigma_graph.GetYaxis().SetRangeUser(-0.79,0.90)
+		twosigma_graph.GetXaxis().SetTitleOffset(0.93)
+	if options.par=='d' :
+		twosigma_graph.GetXaxis().SetRangeUser(-0.065,0.065)
+		twosigma_graph.GetYaxis().SetRangeUser(-0.08,0.08)
+	if options.par=='mu' :
+		twosigma_graph.GetXaxis().SetRangeUser(-0.07,0.03)
+		twosigma_graph.GetYaxis().SetRangeUser(-0.13,0.085)
+	onesigma_graph.Draw('SAME E3')
+	onesigma_graph.Draw('SAME PLX')
 	#Build the lines to indicate based on the data fit value
 	lines = []
 	x_low = twosigma_graph.GetXaxis().GetBinLowEdge(twosigma_graph.GetXaxis().GetFirst())
@@ -259,23 +275,21 @@ if options.centralvalue!=10000000. :
 	lines.append(TLine(data_fit_median,options.centralvalue,data_fit_median,y_low))
 	for line in lines :
 		line.SetLineWidth(3); line.SetLineColor(kRed); line.SetLineStyle(2)
-
-	#Build a legend
-	leg = TLegend(0.62,0.67,0.9,0.9)
-	leg.AddEntry(onesigma_graph,'toy median values','PL')
-	leg.AddEntry(onesigma_graph,'#pm 1 #sigma','F')
-	leg.AddEntry(twosigma_graph,'#pm 2 #sigma','F')
-	leg.AddEntry(lines[0],'data fit','L')
-
-	#Plot the neyman construction histogram
-	neyman_canv = TCanvas('neyman_canv','neyman_canv',900,900)
-	neyman_canv.cd()
-	twosigma_graph.Draw('A E3')
-	onesigma_graph.Draw('SAME E3')
-	onesigma_graph.Draw('SAME PLX')
 	for line in lines :
 		line.Draw()
+	#Build a legend
+	leg = TLegend(0.188,0.675,0.595,0.9)
+	leg.AddEntry(onesigma_graph,'Median MC values','PL')
+	leg.AddEntry(onesigma_graph,'#pm 1 #sigma','F')
+	leg.AddEntry(twosigma_graph,'#pm 2 #sigma','F')
+	leg.AddEntry(lines[0],'Fitted data','L')
+	leg.SetBorderSize(0)
 	leg.Draw()
+	#plot the CMS_Lumi lines on the canvas
+	iPeriod = 4 #13TeV iPeriod = 1*(0/1 7 TeV) + 2*(0/1 8 TeV)  + 4*(0/1 13 TeV)
+	iPos = 1#1 #iPos = 10*(alignment) + position (1/2/3 = left/center/right)
+	CMS_lumi.CMS_lumi(neyman_canv, iPeriod, iPos)
+	neyman_canv.Update()
 	outfile.cd()
 	neyman_canv.Write()
 

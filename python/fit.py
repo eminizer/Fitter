@@ -176,8 +176,8 @@ class Fit(object) :
 		if mode=='data' : 
 			#run a single fit to the observed data
 			fit_diagnostics_filename = self._runSingleDataFit_()
-			#if not self._post_plots_only :
-			#	self._makeNuisanceImpactPlots_()
+			if not self._post_plots_only :
+				self._makeNuisanceImpactPlots_()
 			self._makePostfitCompPlots_(fit_diagnostics_filename,tfilepath)
 		elif mode=='toyGroup' : 
 			if self._post_plots_only :
@@ -467,19 +467,31 @@ class Fit(object) :
 			#start the command to run Combine
 			print 'PARALLEL TOYS: each multiprocessing job will run %d toys (%d total)'%(ntoys/nthreads,nthreads*(ntoys/nthreads))
 			cmd = 'combine -M MultiDimFit '+self._workspace_filename
+			#cmd = 'combine -M FitDiagnostics '+self._workspace_filename
 			#fix nuisance parameters
 			if self._noss :
-				cmd+=' --toysNoSystematics'
+				cmd+=' --toysNoSystematics -S 0'
 			#set observable value for toys
 			cmd+=' --setParameters %s=%.3f'%(self._fitpar,self._toypar)
+			#set the parameter ranges
+			if self._fitpar=='Afb' :
+				cmd+=' --setParameterRanges %s=-0.75,0.75'%(self._fitpar)
+			else :
+				cmd+=' --setParameterRanges %s=-5.0,5.0'%(self._fitpar)
+			#set the custom start point
+			cmd+=' --customStartingPoint'
 			#set the number of toys
 			cmd+=' --toys %d'%(ntoys/nthreads)
 			#set the seed for the RNG
 			cmd+=' -s '+self._toySeed
 			if savetoys : #save the toys
 				cmd+=' --saveToys'
-			#save the fit results to multidimfitNAME.root
-			cmd+=' --saveFitResult'
+			#save the fit results and NLL values to multidimfitNAME.root
+			cmd+=' --trackParameters %s'%(self._fitpar)
+			#cmd+=' --saveFitResult --saveNLL'
+			# use robust fit
+			#cmd+=' --robustFit 1'
+			#cmd+=' --robustHesse 1'
 			#make it print out progress, etc.
 			cmd+=' --verbose 5' if self._verbose else ' --verbose 0'
 			#set the fit name 
@@ -492,12 +504,15 @@ class Fit(object) :
 		#aggregate the outputted files
 		print 'Aggregating separate results'
 		files_to_delete = []
-		haddcmd = 'hadd -f higgsCombineToys%s%.3f.MultiDimFit.all.root '%(self._fitpar,self._toypar)
+		#haddcmd = 'hadd -f higgsCombineToys%s%.3f.MultiDimFit.all.root '%(self._fitpar,self._toypar)
+		haddcmd = 'hadd -f higgsCombineToys%s%.3f.FitDiagnostics.all.root '%(self._fitpar,self._toypar)
 		for i in range(nthreads) :
-			fit_result_filename_pattern = 'higgsCombineToys%s%.3f_%d.MultiDimFit.m*.*.root'%(self._fitpar,self._toypar,i)
+			#fit_result_filename_pattern = 'higgsCombineToys%s%.3f_%d.MultiDimFit.m*.*.root'%(self._fitpar,self._toypar,i)
+			fit_result_filename_pattern = 'higgsCombineToys%s%.3f_%d.FitDiagnostics.m*.*.root'%(self._fitpar,self._toypar,i)
 			fit_result_files = glob.glob(fit_result_filename_pattern)
 			if len(fit_result_files)>1 :
 				print 'WARNING: more than one file found matching pattern higgsCombineToys%s%.3f_%d.MultiDimFit.m*.*.root'%(self._fitpar,self._toypar,i)
+				#print 'WARNING: more than one file found matching pattern higgsCombineToys%s%.3f_%d.FitDiagnostics.m*.*.root'%(self._fitpar,self._toypar,i)
 			print '	Adding file from fit with seed %s (Make sure none of these match)'%(fit_result_files[0].split('.')[-2])
 			haddcmd+=fit_result_files[0]+' '
 			files_to_delete.append(fit_result_files[0])
@@ -506,7 +521,8 @@ class Fit(object) :
 			os.system('rm -rf %s'%(f))
 		#os.system('rm -rf multidimfitToys%s%.3f_*.root'%(self._fitpar,self._toypar))
 		#open the output file 
-		fit_result_file = TFile.Open('higgsCombineToys%s%.3f.MultiDimFit.all.root'%(self._fitpar,self._toypar))
+		#fit_result_file = TFile.Open('higgsCombineToys%s%.3f.MultiDimFit.all.root'%(self._fitpar,self._toypar))
+		fit_result_file = TFile.Open('higgsCombineToys%s%.3f.FitDiagnostics.all.root'%(self._fitpar,self._toypar))
 		#get back the parameter values from the toys
 		limit_tree = fit_result_file.Get('limit')
 		parloc = array('f',[0.])
@@ -527,7 +543,7 @@ class Fit(object) :
 		#print them out : )
 		print '-----------------------------------------------------'
 		print 'FINAL PARAMETER VALUE INTERVALS:'
-		print '%.4f || %.4f | %.4f | %.4f || %.4f'%(minustwo,minusone,median,plusone,plustwo)
+		print '%.8f || %.8f | %.8f | %.8f || %.8f'%(minustwo,minusone,median,plusone,plustwo)
 		print '-----------------------------------------------------'
 		fit_result_file.Close()
 
@@ -628,19 +644,19 @@ class Fit(object) :
 		#	for cn in cnames_to_mask :
 		#		maskstring+='mask_'+cn+'=1,'
 		#make the first command to run the initial fit through combineTool.py
-		cmd = 'combineTool.py -M Impacts -d %s -m 125 --doInitialFit %s'%(self._workspace_filename,maskstring)
+		cmd = 'combineTool.py -M Impacts -d %s -m 125 --doInitialFit --robustFit 1 %s'%(self._workspace_filename,maskstring)
 		print cmd
 		os.system(cmd)
 		#make the second command to do scans for each nuisance parameter
-		cmd = 'combineTool.py -M Impacts -d %s -m 125 --doFits --parallel %d %s'%(self._workspace_filename,2,maskstring)
+		cmd = 'combineTool.py -M Impacts -d %s -m 125 --doFits --robustFit 1 --parallel %d %s'%(self._workspace_filename,2,maskstring)
 		print cmd
 		os.system(cmd)
 		#make the third command to collect the results and put them in a json file
-		cmd = 'combineTool.py -M Impacts -d %s -m 125 -o impacts_%s.json %s'%(self._workspace_filename,self._name,maskstring)
+		cmd = 'combineTool.py -M Impacts -d %s -m 125 -o impacts_%s.json --robustFit 1 %s'%(self._workspace_filename,self._name,maskstring)
 		print cmd
 		os.system(cmd)
 		#make the final command to plot the impacts
-		cmd = 'plotImpacts.py -i impacts_%s.json -o impacts_%s'%(self._name,self._name)
+		cmd = 'plotImpacts.py -i impacts_%s.json -o impacts_%s -t /uscms_data/d3/eminizer/ttbar_13TeV/CMSSW_8_1_0/src/Analysis/Fitter/test/nuisance_parameter_translation.json --per-page 27 --cms-label Preliminary'%(self._name,self._name)
 		print cmd
 		os.system(cmd)
 

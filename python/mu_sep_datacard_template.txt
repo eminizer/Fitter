@@ -26,7 +26,7 @@ observation -1                  -1
 # Add the processes contributing to the data expectation
 bin                                   %(lt)splus_%(r)s %(lt)splus_%(r)s %(lt)splus_%(r)s %(lt)splus_%(r)s %(lt)splus_%(r)s %(lt)splus_%(r)s %(lt)splus_%(r)s %(lt)splus_%(r)s %(lt)splus_%(r)s %(lt)splus_%(r)s %(lt)splus_%(r)s %(lt)sminus_%(r)s %(lt)sminus_%(r)s %(lt)sminus_%(r)s %(lt)sminus_%(r)s %(lt)sminus_%(r)s %(lt)sminus_%(r)s %(lt)sminus_%(r)s %(lt)sminus_%(r)s %(lt)sminus_%(r)s %(lt)sminus_%(r)s %(lt)sminus_%(r)s
 process                               fq0              fq1              fq2              fg0              fg1              fg2              fg3              fg4              fbck             fwjets           fqcd             fq0               fq1               fq2               fg0              fg1              fg2              fg3              fg4              fbck                fwjets              fqcd                
-process                               -7               -6               -5               -4               -3               -2               -1               0                1                2                3                -7               -6               -5               -4               -3               -2               -1               0                1                2                3                   
+process                               0                1                2                3                4                5                6               7                8                9                10                0                1                 2                 3                4                5                6                7                8                9                 10                   
 rate                                  -1               -1               -1               -1               -1               -1               -1               -1               -1               -1               -1               -1               -1               -1               -1               -1               -1               -1               -1               -1               -1               -1                  
 -------------------------------------------------------------------------------
 # Add the systematics
@@ -65,4 +65,4 @@ Rqqbar param 0.0 0.01 [-1.,1.]
 Rqcd_%(topology)s_%(lt)splus_%(r)s param %(rqcdplusval)s %(rqcdpluserr)s [-1.,4.]
 Rqcd_%(topology)s_%(lt)sminus_%(r)s param %(rqcdminusval)s %(rqcdminuserr)s [-1.,4.]
 # auto  MC stats
-#* autoMCStats 0 1
+* autoMCStats 0 1

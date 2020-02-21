@@ -22,13 +22,11 @@ parser.add_option('-T', '--tfilename', type='string', action='store', dest='tfil
 stems = []
 if options.par=='Afb' :
 	centralval = 0.05352; errfromdatafit = 0.10326
-	stems = ['{0:.{1}f}'.format(centralval+(i-10)*(errfromdatafit/2.), 5) for i in range(21)]
 elif options.par=='d' :
-	centralval = 2.22045e-14; errfromdatafit = 0.00011
-	stems = ['{0:.{1}f}'.format((i)*(errfromdatafit*10), 5) for i in range(21)]
+	centralval = 1.44771e-07; errfromdatafit = 0.01054
 elif options.par=='mu' :
 	centralval = -0.02280; errfromdatafit = 0.00748
-	stems = ['{0:.{1}f}'.format(centralval+(i-10)*(errfromdatafit/2.), 5) for i in range(21)]
+stems = ['{0:.{1}f}'.format(centralval+(i-10)*(errfromdatafit/2.), 5) for i in range(21)]
 topdirnames = ['toyGroups_'+options.par+'_'+tds for tds in topdir_stems]
 dirnames = ['toyGroup_'+options.par+'='+stem for stem in stems]
 #print dirnames #DEBUG
